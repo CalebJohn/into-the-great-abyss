@@ -1,2 +1,2 @@
 # potential-fortnight
-Top secret game, fell free to contribute.
+Top secret game, feel free to contribute.
