@@ -8,7 +8,7 @@ This project will defer to [idiomatic.js](https://github.com/rwaldron/idiomatic.
 * Use 4 space indentation, no tabs
 * Always use spacing between operators (i.e. `2 + 2` not `2+2`)
 * Don't use additional whitespace inside parens (i.e. `(2 + 2)` not `( 2 + 2 )`)
-* Parens should stay on the same line for conditionals and else clauses should share a line with closing parens i.e.
+* Braces should stay on the same line for conditionals and else clauses should share a line with closing braces i.e.
     ```javascript
     
     if (flag) {
