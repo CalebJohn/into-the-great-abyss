@@ -1,4 +1,20 @@
-var levelOne = function () {};
+var LevelOne = function () {};
 
-// This line causes the `levelOne` object to be returned on a `require` call 
-module.exports = levelOne;
+LevelOne.prototype = {
+
+  preload: function() {
+
+  },
+
+  create: function() {
+
+  },
+
+  update: function() {
+
+  },
+
+  render: function() {
+
+  }
+};

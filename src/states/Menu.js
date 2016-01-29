@@ -1,4 +1,20 @@
-var menu = function () {};
+var Menu = function () {};
 
-// This line causes the `menu` object to be returned on a `require` call 
-module.exports = menu;
+Menu.prototype = {
+
+  preload: function() {
+
+  },
+
+  create: function() {
+
+  },
+
+  update: function() {
+
+  },
+
+  render: function() {
+
+  }
+};
