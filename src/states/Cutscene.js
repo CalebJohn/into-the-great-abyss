@@ -1,4 +1,20 @@
-var cutscene = function () {};
+var Cutscene = function () {};
 
-// This line causes the `cutscene` object to be returned on a `require` call 
-module.exports = cutscene;
+Cutscene.prototype = {
+
+  preload: function() {
+
+  },
+
+  create: function() {
+
+  },
+
+  update: function() {
+
+  },
+
+  render: function() {
+
+  }
+};
