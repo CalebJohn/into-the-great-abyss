@@ -1,4 +1,4 @@
-"use strict";
+/* globals window */
 
 var WorldGenerator = function () {
     this.isFinished = false;

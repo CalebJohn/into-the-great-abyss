@@ -1,4 +1,4 @@
-"use strict";
+/* globals window WorldGenerator*/
 
 var Cutscene = function () {
   this.generator = null;
