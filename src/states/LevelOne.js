@@ -1,8 +1,6 @@
 /* globals GUIBuilder */
 var LevelOne = function () {
   this.gui = null;
-  this.group = null;
-  this.tween = null;
 };
 
 LevelOne.prototype = {

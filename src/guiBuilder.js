@@ -1,9 +1,9 @@
-"use strict";
+/* globals window */
 
 // TODO : Re-evaluate the api of the gui-builder
 var GUIBuilder = function(buttons) {
   this.buttons = [];
-  this.group = game.add.group();
+  this.group = window.game.add.group();
 
   for (var i = 0; i < buttons.length; i++) {
     var btn = buttons[i];
@@ -16,17 +16,17 @@ GUIBuilder.prototype = {
   // makeButton is used in the constructor of GUIBuilder, but can
   // also be used on it's own
   makeButton: function(x, y, name, size, anchor, callback) {
-    if (size == null) { size = 25; }
-    if (anchor == null) { anchor = [0.5, 0.5]; }
+    if (!size) { size = 25; }
+    if (!anchor) { anchor = [0.5, 0.5]; }
 
-    var button = game.add.text(x, y, name, {resolution: window.devicePixelRatio});
+    var button = window.game.add.text(x, y, name, {resolution: window.devicePixelRatio});
   	button.anchor.setTo.apply(button.anchor, anchor);
   	button.fontSize = size;
   	button.fill = 'white';
 
   	button.inputEnabled = true;
   	button.events.onInputOver.add(function(target) {target.alpha = 100;});
-    if (callback != null) { button.events.onInputDown.add(callback); }
+    if (callback) { button.events.onInputDown.add(callback); }
   	button.events.onInputDown.add(function(target) {target.alpha = 200;});
     button.events.onInputOut.add(function(target) {target.alpha = 1;});
 
