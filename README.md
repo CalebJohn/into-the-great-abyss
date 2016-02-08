@@ -5,7 +5,7 @@ Style Guide
 -----------
 This project will defer to [idiomatic.js](https://github.com/rwaldron/idiomatic.js/), with some elaborations and exceptions below.
 
-* Use 4 space indentation, no tabs
+* Use 2 space indentation, no tabs
 * Always use spacing between operators (i.e. `2 + 2` not `2+2`)
 * Don't use additional whitespace inside parens (i.e. `(2 + 2)` not `( 2 + 2 )`)
 * Braces should stay on the same line for conditionals and else clauses should share a line with closing braces i.e.
