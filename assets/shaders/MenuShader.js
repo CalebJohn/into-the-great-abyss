@@ -49,7 +49,7 @@ Phaser.Filter.sunset = function (game) {
     		    "return v;",
     		"}",
 
-    		"float TOD = 0.0;",
+    		"float dTime = 0.0;",
     		"void main( void )",
     		"{",
     		    
@@ -59,11 +59,11 @@ Phaser.Filter.sunset = function (game) {
     		    "uv.y/=resolution.y;",
     		    "uv.x*=(resolution.x/resolution.y);",
     		    
-    		    "//TOD calculation",
-    		    "TOD=time;",
-    		    "float sh = mouse.y;//0.5+0.5*sin(TOD);",
+    		    "//Time of day (dTime) calculation",
+    		    "dTime=time;",
+    		    "float sh = mouse.y;//0.5+0.5*sin(dTime);",
     		    "//sun position",
-    		    "vec2 sun = vec2(0.5*(resolution.x/resolution.y), -0.21+1.42*sh);// 0.5+0.72*sin(TOD));",
+    		    "vec2 sun = vec2(0.5*(resolution.x/resolution.y), -0.21+1.42*sh);// 0.5+0.72*sin(dTime));",
     		    "//calculate sky gradient",
     		    "   //stars",
     		    "vec3 nightsky = mix(vec3(0.2, 0.2, 0.6), vec3(1.0, 1.0, 0.8), (0.8*smoothstep(0.9992, 1.0, 1.0-voronoi(uv*10.0, 16.0))*(1.0-sh)*(1.0-sh)));",
