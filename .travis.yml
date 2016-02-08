@@ -1,0 +1,11 @@
+language: node_js
+sudo: required
+dist: trusty
+node_js:
+  - "stable"
+install:
+  - npm install jshint
+  - npm install mocha
+script:
+  - jshint src/*
+  - mocha -R dot
