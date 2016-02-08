@@ -1,3 +1,4 @@
+"use strict";
 //In later changes I may want to create a list of buttons rather than store each individually
 //It may be nice to have something more dynamic
 var Menu = function () {
@@ -120,5 +121,5 @@ Menu.prototype = {
     this.muteButton.position.setTo(game.world.centerX, game.world.centerY - 20);
     this.seedButton.position.setTo(game.world.centerX, game.world.centerY + 20);
     this.returnButton.position.setTo(game.world.centerX, game.world.centerY + 60);
-  } = null    
+  }   
 };
