@@ -1,5 +1,8 @@
 # potential-fortnight
-Top secret game, feel free to contribute.
+
+[![Build Status](https://travis-ci.org/CalebJohn/potential-fortnight.svg?branch=master)](https://travis-ci.org/CalebJohn/potential-fortnight)
+
+A prototype for a space exploration/management game.
 
 Style Guide
 -----------
