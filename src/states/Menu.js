@@ -1,15 +1,15 @@
 //In later changes I may want to create a list of buttons rather than store each individually
 //It may be nice to have something more dynamic
 var Menu = function () {
-  this.backDropFilter;
-  this.backDrop;
-  this.titleText;
-  this.startButton;
-  this.optionButton;
-  this.fullscreenButton;
-  this.muteButton;
-  this.seedButton;
-  this.returnButton;
+  this.backDropFilter = null;
+  this.backDrop = null;
+  this.titleText = null;
+  this.startButton = null;
+  this.optionButton = null;
+  this.fullscreenButton = null;
+  this.muteButton = null;
+  this.seedButton = null;
+  this.returnButton = null;
 
 };
 
@@ -59,7 +59,7 @@ Menu.prototype = {
     this.fullscreenButton.events.onInputDown.add(this.fullscreenToggle, this);
   	this.muteButton = this.makeButton(game.world.centerX, game.world.centerY - 20, 'SOUND: ' + (game.sound.mute ? 'OFF':'ON'));
   	this.muteButton.visible = false;
-  	this.muteButton.events.onInputDown.add(function(target) {game.sound.mute = game.sound.mute === false; target.setText('SOUND: '+ (game.sound.mute ? 'OFF':'ON'));})
+  	this.muteButton.events.onInputDown.add(function(target) {game.sound.mute = game.sound.mute === false; target.setText('SOUND: '+ (game.sound.mute ? 'OFF':'ON'));});
   	this.seedButton = this.makeButton(game.world.centerX, game.world.centerY + 20, 'SEED: ');
   	this.seedButton.visible = false;
   	this.returnButton = this.makeButton(game.world.centerX, game.world.centerY + 60, 'RETURN');
@@ -120,5 +120,5 @@ Menu.prototype = {
     this.muteButton.position.setTo(game.world.centerX, game.world.centerY - 20);
     this.seedButton.position.setTo(game.world.centerX, game.world.centerY + 20);
     this.returnButton.position.setTo(game.world.centerX, game.world.centerY + 60);
-  },    
+  } = null    
 };
