@@ -1,4 +1,5 @@
-"use strict";
+/* globals window */
+
 //In later changes I may want to create a list of buttons rather than store each individually
 //It may be nice to have something more dynamic
 var Menu = function () {
