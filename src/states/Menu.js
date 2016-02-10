@@ -12,6 +12,7 @@ var Menu = function () {
   this.muteButton = null;
   this.seedButton = null;
   this.returnButton = null;
+  this.menuState = 'MAIN';
 
 };
 
@@ -23,9 +24,7 @@ Menu.prototype = {
   create: function() {
     window.game.stage.backgroundColor = '#FFFFFF';
     window.game.scale.fullScreenScaleMode = Phaser.ScaleManager.NO_SCALE;
-    //load Filter
-    //this.initMenuBackground();
-    //Apply filter to image in background
+    /*Apply filter to image in background*/
     this.backDrop = window.game.add.image();
     this.backDrop.width = window.game.width;
     this.backDrop.height = window.game.height;
@@ -55,7 +54,7 @@ Menu.prototype = {
     this.startButton = this.makeButton(window.game.world.centerX, window.game.world.centerY - 20, 'START');
     this.startButton.events.onInputDown.add(function() {window.game.state.start('Cutscene');});
     this.optionButton = this.makeButton(window.game.world.centerX, window.game.world.centerY + 20, 'OPTIONS');
-    this.optionButton.events.onInputDown.add(this.toggleMenu, this);
+    this.optionButton.events.onInputDown.add(this.optionMenuToggle, this);
     this.fullscreenButton = this.makeButton(window.game.world.centerX, window.game.world.centerY - 60, 'FULLSCREEN');
     this.fullscreenButton.visible = false;
     this.fullscreenButton.events.onInputDown.add(this.fullscreenToggle, this);
@@ -66,7 +65,7 @@ Menu.prototype = {
     this.seedButton.visible = false;
     this.returnButton = this.makeButton(window.game.world.centerX, window.game.world.centerY + 60, 'RETURN');
     this.returnButton.visible = false;
-    this.returnButton.events.onInputDown.add(this.toggleMenu, this);
+    this.returnButton.events.onInputDown.add(this.optionMenuToggle, this);
   },
 
   //generic button creator, initializes buttons with standard formatting
@@ -83,30 +82,35 @@ Menu.prototype = {
 
   //functonality for the fullscreen button
   fullscreenToggle: function() {
-    if (window.game.scale.isFullScreen)
-    {
-        this.resizeGame(1000, 600);
-        
-        window.game.scale.stopFullScreen();
-    }
-    else
-    {
-        
-       this.resizeGame(window.screen.width, window.screen.height);
-        window.game.scale.startFullScreen();
-        
-        
+    if (window.game.scale.isFullScreen) {
+      this.resizeGame(1000, 600);
+      window.game.scale.stopFullScreen();
+    } else {
+      this.resizeGame(window.screen.width, window.screen.height);
+      window.game.scale.startFullScreen();   
     }
   },
 
   //toggles between regular menu and options menu
-  toggleMenu: function() {
-    this.startButton.visible = this.startButton.visible === false;
-    this.optionButton.visible = this.optionButton.visible === false;
-    this.fullscreenButton.visible = this.fullscreenButton.visible === false;
-    this.muteButton.visible = this.muteButton.visible === false;
-    this.seedButton.visible = this.seedButton.visible === false;
-    this.returnButton.visible = this.returnButton.visible === false;
+  optionMenuToggle: function() {
+    this.startButton.visible = false;
+    this.optionButton.visible = false;
+    this.fullscreenButton.visible = false;
+    this.muteButton.visible = false;
+    this.seedButton.visible = false;
+    this.returnButton.visible = false;
+
+    if (this.menuState === 'MAIN') {
+      this.fullscreenButton.visible = true;
+      this.muteButton.visible = true;
+      this.seedButton.visible = true;
+      this.returnButton.visible = true;
+      this.menuState = 'OPTIONS';
+    } else if (this.menuState === 'OPTIONS') {
+      this.startButton.visible = true;
+      this.optionButton.visible = true;
+      this.menuState = 'MAIN';
+    }
   },
 
   // called in order to resize the game window, used with fullscreen
