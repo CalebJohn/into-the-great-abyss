@@ -6,20 +6,16 @@
         <style type="text/css">
             body { margin:0; }
         </style>
-        <script>
-        var supportsWebGL = ( function () { try { return !! window.WebGLRenderingContext && !! document.createElement( 'canvas' ).getContext( 'experimental-webgl' ); } catch( e ) { return false; } } )();
-        if(supportsWebGL){
-            document.write("<script src=\"assets/phaser.min.js\"><\/script>");
-        }
-        </script>
+        <script src="assets/phaser.min.js"></script>
     </head>
     <body>
     <script>
-    if(supportsWebGL){
-        document.write("<script src=\"src/main.js\"><\/script>");
-    } else {
-        document.write("You have not enabled WebGL :( You can't run the game");
-    }
+        var supportsWebGL = ( function () { try { return !! window.WebGLRenderingContext && !! document.createElement( 'canvas' ).  getContext( 'experimental-webgl' ); } catch( e ) { return false; } } )();
+        if(supportsWebGL){
+            document.write("<script src=\"src/main.js\"><\/script>");
+        } else {
+            document.write("You have not enabled WebGL :( You can't run the game");
+        }
     </script>
     </body>
 </html>
