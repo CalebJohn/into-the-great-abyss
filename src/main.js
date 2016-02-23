@@ -1,10 +1,8 @@
-// Globals
-window.game = new Phaser.Game(1000, 600, Phaser.Auto, '');
+/* globals Menu, Cutscene, LevelOne */
+
+var game = new Phaser.Game(1000, 600, Phaser.Auto, '');
 
 var Main = function() {};
-var worldData;
-// startGame();
-
 
 Main.prototype = {
 
