@@ -1,21 +1,20 @@
-/* globals GUIBuilder */
+/* globals ButtonGroup */
 var LevelOne = function () {
-  this.gui = null;
+  this.baseBtns = null;
 };
 
 LevelOne.prototype = {
 
   preload: function() {
     game.stage.backgroundColor = '#444444';
-    game.load.script('guiBuilder', 'src/guiBuilder.js');
+    game.load.script('buttonGroup', 'src/ButtonGroup.js');
   },
 
   toggleView: function(btn) {
-    var group = btn.parent;
-    var groupPos = group.x === 0 ? -game.world.width : 0;
-    var btnRot = group.x === 0 ? -3 * Math.PI : 0;
+    var groupPos = this.baseBtns.x === 0 ? -game.world.width : 0;
+    var btnRot = this.baseBtns.x === 0 ? -3 * Math.PI : 0;
 
-    game.add.tween(group).to({x: groupPos}, 1200, Phaser.Easing.Quadratic.In, true);
+    game.add.tween(this.baseBtns).to({x: groupPos}, 1200, Phaser.Easing.Quadratic.In, true);
     game.add.tween(btn).to({rotation: btnRot}, 1200, Phaser.Easing.Quadratic.In, true);
   },
 
@@ -25,7 +24,8 @@ LevelOne.prototype = {
   },
 
   create: function() {
-    this.gui = new GUIBuilder([{name: 'Mine Ore',
+    this.baseBtns = new ButtonGroup(this, 0, 0,
+                              [{name: 'Mine Ore',
                                 x: 100,
                                 y: 100,
                                 anchor: [0, 0.5],

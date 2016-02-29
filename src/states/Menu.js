@@ -1,21 +1,19 @@
+/* globals ButtonGroup */
 //In later changes I may want to create a list of buttons rather than store each individually
 //It may be nice to have something more dynamic
 var Menu = function () {
   this.backDropFilter = null;
   this.backDrop = null;
   this.titleText = null;
-  this.startButton = null;
-  this.optionButton = null;
-  this.fullscreenButton = null;
-  this.muteButton = null;
-  this.seedButton = null;
-  this.returnButton = null;
+  this.mainBtns = null;
+  this.optionBtns = null;
   this.menuState = 'MAIN';
 };
 
 Menu.prototype = {
   preload: function() {
     game.load.script('sunset', 'assets/shaders/MenuShader.js');
+    game.load.script('buttonGroup', 'src/ButtonGroup.js');
   },
 
   create: function() {
@@ -48,33 +46,32 @@ Menu.prototype = {
 
   drawMain: function() {
     //make buttons and initialize their functions
-    this.startButton = this.makeButton(game.world.centerX, game.world.centerY - 20, 'START');
-    this.startButton.events.onInputDown.add(function() {game.state.start('Cutscene');});
-    this.optionButton = this.makeButton(game.world.centerX, game.world.centerY + 20, 'OPTIONS');
-    this.optionButton.events.onInputDown.add(this.optionMenuToggle, this);
-    this.fullscreenButton = this.makeButton(game.world.centerX, game.world.centerY - 60, 'FULLSCREEN');
-    this.fullscreenButton.visible = false;
-    this.fullscreenButton.events.onInputDown.add(this.fullscreenToggle, this);
-    this.muteButton = this.makeButton(game.world.centerX, game.world.centerY - 20, 'SOUND: ' + (game.sound.mute ? 'OFF':'ON'));
-    this.muteButton.visible = false;
-    this.muteButton.events.onInputDown.add(function(target) {game.sound.mute = game.sound.mute === false; target.setText('SOUND: '+ (game.sound.mute ? 'OFF':'ON'));});
-    this.seedButton = this.makeButton(game.world.centerX, game.world.centerY + 20, 'SEED: ');
-    this.seedButton.visible = false;
-    this.returnButton = this.makeButton(game.world.centerX, game.world.centerY + 60, 'RETURN');
-    this.returnButton.visible = false;
-    this.returnButton.events.onInputDown.add(this.optionMenuToggle, this);
-  },
+    this.mainBtns = new ButtonGroup(this,
+                                    game.world.centerX, game.world.centerY,
+                                    [{name: 'START',
+                                      y: -20,
+                                      callback: function() {game.state.start('Cutscene');}},
+                                     {name: 'OPTIONS',
+                                      y: 20,
+                                      callback: this.optionMenuToggle}]);
 
-  //generic button creator, initializes buttons with standard formatting
-  makeButton: function(x, y, name) {
-    var button = game.add.text(x, y, name);
-    button.anchor.setTo(0.5, 0.5);
-    button.fontSize = 25;
-    button.fill = 'white';
-    button.inputEnabled = true;
-    button.events.onInputOver.add(function(target) {target.alpha = 150;});
-    button.events.onInputOut.add(function(target) {target.alpha = 1;});
-    return button;
+    this.optionBtns = new ButtonGroup(this,
+                                      game.world.centerX, game.world.centerY,
+                                      [{name: 'FULLSCREEN',
+                                        y: -60,
+                                        callback: this.fullscreenToggle},
+                                       {name: 'SOUND: ' + (game.sound.mute ? 'OFF':'ON'),
+                                        y: -20,
+                                        callback: function(target) {
+                                          game.sound.mute = game.sound.mute === false;
+                                          target.setText('SOUND: '+ (game.sound.mute ? 'OFF':'ON'));
+                                        }},
+                                       {name: 'SEED: ',
+                                        y: 20},
+                                       {name: 'RETURN',
+                                        y: 60,
+                                        callback: this.optionMenuToggle}]);
+    this.optionBtns.visible = false;
   },
 
   //functonality for the fullscreen button
@@ -90,22 +87,13 @@ Menu.prototype = {
 
   //toggles between regular menu and options menu
   optionMenuToggle: function() {
-    this.startButton.visible = false;
-    this.optionButton.visible = false;
-    this.fullscreenButton.visible = false;
-    this.muteButton.visible = false;
-    this.seedButton.visible = false;
-    this.returnButton.visible = false;
-
     if (this.menuState === 'MAIN') {
-      this.fullscreenButton.visible = true;
-      this.muteButton.visible = true;
-      this.seedButton.visible = true;
-      this.returnButton.visible = true;
+      this.mainBtns.visible = false;
+      this.optionBtns.visible = true;
       this.menuState = 'OPTIONS';
     } else if (this.menuState === 'OPTIONS') {
-      this.startButton.visible = true;
-      this.optionButton.visible = true;
+      this.mainBtns.visible = true;
+      this.optionBtns.visible = false;
       this.menuState = 'MAIN';
     }
   },
@@ -117,11 +105,8 @@ Menu.prototype = {
     this.backDrop.width = game.width;
     this.backDrop.height = game.height;
     this.titleText.position.setTo((game.width * 0.5 - 64) * 0.5, (game.height * 0.5 - 70) * 0.61);
-    this.startButton.position.setTo(game.world.centerX, game.world.centerY - 20);
-    this.optionButton.position.setTo(game.world.centerX, game.world.centerY + 20);
-    this.fullscreenButton.position.setTo(game.world.centerX, game.world.centerY - 60);
-    this.muteButton.position.setTo(game.world.centerX, game.world.centerY - 20);
-    this.seedButton.position.setTo(game.world.centerX, game.world.centerY + 20);
-    this.returnButton.position.setTo(game.world.centerX, game.world.centerY + 60);
+
+    this.mainBtns.position.setTo(game.world.centerX, game.world.centerY);
+    this.optionBtns.position.setTo(game.world.centerX, game.world.centerY);
   }
 };
