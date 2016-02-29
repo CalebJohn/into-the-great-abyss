@@ -14,6 +14,10 @@ ButtonGroup.prototype.makeButton = function(ctx, btn) {
     var y = btn.y || 0;
     var size = btn.size || 25;
     var anchor = btn.anchor || [0.5, 0.5];
+    var downAlpha = btn.downAlpha || 200;
+    var upAlpha = btn.upAlpha || 1;
+    var overAlpha = btn.overAlpha || 100;
+    var outAlpha = btn.outAlpha || 1;
     var style = btn.style || {fontSize: size,
                               fill: 'white'};
     style.resolution = window.devicePixelRatio;
@@ -27,10 +31,10 @@ ButtonGroup.prototype.makeButton = function(ctx, btn) {
     button.text = btn.name;
     button.addChild(txt);
 
-    button.events.onInputDown.add(function(target) {target.alpha = 200;});
-    button.events.onInputUp.add(function(target) {target.alpha = 1;});
-    button.events.onInputOver.add(function(target) {target.alpha = 100;});
-    button.events.onInputOut.add(function(target) {target.alpha = 1;});
+    button.events.onInputDown.add(function(target) {target.alpha = downAlpha;});
+    button.events.onInputUp.add(function(target) {target.alpha = upAlpha;});
+    button.events.onInputOver.add(function(target) {target.alpha = overAlpha;});
+    button.events.onInputOut.add(function(target) {target.alpha = outAlpha;});
 
     // txt is referenced using a closure
     button.setText = function(text) {txt.setText(text); this.text = text;};
