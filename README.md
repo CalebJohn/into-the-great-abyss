@@ -4,6 +4,8 @@
 
 A prototype for a space exploration/management game.
 
+![sketch](https://cloud.githubusercontent.com/assets/2179547/13969920/241d406a-f04b-11e5-95a2-b51d8bcd1df9.png)
+
 Style Guide
 -----------
 This project will defer to [idiomatic.js](https://github.com/rwaldron/idiomatic.js/), with some elaborations and exceptions below.
