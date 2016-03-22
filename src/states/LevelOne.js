@@ -1,6 +1,7 @@
-/* globals ButtonGroup */
+/* globals ButtonGroup, WorldMap */
 var LevelOne = function () {
   this.baseBtns = null;
+  this.map = null;
 };
 
 LevelOne.prototype = {
@@ -8,6 +9,8 @@ LevelOne.prototype = {
   preload: function() {
     game.stage.backgroundColor = '#444444';
     game.load.script('buttonGroup', 'src/ButtonGroup.js');
+    game.load.script('worldMap', 'src/WorldMap.js');
+    game.load.image('fadeButton', 'assets/fadeButton.png');
   },
 
   toggleView: function(btn) {
@@ -24,14 +27,16 @@ LevelOne.prototype = {
   },
 
   create: function() {
+    this.map = new WorldMap(game.world.centerX, game.world.centerY);
+
     this.baseBtns = new ButtonGroup(this, 0, 0,
                               [{name: 'Mine Ore',
-                                x: 100,
+                                x: 100 + game.width,
                                 y: 100,
                                 anchor: [0, 0.5],
                                 callback: this.collectResources},
                                {name: 'Chop Trees',
-                                x: 100,
+                                x: 100 + game.width,
                                 y: 200,
                                 anchor: [0, 0.5],
                                 callback: this.collectResources},
@@ -41,6 +46,7 @@ LevelOne.prototype = {
                                 anchor: [1.6, 0.5],
                                 callback: this.toggleView,
                                 size: 48}]);
+    this.baseBtns.add(this.map);
   },
 
   update: function() {

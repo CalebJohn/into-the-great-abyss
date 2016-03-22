@@ -31,7 +31,7 @@ Menu.prototype = {
     this.titleText.anchor.setTo(0.5, 0.5);
     this.titleText.fontSize = 30;
     this.titleText.fill = 'white';
-    this.titleText.alpha = 100;
+    this.titleText.alpha = 0.5;
     // make menu buttons
     this.drawMain();
   },
