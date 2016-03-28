@@ -17,6 +17,7 @@ ButtonGroup.prototype.makeButton = function(ctx, btn) {
     var size = btn.size || 25;
     var anchor = btn.anchor || [0.5, 0.5];
     var imgSize = btn.imgSize || [1, 1];
+    var context = btn.context || ctx;
 
     var downAlpha = btn.downAlpha;
     var upAlpha = btn.upAlpha;
@@ -37,7 +38,7 @@ ButtonGroup.prototype.makeButton = function(ctx, btn) {
     sprite.anchor.setTo.apply(sprite.anchor, anchor);
     sprite.scale.setTo.apply(sprite.scale, imgSize);
 
-    var button = game.make.button(x, y, null, btn.callback, ctx);
+    var button = game.make.button(x, y, null, btn.callback, context);
   	button.anchor.setTo.apply(button.anchor, anchor);
     button.text = name;
     button.alpha = upAlpha;
@@ -57,3 +58,4 @@ ButtonGroup.prototype.makeButton = function(ctx, btn) {
 
     this.add(button);
 };
+

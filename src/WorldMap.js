@@ -1,12 +1,17 @@
-/* globals ButtonGroup */
-var WorldMap = function (x, y, size, width, height) {
+/* globals ButtonGroup, planetData */
+var WorldMap = function (x, y, containerLevel) {
   Phaser.Group.call(this, game);
   this.sectorBtns = null;
+  this.container = containerLevel;
 
   // These are the default grid size and button sizes
-  this.size = size || 5;
-  this.btnWidth = width / this.size || 140;
-  this.btnHeight = height / this.size || 100;
+  this.size = planetData.mapSize;
+  this.btnWidth = planetData.width / this.size;
+  this.btnHeight = planetData.height / this.size;
+
+  this.visibleAlpha = 0.4;
+  this.hiddenAlpha = 0.9;
+  this.peakAlpha = 0.8;
 
   this.position.setTo(x - this.size * this.btnWidth / 2, y - this.size * this.btnHeight / 2); // Can't set an anchor
   this.create();
@@ -16,22 +21,36 @@ WorldMap.prototype = Object.create(Phaser.Group.prototype);
 WorldMap.prototype.constructor = WorldMap;
 
 WorldMap.prototype.selected = function(btn) {
-  // Make button transparent so the map can be seen
-  btn.upAlpha = 0;
-  btn.overAlpha = 0;
+  if (btn.upAlpha == this.visibleAlpha) {
+    // Make button transparent so the map can be seen
+    btn.upAlpha = 0;
+    btn.overAlpha = 0;
+    btn.downAlpha = this.visibleAlpha;
 
-  // Check all buttons in the map, and lighten neighbours
-  for (var i = 0; i < this.sectorBtns.length; i++) {
-    var oBtn = this.sectorBtns.getChildAt(i);
+    // Check all buttons in the map, and lighten neighbours
+    for (var i = 0; i < this.sectorBtns.length; i++) {
+      var oBtn = this.sectorBtns.getChildAt(i);
 
-    if (Math.abs(oBtn.x - btn.x) <= this.btnWidth &&
-        Math.abs(oBtn.y - btn.y) <= this.btnHeight &&
-        oBtn.upAlpha > 0) {
-      oBtn.upAlpha = 0.4;
-      oBtn.overAlpha = 0.4;
-      oBtn.alpha = oBtn.upAlpha;
+      if (Math.abs(oBtn.x - btn.x) <= this.btnWidth &&
+          Math.abs(oBtn.y - btn.y) <= this.btnHeight &&
+          oBtn.upAlpha > 0) {
+        oBtn.upAlpha = this.visibleAlpha;
+        oBtn.overAlpha = this.visibleAlpha;
+        oBtn.alpha = oBtn.upAlpha;
+      }
     }
   }
+
+  var indices = this.sectorIndex(btn);
+  this.container.updateButtons(planetData.getSector(indices[0], indices[1]));
+  this.container.toggleView();
+};
+
+// Used to find the indices of the sector that was pressed
+WorldMap.prototype.sectorIndex = function(btn) {
+  var x = btn.x / this.btnWidth;
+  var y = btn.y / this.btnHeight;
+  return [x, y];
 };
 
 WorldMap.prototype.create = function() {
@@ -44,24 +63,18 @@ WorldMap.prototype.create = function() {
                  anchor: [0, 0],
                  imgSize: [this.btnWidth, this.btnHeight],
                  callback: this.selected,
-                 upAlpha: 0.9,
-                 overAlpha: 0.9,
-                 downAlpha: 0.4});
+                 upAlpha: this.hiddenAlpha,
+                 overAlpha: this.hiddenAlpha,
+                 downAlpha: this.peakAlpha});
     }
   }
+  var startBtn = btns[Math.floor(Math.random() * btns.length)];
+  startBtn.upAlpha = this.visibleAlpha;
+  startBtn.overAlpha = this.visibleAlpha;
 
-  // Only temporary, Data should be pulled from PlanetData
-  var backgroundBmd = game.add.bitmapData(this.size * this.btnWidth, this.size * this.btnHeight);
-  var grd = backgroundBmd.context.createLinearGradient(0, 0, this.size * this.btnWidth, this.size * this.btnHeight);
-  grd.addColorStop(0, "rgb(200, 50, 50)");
-  grd.addColorStop(0.3, "rgb(200, 0, 75)");
-  grd.addColorStop(1, "rgb(200, 0, 150)");
-  backgroundBmd.context.fillStyle = grd;
-  backgroundBmd.context.fillRect(0, 0, this.size * this.btnWidth, this.size * this.btnHeight); 
-  var bkrd = new Phaser.Sprite(game, 0, 0, backgroundBmd);
+  var bkrd = new Phaser.Sprite(game, 0, 0, planetData.mapData);
 
   this.sectorBtns = new ButtonGroup(this, 0, 0, btns);
   this.add(bkrd);
   this.add(this.sectorBtns);
 };
-
