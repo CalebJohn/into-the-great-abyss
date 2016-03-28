@@ -21,7 +21,7 @@ WorldMap.prototype = Object.create(Phaser.Group.prototype);
 WorldMap.prototype.constructor = WorldMap;
 
 WorldMap.prototype.selected = function(btn) {
-  if (btn.upAlpha == this.visibleAlpha) {
+  if (btn.upAlpha === this.visibleAlpha || btn.upAlpha === 0) {
     // Make button transparent so the map can be seen
     btn.upAlpha = 0;
     btn.overAlpha = 0;
@@ -39,11 +39,10 @@ WorldMap.prototype.selected = function(btn) {
         oBtn.alpha = oBtn.upAlpha;
       }
     }
+    var indices = this.sectorIndex(btn);
+    this.container.updateButtons(planetData.getSector(indices[0], indices[1]));
+    this.container.toggleView();
   }
-
-  var indices = this.sectorIndex(btn);
-  this.container.updateButtons(planetData.getSector(indices[0], indices[1]));
-  this.container.toggleView();
 };
 
 // Used to find the indices of the sector that was pressed
