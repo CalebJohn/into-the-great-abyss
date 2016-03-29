@@ -1,3 +1,5 @@
+/* globals planetData */
+
 var WorldGenerator = function () {
     this.isFinished = false;
 };
@@ -5,7 +7,9 @@ var WorldGenerator = function () {
 WorldGenerator.prototype = {
     generateWorld: function(){
         console.log("generator started!");
-        // Put generation code in here
+        
+        planetData.generateMap();
+        
         console.log("generator finished!");
         this.isFinished = true;
     }

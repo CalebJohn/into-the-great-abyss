@@ -31,7 +31,7 @@ Menu.prototype = {
     this.titleText.anchor.setTo(0.5, 0.5);
     this.titleText.fontSize = 30;
     this.titleText.fill = 'white';
-    this.titleText.alpha = 100;
+    this.titleText.alpha = 0.5;
     // make menu buttons
     this.drawMain();
   },
@@ -49,27 +49,39 @@ Menu.prototype = {
     this.mainBtns = new ButtonGroup(this,
                                     game.world.centerX, game.world.centerY,
                                     [{name: 'START',
+                                      x: 0,
                                       y: -20,
+                                      anchor: [0.5, 0.5],
                                       callback: function() {game.state.start('Cutscene');}},
                                      {name: 'OPTIONS',
+                                      x: 0,
                                       y: 20,
+                                      anchor: [0.5, 0.5],
                                       callback: this.optionMenuToggle}]);
 
     this.optionBtns = new ButtonGroup(this,
                                       game.world.centerX, game.world.centerY,
                                       [{name: 'FULLSCREEN',
+                                        x: 0,
                                         y: -60,
+                                        anchor: [0.5, 0.5],
                                         callback: this.fullscreenToggle},
                                        {name: 'SOUND: ' + (game.sound.mute ? 'OFF':'ON'),
+                                        x: 0,
                                         y: -20,
+                                        anchor: [0.5, 0.5],
                                         callback: function(target) {
                                           game.sound.mute = game.sound.mute === false;
                                           target.setText('SOUND: '+ (game.sound.mute ? 'OFF':'ON'));
                                         }},
                                        {name: 'SEED: ',
-                                        y: 20},
+                                        x: 0,
+                                        y: 20,
+                                        anchor: [0.5, 0.5]},
                                        {name: 'RETURN',
+                                        x: 0,
                                         y: 60,
+                                        anchor: [0.5, 0.5],
                                         callback: this.optionMenuToggle}]);
     this.optionBtns.visible = false;
   },
