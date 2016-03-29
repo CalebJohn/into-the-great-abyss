@@ -59,7 +59,6 @@ WorldMap.prototype.create = function() {
       btns.push({image: 'fadeButton',
                  x: x * this.btnWidth,
                  y: y * this.btnHeight,
-                 anchor: [0, 0],
                  imgSize: [this.btnWidth, this.btnHeight],
                  callback: this.selected,
                  upAlpha: this.hiddenAlpha,

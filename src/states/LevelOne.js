@@ -2,24 +2,25 @@
 var LevelOne = function () {
   this.baseBtns = null;
   this.map = null;
-  this.returnBtn = {name: 'Return to Map',
-                    x: game.world.width + 10,
-                    y: 10,
-                    anchor: [0, 0],
-                    callback: this.toggleView};
+  this.returnBtn = null;
 };
 
 LevelOne.prototype = {
 
   preload: function() {
     game.stage.backgroundColor = '#444444';
+    this.returnBtn = {name: 'Return to Map',
+                      x: game.world.width + 10,
+                      y: 10,
+                      callback: this.toggleView};
   },
 
   // TODO : This needs to be re-written to not destroy the buttons evertime
   updateButtons: function(sector) {
-    for (var i = 0; i < this.baseBtns.length; i++) {
-      if (this.baseBtns.getChildAt(i) != this.map) {
-        this.baseBtns.getChildAt(i).destroy();
+    var children = this.baseBtns.children;
+    for (var i = 0; i < children.length; i++) {
+      if (children[i] != this.map) {
+        children[i].destroy();
       }
     }
     this.baseBtns = new ButtonGroup(this, 0, 0, sector.buttons);

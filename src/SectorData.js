@@ -12,6 +12,7 @@ var SectorData = function (type) {
   this.buttons = [{name: this.exploreTypes[this.type],
                    x: game.world.centerX + game.world.width,
                    y: game.world.centerY,
+                   anchor: [0.5, 0.5],
                    context: this,
                    callback: this.collectResources}];
               
