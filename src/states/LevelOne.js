@@ -8,6 +8,8 @@ LevelOne.prototype = {
   preload: function() {
     game.stage.backgroundColor = '#444444';
     game.load.script('buttonGroup', 'src/ButtonGroup.js');
+    game.load.shader('sceneShader', 'assets/filters/shaders/sceneShader.frag');
+    game.load.script('sceneFilter', 'assets/filters/sceneFilter.js');
   },
 
   toggleView: function(btn) {
@@ -21,6 +23,10 @@ LevelOne.prototype = {
   collectResources: function(btn) {
     // TODO : Put something here
     console.log(btn.text);
+  },
+  
+  drawScene: function() {
+    var scene = new SceneGenerator('sceneFilter', window.game.width, window.game.height);
   },
 
   create: function() {
@@ -40,7 +46,12 @@ LevelOne.prototype = {
                                 y: game.world.centerY,
                                 anchor: [1.6, 0.5],
                                 callback: this.toggleView,
-                                size: 48}]);
+                                size: 48},
+                               {name: 'Scene',
+                                x: 100,
+                                y: 300,
+                                anchor: [0, 0.5],
+                                callback : this.drawScene}]);
   },
 
   update: function() {

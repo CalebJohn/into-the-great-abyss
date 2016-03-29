@@ -17,7 +17,7 @@ Main.prototype = {
     game.state.add('Menu', Menu); 
     game.state.add('Cutscene', Cutscene); 
     game.state.add('LevelOne', LevelOne);
-
+    
     // TODO : Add a splash screen
     game.state.start('Menu');
   }
