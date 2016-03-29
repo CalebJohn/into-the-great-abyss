@@ -24,10 +24,18 @@ Cutscene.prototype = {
   },
 
   preload: function() {
+    // Needed for Cutscene
     game.load.script('WorldGenerator', 'src/WorldGenerator.js'); 
     game.load.spritesheet('loadingImage', '../../assets/loadingImage.png', 270, 90, 3);
     game.load.script('util', 'src/utils.js');
     game.load.script('sceneGenerator', 'src/SceneGenerator.js');
+    game.load.spritesheet('loadingImage', 'assets/loadingImage.png', 270, 90, 3);
+
+    // Necessary for LevelOne
+    game.load.script('buttonGroup', 'src/ButtonGroup.js');
+    game.load.script('sectorData', 'src/SectorData.js');
+    game.load.script('worldMap', 'src/WorldMap.js');
+    game.load.image('fadeButton', 'assets/fadeButton.png');
   },
 
   create: function() {

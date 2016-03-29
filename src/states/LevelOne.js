@@ -1,6 +1,8 @@
-/* globals ButtonGroup */
+/* globals ButtonGroup, WorldMap */
 var LevelOne = function () {
   this.baseBtns = null;
+  this.map = null;
+  this.returnBtn = null;
 };
 
 LevelOne.prototype = {
@@ -10,19 +12,29 @@ LevelOne.prototype = {
     game.load.script('buttonGroup', 'src/ButtonGroup.js');
     game.load.shader('sceneShader', 'assets/filters/shaders/sceneShader.frag');
     game.load.script('sceneFilter', 'assets/filters/sceneFilter.js');
+    this.returnBtn = {name: 'Return to Map',
+                      x: game.world.width + 10,
+                      y: 10,
+                      callback: this.toggleView};
   },
 
-  toggleView: function(btn) {
+  // TODO : This needs to be re-written to not destroy the buttons evertime
+  updateButtons: function(sector) {
+    var children = this.baseBtns.children;
+    for (var i = 0; i < children.length; i++) {
+      if (children[i] != this.map) {
+        children[i].destroy();
+      }
+    }
+    this.baseBtns = new ButtonGroup(this, 0, 0, sector.buttons);
+    this.baseBtns.makeButton(this, this.returnBtn);
+    this.baseBtns.add(this.map);
+  },
+
+  toggleView: function() {
     var groupPos = this.baseBtns.x === 0 ? -game.world.width : 0;
-    var btnRot = this.baseBtns.x === 0 ? -3 * Math.PI : 0;
 
-    game.add.tween(this.baseBtns).to({x: groupPos}, 1200, Phaser.Easing.Quadratic.In, true);
-    game.add.tween(btn).to({rotation: btnRot}, 1200, Phaser.Easing.Quadratic.In, true);
-  },
-
-  collectResources: function(btn) {
-    // TODO : Put something here
-    console.log(btn.text);
+    game.add.tween(this.baseBtns).to({x: groupPos}, 700, Phaser.Easing.Quadratic.In, true);
   },
   
   drawScene: function() {
@@ -30,28 +42,10 @@ LevelOne.prototype = {
   },
 
   create: function() {
-    this.baseBtns = new ButtonGroup(this, 0, 0,
-                              [{name: 'Mine Ore',
-                                x: 100,
-                                y: 100,
-                                anchor: [0, 0.5],
-                                callback: this.collectResources},
-                               {name: 'Chop Trees',
-                                x: 100,
-                                y: 200,
-                                anchor: [0, 0.5],
-                                callback: this.collectResources},
-                               {name: '⇀',
-                                x: game.world.width,
-                                y: game.world.centerY,
-                                anchor: [1.6, 0.5],
-                                callback: this.toggleView,
-                                size: 48},
-                               {name: 'Scene',
-                                x: 100,
-                                y: 300,
-                                anchor: [0, 0.5],
-                                callback : this.drawScene}]);
+    this.map = new WorldMap(game.world.centerX, game.world.centerY, this);
+
+    this.baseBtns = new ButtonGroup(this, 0, 0, [this.returnBtn]);
+    this.baseBtns.add(this.map);
   },
 
   update: function() {
