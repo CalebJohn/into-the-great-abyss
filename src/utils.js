@@ -40,6 +40,11 @@ randomTexture = function() {
       }
     }
   bmd.context.putImageData(bmd.imageData, 0, 0);
-    bmd.dirty = true;
-    return bmd;
+  bmd.dirty = true;
+  return bmd;
+};
+
+smoothstep = function(a, b, c) {
+  var t = Math.max(Math.min((c - a) / (b - a), 1.0), 0.0);
+    return t * t * (3.0 - 2.0 * t);
 };
