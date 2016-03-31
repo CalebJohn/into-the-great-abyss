@@ -25,13 +25,16 @@ PlanetData.prototype = {
         this.mapData.pixels[y * this.mapData.width + x] = (alpha << 24) | (blue << 16) | (green << 8) | red;
       }
     }
+    
     this.mapData.context.putImageData(this.mapData.imageData, 0, 0);
     this.mapData.dirty = true;
+
     this.Types = [
     "Rocky",
     "Fertile",
     "Humid",
     "Mountainous"];
+
     for (var x = 0; x < this.mapSize; x++) {
       this.sectors.push([]);
       for (var y = 0; y < this.mapSize; y++) {
