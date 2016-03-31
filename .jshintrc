@@ -1,5 +1,5 @@
 {
-  "globals"     : { "Phaser": false, "PIXI": false, "p2": false, "CocoonJS": false, "process": false, "game": true, "randomTexture": false, "smoothstep": false },
+  "globals"     : { "Phaser": false, "PIXI": false, "p2": false, "CocoonJS": false, "process": false, "game": true, "randomTexture": true, "smoothstep": true },
 
   // Ignore Environment Globals
   "browser"     : true,   // Standard browser globals e.g. `window`, `document`.
