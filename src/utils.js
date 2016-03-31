@@ -1,4 +1,4 @@
-//Utility Functions
+/* exported randomTexture, smoothstep */
 var randomTexture = function() {
   var tex = new Array(256);
   
