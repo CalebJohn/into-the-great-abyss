@@ -1,4 +1,4 @@
-/* globals SectorData */
+/* globals SectorData, smoothstep */
 
 var PlanetData = function () {
   this.sectors = [];

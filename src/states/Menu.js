@@ -12,7 +12,7 @@ var Menu = function () {
 
 Menu.prototype = {
   preload: function() {
-  	game.load.shader('menuShader', 'assets/filters/shaders/menuShader.frag');
+    game.load.shader('menuShader', 'assets/filters/shaders/menuShader.frag');
     game.load.script('sunset', 'assets/filters/menuFilter.js');
     game.load.script('buttonGroup', 'src/ButtonGroup.js');
   },

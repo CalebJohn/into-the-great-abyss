@@ -26,7 +26,7 @@ Cutscene.prototype = {
   preload: function() {
     // Needed for Cutscene
     game.load.script('WorldGenerator', 'src/WorldGenerator.js'); 
-    game.load.spritesheet('loadingImage', '../../assets/loadingImage.png', 270, 90, 3);
+    game.load.spritesheet('loadingImage', 'assets/loadingImage.png', 270, 90, 3);
     game.load.script('util', 'src/utils.js');
     game.load.script('sceneGenerator', 'src/SceneGenerator.js');
     game.load.spritesheet('loadingImage', 'assets/loadingImage.png', 270, 90, 3);

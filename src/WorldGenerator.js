@@ -1,4 +1,4 @@
-/* globals planetData */
+/* globals planetData, randomTexture */
 
 var WorldGenerator = function () {
   this.isFinished = false;
