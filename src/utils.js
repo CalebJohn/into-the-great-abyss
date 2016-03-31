@@ -1,5 +1,5 @@
 //Utility Functions
-randomTexture = function() {
+var randomTexture = function() {
   var tex = new Array(256);
     for (var i = 0; i < 256; i++) {
       tex[i] = new Array(256);
@@ -44,7 +44,7 @@ randomTexture = function() {
   return bmd;
 };
 
-smoothstep = function(a, b, c) {
+var smoothstep = function(a, b, c) {
   var t = Math.max(Math.min((c - a) / (b - a), 1.0), 0.0);
     return t * t * (3.0 - 2.0 * t);
 };

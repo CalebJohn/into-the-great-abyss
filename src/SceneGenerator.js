@@ -2,8 +2,8 @@
 var SceneGenerator = function(filterName, width, height) {
 	Phaser.Group.call(this, game);
 	this.width = width;
-	this.height = height
-	this.filter = filterName
+	this.height = height;
+	this.filter = filterName;
 	this.position.setTo(game.world.width*1.25,game.world.height*0.25);
 	this.texture = game.cache.getBitmapData('randomTex').texture;
 	this.visible = false;
