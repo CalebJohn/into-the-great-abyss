@@ -20,7 +20,6 @@ Main.prototype = {
     game.state.add('Cutscene', Cutscene); 
     game.state.add('LevelOne', LevelOne);
     planetData = new PlanetData();
-
     // TODO : Add a splash screen
     game.state.start('Menu');
   }
