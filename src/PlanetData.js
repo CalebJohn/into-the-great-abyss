@@ -19,7 +19,7 @@ PlanetData.prototype = {
     grd.addColorStop(1, "rgb(200, 0, 150)");
     this.mapData.context.fillStyle = grd;
     this.mapData.context.fillRect(0, 0, this.width, this.height); 
-
+    
     for (var x = 0; x < this.mapSize; x++) {
       this.sectors.push([]);
       for (var y = 0; y < this.mapSize; y++) {
