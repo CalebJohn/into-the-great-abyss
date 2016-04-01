@@ -11,7 +11,6 @@ LevelOne.prototype = {
 
   preload: function() {
     game.stage.backgroundColor = '#444444';
-    game.load.script('buttonGroup', 'src/ButtonGroup.js');
     game.load.shader('sceneShader', 'assets/filters/shaders/sceneShader.frag');
     game.load.script('sceneFilter', 'assets/filters/sceneFilter.js');
     this.returnBtn = {name: 'Return to Map',

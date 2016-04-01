@@ -13,6 +13,7 @@ PlanetData.prototype = {
   // TODO : This should be replaced with a proper generarion algorithm
   generateMap: function() {
     this.mapData = game.add.bitmapData(this.width, this.height);
+    
     var alpha, red, green, blue;
     for (var x = 0; x < this.mapData.width; x++) {
       for (var y = 0; y < this.mapData.height; y++) {
