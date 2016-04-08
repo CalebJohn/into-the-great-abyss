@@ -307,4 +307,44 @@
        v);
   };
 
+  //2D multi octave noise using Simplex
+  module.fbm2 = function(x, y, o = 6, f = 2.0, l = 0.5) {
+    var h = 0;
+    var a = 0.5;
+    var p = 1.0;
+    for (var i = 0; i < o; i++) {
+      h += 0.5 * (module.simplex2(x * p, y * p) + 1) * a;
+      a *= l;
+      p *= f;
+    }
+    return h;
+  };
+
+  //3D multi octave noise using Simplex
+  module.fbm3 = function(x, y, z, o = 6, f = 2.0, l = 0.5) {
+    var h = 0;
+    var a = 0.5;
+    var p = 1.0;
+    for (var i = 0; i < o; i++) {
+      h += 0.5 * (module.simplex3(x * p, y * p, z * p) + 1) * a;
+      a *= l;
+      p *= f;
+    }
+    return h;
+  };
+
+  module.warp2 = function(x, y, wa = 1, o = 6, f = 2.0, l = 0.5) {
+    var nx = module.fbm2(x, y, o);
+    var ny = module.fbm2(x + 1.5, y + 8.7, o);
+    return module.fbm2(x + wa * nx, y + wa * ny, o, f, l);
+  };
+
+
+  module.warp3 = function(x, y, z, wa = 1, o = 6, f = 2.0, l = 0.5) {
+    var nx = module.fbm3(x, y, z, o);
+    var ny = module.fbm3(x + 1.5, y + 8.7, z + 6.9, o);
+    var nz = module.fbm3(x + 7.1, y + 4.9, z + 1.3, o);
+    return module.fbm3(x + wa * nx, y + wa * ny, z + wa * nz, o, f, l);
+  };
+  
 })(this);

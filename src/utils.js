@@ -1,11 +1,11 @@
-/* exported randomTexture, smoothstep */
+/* exported randomTexture, smoothstep, lerp, mix, palette, roundTo */
 var randomTexture = function() {
-  var tex = new Array(256);
+  var tex = [];
   
   for (var i = 0; i < 256; i++) {
-    tex[i] = new Array(256);
+    tex.push([]);
     for (var j = 0; j< 256; j++) {
-      tex[i][j] = {r:0, g:0, b:0};
+      tex[i].push({r:0, g:0, b:0});
     }
   }
 
@@ -37,7 +37,7 @@ var randomTexture = function() {
       red = tex[x][y].r;
       green = tex[x][y].g;
       blue = tex[x][y].b;
-      bmd.pixels[y * bmd.width + x] = (alpha << 24) | (blue << 16) | (green << 8) | red;
+      bmd.pixels[y * bmd.width + x] = Phaser.Color.packPixel(red, green, blue, alpha);
     }
   }
 
@@ -49,4 +49,24 @@ var randomTexture = function() {
 var smoothstep = function(a, b, c) {
   var t = Math.max(Math.min((c - a) / (b - a), 1.0), 0.0);
   return t * t * (3.0 - 2.0 * t);
+};
+
+var lerp = function(a, b, c) {
+  return (1 - c) * a + c * b;
+};
+
+//for interpolating between two colors
+var mix = function(a, b, c) {
+  return {r: lerp(a.r, b.r, c), g: lerp(a.g, b.g, c), b: lerp(a.b, b.b, c)};
+};
+
+//pass in object with offset, frequency, amplitude, base color
+var palette = function(t, r, g, b) {
+  return {r: r.bc + Math.cos(Math.PI * 2 * (t * r.f + r.o)) * r.a,
+          g: g.bc + Math.cos(Math.PI * 2 * (t * g.f + g.o)) * g.a,
+          b: b.bc + Math.cos(Math.PI * 2 * (t * b.f + b.o)) * b.a};
+};
+
+var roundTo = function(t, r) {
+  return Math.floor(t / r) * r;
 };
