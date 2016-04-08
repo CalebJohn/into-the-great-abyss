@@ -33,8 +33,6 @@ PlanetData.prototype = {
     var alpha, red, green, blue, h, c;
     for (var x = 0; x < this.mapData.width - 1; x++) {
       for (var y = 0; y < this.mapData.height - 1; y++) {
-        var nx = x - this.mapData.width * 0.5;
-        var ny = y - this.mapData.height * 0.5;
         h = buffer[x][y];
         alpha = 255;
         c = mix(this.landHue, this.waterHue, smoothstep(0.4, 0.7, h));
