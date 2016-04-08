@@ -26,7 +26,7 @@ PlanetData.prototype = {
     for (var x = 0; x < this.mapData.width; x++) {
       buffer.push([]);
       for (var y = 0; y < this.mapData.height; y++) {
-        buffer[x].push(noise.simplex2(x * 0.005, y * 0.005));
+        buffer[x].push(noise.fbm2(x * 0.005, y * 0.005));
       }
     }
 

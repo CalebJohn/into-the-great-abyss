@@ -7,7 +7,7 @@ var WorldGenerator = function () {
 WorldGenerator.prototype = {
   generateWorld: function(){
     console.log("generator started!");
-
+    noise.seed(Math.random());
     planetData.generateMap();
     game.cache.addBitmapData('randomTex', randomTexture());
     /* generate a  bitmap to use as a fancy background image in the level */
