@@ -8,7 +8,7 @@ var SceneGenerator = function(filterName, width, height) {
   this.texture = game.cache.getBitmapData('randomTex').texture;
   this.visible = false;
 
-  this.scene  = game.add.filter(filterName, width, height*2.0, this.texture, Math.random()*1000, Math.random()*1000);
+  this.scene  = game.add.filter(filterName, width, height * 2.0, this.texture, Math.random() * 1000, Math.random() * 1000);
 
   this.inView = game.make.image();
   this.inView.width = width;
@@ -25,7 +25,7 @@ SceneGenerator.prototype.constructor = SceneGenerator;
 SceneGenerator.prototype.remake = function() {
   this.scene.destroy();
   this.inView.filters = [];
-  this.scene  = game.add.filter(this.filter, this.width, this.height*2.0, this.texture, Math.random()*1000, Math.random()*1000);
+  this.scene  = game.add.filter(this.filter, this.width, this.height * 2.0, this.texture, Math.random() * 1000, Math.random() * 1000);
   this.inView.filters = [this.scene];
 };
 
