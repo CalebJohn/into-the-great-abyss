@@ -12,7 +12,7 @@ WorldGenerator.prototype = {
     game.cache.addBitmapData('randomTex', randomTexture());
     /* generate a  bitmap to use as a fancy background image in the level */
     /* image is a quarter of the screen size because we do not need high-res */
-    var bmd = game.make.bitmapData(window.game.width * 0.5, window.game.height * 0.5);
+    var bmd = game.make.bitmapData(game.width * 0.5, game.height * 0.5);
     var h, c, s;
     for (var x = 0; x < bmd.width; x++) {
       for (var y = 0; y < bmd.height; y++) {
