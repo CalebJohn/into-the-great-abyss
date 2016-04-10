@@ -5,12 +5,16 @@ var LevelOne = function () {
   this.returnBtn = null;
   this.sceneBtn = null;
   this.scene = null;
+  this.backgroundImg = null;
 };
 
 LevelOne.prototype = {
 
   preload: function() {
     game.stage.backgroundColor = '#444444';
+    this.backgroundImg = game.add.image(0, 0, game.cache.getBitmapData('background'));
+    this.backgroundImg.width = game.width;
+    this.backgroundImg.height = game.height;
     game.load.shader('sceneShader', 'assets/filters/shaders/sceneShader.frag');
     game.load.script('sceneFilter', 'assets/filters/sceneFilter.js');
     this.returnBtn = {name: 'Return to Map',
@@ -57,10 +61,10 @@ LevelOne.prototype = {
 
   create: function() {
     this.map = new WorldMap(game.world.centerX, game.world.centerY, this);
-    this.scene = new SceneGenerator('sceneFilter', window.game.width*0.5, window.game.height*0.5);
+    this.scene = new SceneGenerator('sceneFilter', game.width * 0.5, game.height * 0.5);
     this.baseBtns = new ButtonGroup(this, 0, 0, [this.returnBtn]);
     this.baseBtns.add(this.map);
-    this.baseBtns.add(this.scene);
+    this.baseBtns.add(this.scene);    
   },
 
   update: function() {
