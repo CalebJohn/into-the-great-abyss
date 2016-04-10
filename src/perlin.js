@@ -308,6 +308,11 @@
   };
 
   //2D multi octave noise using Simplex
+  //compound simplex noise with multipole octaves to make cloudy noise
+  //takes in x and y coordinate and returns height value
+  //o = octaves, refers to number of iterations of noise
+  //f = frequency, refers to the change in coordinates each octave
+  //l = lacurnity, change in amplitude per octave
   module.fbm2 = function(x, y, o = 6, f = 2.0, l = 0.5) {
     var h = 0;
     var a = 0.5;
@@ -321,6 +326,11 @@
   };
 
   //3D multi octave noise using Simplex
+  //compound simplex noise with multipole octaves to make cloudy noise
+  //takes in x, y, and z coordinates and returns density value
+  //o = octaves, refers to number of iterations of noise
+  //f = frequency, refers to the change in coordinates each octave
+  //l = lacurnity, change in amplitude per octave
   module.fbm3 = function(x, y, z, o = 6, f = 2.0, l = 0.5) {
     var h = 0;
     var a = 0.5;
@@ -333,13 +343,20 @@
     return h;
   };
 
+  // warps lookup coordinates for noise by other noise to increase variation
+  // x and y are coordinate locations
+  // wa is the strength of the warping effect
+  // the rest are standard fbm functions to be passed on
   module.warp2 = function(x, y, wa = 1, o = 6, f = 2.0, l = 0.5) {
     var nx = module.fbm2(x, y, o);
     var ny = module.fbm2(x + 1.5, y + 8.7, o);
     return module.fbm2(x + wa * nx, y + wa * ny, o, f, l);
   };
 
-
+  // warps lookup coordinates for noise by other noise to increase variation
+  // x, y, and z are coordinate locations
+  // wa is the strength of the warping effect
+  // the rest are standard fbm functions to be passed on
   module.warp3 = function(x, y, z, wa = 1, o = 6, f = 2.0, l = 0.5) {
     var nx = module.fbm3(x, y, z, o);
     var ny = module.fbm3(x + 1.5, y + 8.7, z + 6.9, o);
