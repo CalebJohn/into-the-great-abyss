@@ -5,7 +5,7 @@ var SceneGenerator = function(filterName, width, height) {
   this.height = height;
   this.filter = filterName;
   this.position.setTo(game.world.width*1.25,game.world.height*0.25);
-  this.texture = game.cache.getBitmapData('randomTex').texture;
+  this.texture = PIXI.Texture.fromCanvas(game.cache.getCanvas('randomTex'));
   this.visible = false;
 
   this.scene  = game.add.filter(filterName, width, height * 2.0, this.texture, Math.random() * 1000, Math.random() * 1000);

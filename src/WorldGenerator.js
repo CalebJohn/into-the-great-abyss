@@ -9,7 +9,7 @@ WorldGenerator.prototype = {
     console.log("generator started!");
     noise.seed(Math.random());
     planetData.generateMap();
-    game.cache.addBitmapData('randomTex', randomTexture());
+    randomTexture();
     /* generate a  bitmap to use as a fancy background image in the level */
     /* image is a quarter of the screen size because we do not need high-res */
     var canvas = document.createElement("canvas");
