@@ -3,7 +3,7 @@
 var PlanetData = function () {
   this.sectors = [];
   // Will be set in WorldGenerator
-  this.mapData = null;
+  this.mapData = {canvas: null, ctx: null, imageData: null, data: null};
   this.mapSize = 5;
   this.width = 700;
   this.height = 500;
@@ -19,20 +19,25 @@ PlanetData.prototype = {
     this.landHue = palette(Math.random(), {bc: 150, f: 1, o: 0, a: 100}, {bc: 90, f: 2, o: 0, a: 90}, {bc: 75, f: 0.8, o: 0, a: 75});
     this.waterHue = palette(Math.random(), {bc: 75, f: 0.5, o: 0, a: 75}, {bc: 128, f: 2, o: 0, a: 128}, {bc: 200, f: 1, o: 0, a: 55});
 
-    this.mapData = game.add.bitmapData(this.width, this.height);
+    this.mapData.canvas = document.createElement("canvas");
+    this.mapData.canvas.width = this.width;
+    this.mapData.canvas.height = this.height;
+    this.mapData.ctx = this.mapData.canvas.getContext('2d');
+    this.mapData.imageData = this.mapData.ctx.getImageData(0,0,this.mapData.canvas.width, this.mapData.canvas.height);
+    this.mapData.data = this.mapData.imageData.data;
     // TODO: add hydro erosion to this
     // TODO: add complex features, cliffs, rivers, etc.
     var buffer = [];
-    for (var x = 0; x < this.mapData.width; x++) {
+    for (var x = 0; x < this.width; x++) {
       buffer.push([]);
-      for (var y = 0; y < this.mapData.height; y++) {
+      for (var y = 0; y < this.height; y++) {
         buffer[x].push(noise.fbm2(x * 0.005, y * 0.005));
       }
     }
 
-    var alpha, red, green, blue, h, c;
-    for (var x = 0; x < this.mapData.width - 1; x++) {
-      for (var y = 0; y < this.mapData.height - 1; y++) {
+    var alpha, red, green, blue, h, c, i;
+    for (var x = 0; x < this.width - 1; x++) {
+      for (var y = 0; y < this.height - 1; y++) {
         h = buffer[x][y];
         alpha = 255;
         c = mix(this.landHue, this.waterHue, smoothstep(0.4, 0.7, h));
@@ -43,18 +48,21 @@ PlanetData.prototype = {
         red = c.r * d.x;
         green = c.g * d.x;
         blue = c.b * d.x;
-        this.mapData.pixels[y * this.mapData.width + x] = Phaser.Color.packPixel(red, green, blue, alpha);
+        i = 4 * (y * this.width + x);
+        this.mapData.data[i] = red;
+        this.mapData.data[i + 1] = green;
+        this.mapData.data[i + 2] = blue;
+        this.mapData.data[i + 3] = alpha;
       }
     }
     
-    this.mapData.context.putImageData(this.mapData.imageData, 0, 0);
-    this.mapData.dirty = true;
+    this.mapData.ctx.putImageData(this.mapData.imageData, 0, 0);
 
     var type;
     for (var x = 0; x < this.mapSize; x++) {
       this.sectors.push([]);
       for (var y = 0; y < this.mapSize; y++) {
-        h = buffer[(x + 0.5) * (this.mapData.width / this.mapSize)][(y + 0.5) * (this.mapData.height / this.mapSize)];
+        h = buffer[(x + 0.5) * (this.width / this.mapSize)][(y + 0.5) * (this.height / this.mapSize)];
         if (h > 0.7) {
           type = 'Humid';
         } else if (h > 0.5) {
