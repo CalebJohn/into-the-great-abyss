@@ -16,7 +16,7 @@ WorldGenerator.prototype = {
     var h, c, s;
     for (var x = 0; x < bmd.width; x++) {
       for (var y = 0; y < bmd.height; y++) {
-        h = roundTo(noise.fbm2(x * 0.01, y * 0.01, 8) * ((y + 1) / bmd.height), 0.15 * ((y + 1) / bmd.height));
+        h = utils.roundTo(noise.fbm2(x * 0.01, y * 0.01, 8) * ((y + 1) / bmd.height), 0.15 * ((y + 1) / bmd.height));
         c = utils.mix(planetData.waterHue, planetData.landHue, Math.sqrt(h));
         s = 0.3 * c.r + 0.6 * c.g + 0.1 * c.b;
         c = utils.mix({r:s, g:s, b:s}, c, 0.5);
