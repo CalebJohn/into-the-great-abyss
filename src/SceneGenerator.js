@@ -4,7 +4,7 @@ var SceneGenerator = function(filterName, width, height) {
   this.width = width;
   this.height = height;
   this.filter = filterName;
-  this.position.setTo(game.world.width*1.25,game.world.height*0.25);
+  this.position.setTo(game.world.width*1.125,game.world.height*0.125);
   this.texture = game.cache.getBitmapData('randomTex').texture;
   this.visible = false;
 

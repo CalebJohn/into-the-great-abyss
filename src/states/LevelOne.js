@@ -61,7 +61,7 @@ LevelOne.prototype = {
 
   create: function() {
     this.map = new WorldMap(game.world.centerX, game.world.centerY, this);
-    this.scene = new SceneGenerator('sceneFilter', game.width * 0.5, game.height * 0.5);
+    this.scene = new SceneGenerator('sceneFilter', game.width * 0.75, game.height * 0.75);
     this.baseBtns = new ButtonGroup(this, 0, 0, [this.returnBtn]);
     this.baseBtns.add(this.map);
     this.baseBtns.add(this.scene);    
