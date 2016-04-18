@@ -1,4 +1,4 @@
-/* globals SectorData, smoothstep, lerp, noise, mix, palette */
+/* globals SectorData, utils, noise */
 
 var PlanetData = function () {
   this.sectors = [];
@@ -16,8 +16,8 @@ PlanetData.prototype = {
     // TODO: clean up formatting issues, add warp functions
     //this creates our base color for the land and water
     //once we generate material data we can use those to influence the color choice
-    this.landHue = palette(Math.random(), {bc: 150, f: 1, o: 0, a: 100}, {bc: 90, f: 2, o: 0, a: 90}, {bc: 75, f: 0.8, o: 0, a: 75});
-    this.waterHue = palette(Math.random(), {bc: 75, f: 0.5, o: 0, a: 75}, {bc: 128, f: 2, o: 0, a: 128}, {bc: 200, f: 1, o: 0, a: 55});
+    this.landHue = utils.palette(Math.random(), {bc: 150, f: 1, o: 0, a: 100}, {bc: 90, f: 2, o: 0, a: 90}, {bc: 75, f: 0.8, o: 0, a: 75});
+    this.waterHue = utils.palette(Math.random(), {bc: 75, f: 0.5, o: 0, a: 75}, {bc: 128, f: 2, o: 0, a: 128}, {bc: 200, f: 1, o: 0, a: 55});
 
     //this entire block is used to create a canvas element and initiate all 
     //its variables that we will need to access
@@ -50,7 +50,7 @@ PlanetData.prototype = {
         //the smoothstep means that below 0.4 is solid land
         //then between 0.4-0.7 there is a smooth gradient
         //and after it is purely water
-        c = mix(this.landHue, this.waterHue, smoothstep(0.4, 0.7, h));
+        c = utils.mix(this.landHue, this.waterHue, utils.smoothstep(0.4, 0.7, h));
         //calculate the normal at a given pixel
         //this allows us to cheaply shadow the terrain
         var d = new Phaser.Point(h - buffer[x + 1][y], h - buffer[x][y + 1]);
@@ -58,7 +58,7 @@ PlanetData.prototype = {
         //map our normal to the range 0-1
         d.x = 0.5 * (d.x + 1);
         //this removes the normal from the water area so we only see it on land
-        d.x = lerp(d.x, 1, smoothstep(0.5, 0.6, h));
+        d.x = utils.lerp(d.x, 1, utils.smoothstep(0.5, 0.6, h));
         //multiply the shadow shading by individual colors and apply directly to canvas pixel buffer
         red = c.r * d.x;
         green = c.g * d.x;

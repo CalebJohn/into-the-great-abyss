@@ -1,4 +1,4 @@
-/* globals planetData, randomTexture, noise, mix, roundTo */
+/* globals planetData, utils, noise */
 
 var WorldGenerator = function () {
   this.isFinished = false;
@@ -9,8 +9,8 @@ WorldGenerator.prototype = {
     console.log("generator started!");
     noise.seed(Math.random());
     planetData.generateMap();
-    randomTexture();
-    /* generate a  bitmap to use as a fancy background image in the level */
+    utils.randomTexture();
+    /* generate a Texture to use as a fancy background image in the level */
     /* image is a quarter of the screen size because we do not need high-res */
     var canvas = document.createElement("canvas");
     canvas.width = game.width * 0.5;
@@ -22,10 +22,10 @@ WorldGenerator.prototype = {
     var h, c, s, i;
     for (var x = 0; x < canvas.width; x++) {
       for (var y = 0; y < canvas.height; y++) {
-        h = roundTo(noise.fbm2(x * 0.01, y * 0.01, 8) * ((y + 1) / canvas.height), 0.15 * ((y + 1) / canvas.height));
-        c = mix(planetData.waterHue, planetData.landHue, Math.sqrt(h));
+        h = utils.roundTo(noise.fbm2(x * 0.01, y * 0.01, 8) * ((y + 1) / canvas.height), 0.15 * ((y + 1) / canvas.height));
+        c = utils.mix(planetData.waterHue, planetData.landHue, Math.sqrt(h));
         s = 0.3 * c.r + 0.6 * c.g + 0.1 * c.b;
-        c = mix({r:s, g:s, b:s}, c, 0.5);
+        c = utils.mix({r:s, g:s, b:s}, c, 0.5);
         i = 4 * (y * canvas.width + x);
         data[i] = c.r;
         data[i + 1] = c.g;
