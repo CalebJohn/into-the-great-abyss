@@ -12,7 +12,8 @@ LevelOne.prototype = {
 
   preload: function() {
     game.stage.backgroundColor = '#444444';
-    this.backgroundImg = game.add.image(0, 0, game.cache.getBitmapData('background'));
+    this.backgroundImg = game.add.image(0, 0);
+    this.backgroundImg.texture = PIXI.Texture.fromCanvas(game.cache.getCanvas('background'));
     this.backgroundImg.width = game.width;
     this.backgroundImg.height = game.height;
     game.load.shader('sceneShader', 'assets/filters/shaders/sceneShader.frag');

@@ -70,7 +70,8 @@ WorldMap.prototype.create = function() {
   startBtn.upAlpha = this.visibleAlpha;
   startBtn.overAlpha = this.visibleAlpha;
 
-  var bkrd = new Phaser.Sprite(game, 0, 0, planetData.mapData);
+  var bkrd = new Phaser.Sprite(game, 0, 0);
+  bkrd.texture = PIXI.Texture.fromCanvas(planetData.mapData.canvas);
 
   this.sectorBtns = new ButtonGroup(this, 0, 0, btns);
   this.add(bkrd);

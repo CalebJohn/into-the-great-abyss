@@ -7,46 +7,54 @@ var utils = {
     
     for (var i = 0; i < 256; i++) {
       tex.push([]);
-      for (var j = 0; j< 256; j++) {
+      for (var j = 0; j < 256; j++) {
         tex[i].push({r:0, g:0, b:0});
       }
     }
 
-    var bmd = game.make.bitmapData(256, 256);
+    var canvas = document.createElement("canvas");
+    canvas.width = 256;
+    canvas.height = 256;
+    var ctx = canvas.getContext('2d');
+    var imageData = ctx.getImageData(0,0,canvas.width, canvas.height);
+    var data = imageData.data;
+
     var alpha = 0;
     var red = 0;
     var green = 0;
     var blue = 0;
-    for (var x = 0; x < bmd.width; x++) {
-      for (var y = 0; y < bmd.height; y++) {
+    for (var x = 0; x < canvas.width; x++) {
+      for (var y = 0; y < canvas.height; y++) {
       tex[x][y].r = Math.random()*255;
       tex[x][y].b = Math.random()*255;
+        }
       }
-    }
 
-    blue = 0;
-    red = 0;
-    for (var x = 0; x < bmd.width; x++) {
-      for (var y = 0; y < bmd.width; y++) {
+    for (var x = 0; x < canvas.width; x++) {
+      for (var y = 0; y < canvas.width; y++) {
         var x2 = (x-37) & 255;
         var y2 = (y-17) & 255;
         tex[x][y].g = tex[x2][y2].r;
+        }
       }
-    }
 
-    for (var x = 0; x < bmd.width; x++) {
-      for (var y = 0; y < bmd.height; y++) {
+    var i;
+    for (var x = 0; x < canvas.width; x++) {
+      for (var y = 0; y < canvas.height; y++) {
         alpha = 255;
         red = tex[x][y].r;
         green = tex[x][y].g;
         blue = tex[x][y].b;
-        bmd.pixels[y * bmd.width + x] = Phaser.Color.packPixel(red, green, blue, alpha);
+        i = 4 * (y * canvas.width + x);
+        data[i] = red;
+        data[i + 1] = green;
+        data[i + 2] = blue;
+        data[i + 3] = alpha;
+        }
       }
-    }
 
-    bmd.context.putImageData(bmd.imageData, 0, 0);
-    bmd.dirty = true;
-    return bmd;
+    ctx.putImageData(imageData, 0, 0);
+    game.cache.addCanvas('randomTex', canvas, ctx);
   },
 
   //smoothly interpolates between 0 and 1 using c
