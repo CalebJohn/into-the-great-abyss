@@ -56,7 +56,7 @@ WorldMap.prototype.create = function() {
   var btns = [];
   for (var x = 0; x < this.size; x++) {
     for (var y = 0; y < this.size; y++) {
-      btns.push({image: 'fadeButton',
+      btns.push({image: null,
                  x: x * this.btnWidth,
                  y: y * this.btnHeight,
                  imgSize: [this.btnWidth, this.btnHeight],
@@ -70,7 +70,7 @@ WorldMap.prototype.create = function() {
   startBtn.upAlpha = this.visibleAlpha;
   startBtn.overAlpha = this.visibleAlpha;
 
-  var bkrd = new Phaser.Sprite(game, 0, 0);
+  var bkrd = new Phaser.Sprite(game, -this.position.x, -this.position.y);
   bkrd.texture = PIXI.Texture.fromCanvas(planetData.mapData.canvas);
 
   this.sectorBtns = new ButtonGroup(this, 0, 0, btns);
