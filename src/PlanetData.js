@@ -9,6 +9,40 @@ var PlanetData = function () {
   this.height = 500;
   this.landHue = null;
   this.waterHue = null;
+
+  //add a bunch of variables here that will define our planets
+    //when we generate higher level planet data we will use that to replace all the math.random() calls
+  this.randEffect = 0; //warping plus log
+    //maybe do one level of warp that warps before the fbm is called
+      //but that still triples the calls to simplex
+      //so maybe just use cos noise or something like that
+      //maybe do some interesting warping based on amplitude frequency stuff
+    //play around with swapping amp+freq, or doing other cool things with them
+      //like changing based on h
+    //call one layer first and put a log on that
+      //or call a layer after that has a log
+      //maybe combine this with the skew somehow
+    //high randeffect could increase skew
+  this.variance = 0; //should be computed after water height so it isnt too low
+    //do something like a+b*c where a is bottom, b is variance, and c is the noise value
+    //additionally can call math.pow when returning h to change the curve
+
+  this.frequency = Math.random()*0.01+0.001; //generate between 0.001 and 0.02 with weight towards a lower frequency
+  this.lod = 0.25+0.25*Math.random(); //used in tandom with frequency//may just be a constant
+
+
+  /*start here when I come back to this*/
+  /*// need to compute a nice amount of skew//*/
+  this.skew = 1+Math.pow(Math.random(), 1); //stretch in the x direction compared to the y
+  this.moisture = Math.random()*0.6;
+
+  console.log("moisture level: " + this.moisture.toPrecision(3)+
+              "\nrandom effect: " + this.randEffect.toPrecision(3)+
+              "\namplitude variance: " + this.variance.toPrecision(3)+
+              "\nfrequency: " + this.frequency.toPrecision(3)+
+              "\nskew: " + this.skew.toPrecision(3)+
+              "\nlod: " + this.lod.toPrecision(3)
+    );
   };
 
 PlanetData.prototype = {
@@ -29,75 +63,46 @@ PlanetData.prototype = {
     this.mapData.data = this.mapData.imageData.data;
 
     // TODO: add hydro erosion to this
+
     // TODO: add complex features, cliffs, rivers, etc.
+    // TODO: use procworlds system of simulation
+    //replace fbm with something more complicated
+      //using a mixture of worley, logs, exp, with random parameters
+
+
     //create a 2d array which holds our height data for the planet
     //This is done so that we can avoid calling our noise function more than once per pixel
     var buffer = [];
     var rivers = [];
-    var drops = []
     for (var x = 0; x < this.mapData.canvas.width; x++) {
       buffer.push([]);
       rivers.push([]);
       for (var y = 0; y < this.mapData.canvas.height; y++) {
-        buffer[x].push(noise.fbm2(x*0.004, y*0.004));
-        //rivers[x].push(1 - noise.worley2(x*0.1, y*0.1));
-        rivers[x].push(0);
+        buffer[x].push(this.heightmap(x, y));
+        rivers[x].push(1 - noise.worley2(x*25*this.frequency, y*25*this.frequency));
       }
     }
-    for (var i = 0; i < 1000; i++) {
-      drops.push({x: Math.floor(10+Math.random()*(this.mapData.canvas.width-20)), y: Math.floor(10+Math.random()*(this.mapData.canvas.height-20)), s: Math.random()});
-    }
-    for (var i = 0; i < 100; i++) {
-      if (drops.length <=1) {break;}
-
-      for (var e = 0; e < drops.length; e++) {
-        if (drops[e]!=null) {
-        var dir = {x:0, y:0};
-        var drop = drops[e];
-        var mx = 0;
-        var h = buffer[drop.x][drop.y];
-        for (var x = -1;x<=1;x++) {
-          for (var y = -1;y<=1;y++) {
-
-            if ( buffer[drop.x+x][drop.y+y]-h> mx) {
-              mx =  buffer[drop.x+x][drop.y+y]-h;
-              dir = {x:x, y:y};
-            }
-          }
-        }
-        //rivers[drop.x][drop.y] = 1;
-        ar(drop.x, drop.y, drop.s, rivers);
-        drops[e].x = drop.x = drop.x+ dir.x;
-        drops[e].y = drop.y = drop.y+ dir.y;
-        drops[e].s *= 1.05;
-        if (drop.x<10 || drop.y<10 ||drop.x >this.mapData.width-10||drop.y>this.mapData.height-10||h>0.65) {
-          drops.splice(e, 1);
-          e--;
-        }
-      }
-      }
-    }
-
-
+    
 
     //Here we will take the height data and convert it to colors
     var alpha, red, green, blue, h, c, i;
-    for (var x = 0; x < buffer.length - 1; x++) {
-      for (var y = 0; y < buffer[x].length - 1; y++) {
+    for (var x = 1; x < buffer.length - 1; x++) {
+      for (var y = 1; y < buffer[x].length - 1; y++) {
         h = buffer[x][y];
-        //This takes the height and maps the land or water color to it
-        //the smoothstep means that below 0.4 is solid land
-        //then between 0.4-0.7 there is a smooth gradient
-        //and after it is purely water
-        /*var w = 0;
+        
+        var w = 0;
         if (x>1&&y>1) {
-          if (((rivers[x][y]>=rivers[x+1][y]&&rivers[x][y]>=rivers[x-1][y])||(rivers[x][y]>=rivers[x][y+1]&&rivers[x][y]>=rivers[x][y-1]))&&(rivers[x][y]>0.3)) {
-            w = 1-h;
+          if (((rivers[x][y]>=rivers[x+1][y]&&rivers[x][y]>=rivers[x-1][y])||(rivers[x][y]>=rivers[x][y+1]&&rivers[x][y]>=rivers[x][y-1]))&&(rivers[x][y]>(0.7 - this.moisture))) {
+            w = h;
           }
-        }*/
-        var w = rivers[x][y];
-        var rl = utils.mix(this.landHue, this.waterHue, utils.smoothstep(0.5, 0.6, w));
-        c = utils.mix(rl, this.waterHue, utils.smoothstep(0.4, 0.7, h));
+        }
+
+        var rl = utils.mix(this.landHue, this.waterHue, utils.smoothstep(this.moisture, 1.0, w));
+        //This takes the height and maps the land or water color to it
+        //the smoothstep means that below 0.3 is water
+        //then between 0.3-0.6 there is a smooth gradient
+        //and after it is purely land
+        c = utils.mix(this.waterHue, rl, utils.smoothstep(this.moisture, this.moisture+0.3, h));
         
         //calculate the normal at a given pixel
         //this allows us to cheaply shadow the terrain
@@ -106,13 +111,13 @@ PlanetData.prototype = {
         //map our normal to the range 0-1
         d.x = 0.5 * (d.x + 1);
         //this removes the normal from the water area so we only see it on land
-        d.x = utils.lerp(d.x, 1, utils.smoothstep(0.5, 0.6, h));
+        d.x = utils.lerp(1, d.x, utils.smoothstep(this.moisture+0.1, this.moisture+0.2, h));
         //multiply the shadow shading by individual colors and apply directly to canvas pixel buffer
         red = c.r * d.x;
         green = c.g * d.x;
         blue = c.b * d.x;
         alpha = utils.smoothstep(0.0, 100.0, Math.min(Math.min(x, this.mapData.canvas.width - x), Math.min(y, this.mapData.canvas.height - y))) 
-              * utils.smoothstep(0.0, 0.6, 1 - h) * 255;
+              * (utils.smoothstep(0.0, this.moisture+0.3, h)) * 255;
         i = 4 * (y * this.mapData.canvas.width + x);
         this.mapData.data[i] = red;
         this.mapData.data[i + 1] = green;
@@ -150,18 +155,19 @@ PlanetData.prototype = {
 
   getSector: function(x, y) {
     return this.sectors[x][y];
-  }
-};
+  },
 
-
-//this function is temporary it should not be around for the PR
-var ar = function(x, y, s, riv) {
-  var as = Math.min(2, Math.floor(s));
-  s += riv[x][y];
-  for (var i = -1*as;i<=1*as;i++) {
-    for (var j = -1*as;j<=1*as;j++) {
-      riv[x+i][y+j] += Math.min(1, Math.max(0, s-Math.min(Math.abs(i), Math.abs(j))));
-      riv[x+i][y+j] = Math.min(1, Math.max(0, riv[x+i][y+j]));
+  heightmap: function(x, y) {
+    var h = 0;
+    var a = 0.5;
+    var p = this.frequency;
+    var s = 1/6
+    for (var i = 0; i < 6; i++) {
+      h += (0.5+0.5*noise.simplex2(x * p, y * p)) * a;
+      a *= 0.5;
+      p = this.frequency+Math.pow(s*i, 2)*(this.lod-this.frequency);
     }
+    return h;
   }
+
 };
