@@ -87,3 +87,4 @@ var palette = function(t, r, g, b) {
 var roundTo = function(t, r) {
   return Math.floor(t / r) * r;
 };
+

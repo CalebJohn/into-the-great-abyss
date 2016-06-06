@@ -26,7 +26,6 @@ Cutscene.prototype = {
   preload: function() {
     // Needed for Cutscene
     game.load.script('WorldGenerator', 'src/WorldGenerator.js'); 
-    game.load.spritesheet('loadingImage', 'assets/loadingImage.png', 270, 90, 3);
     game.load.script('util', 'src/utils.js');
     game.load.script('sceneGenerator', 'src/SceneGenerator.js');
     game.load.spritesheet('loadingImage', 'assets/loadingImage.png', 270, 90, 3);
@@ -42,7 +41,9 @@ Cutscene.prototype = {
   create: function() {
     this.generator = new WorldGenerator();
     this.beginCutscene();
-    this.generator.generateWorld();
+    // 50ms was determined to work to allow the engine enough time to draw the
+    // background image, 100ms is being used to guarentee the image gets drawn
+    game.time.events.add(100, this.generator.generateWorld, this.generator);
   },
 
   update: function() {
@@ -53,3 +54,4 @@ Cutscene.prototype = {
 
   render: function() {}
 };
+
