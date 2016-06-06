@@ -17,7 +17,7 @@ Cutscene.prototype = {
     backgroundBmd.context.fillStyle = grd;
     backgroundBmd.context.fillRect(0, 0, game.width, game.height); 
     game.add.sprite(0, 0, backgroundBmd);
-    
+
     var loader = game.add.sprite(10, 10, 'loadingImage');
     this.cutscene = loader.animations.add('load', [0, 1, 2], 1, false); 
     this.cutscene.play('load');

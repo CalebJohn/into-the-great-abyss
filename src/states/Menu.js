@@ -7,6 +7,7 @@ var Menu = function () {
   this.titleText = null;
   this.mainBtns = null;
   this.optionBtns = null;
+  this.sunPos = game.input.activePointer;
   this.menuState = 'MAIN';
 };
 
@@ -41,7 +42,7 @@ Menu.prototype = {
   },
 
   update: function() {
-    this.backDropFilter.update(game.input.activePointer);
+    this.backDropFilter.update(this.sunPos);
   },
 
   render: function() {
@@ -56,7 +57,7 @@ Menu.prototype = {
                                       x: 0,
                                       y: -20,
                                       anchor: [0.5, 0.5],
-                                      callback: function() {game.state.start('Cutscene');}},
+                                      callback: this.startGame},
                                      {name: 'OPTIONS',
                                       x: 0,
                                       y: 20,
@@ -88,6 +89,14 @@ Menu.prototype = {
                                         anchor: [0.5, 0.5],
                                         callback: this.optionMenuToggle}]);
     this.optionBtns.visible = false;
+  },
+
+  //plays a simple animation and switches to cutsence state
+  startGame: function() {
+    this.sunPos = {y: this.sunPos.y};
+
+    var tween = game.add.tween(this.sunPos).to({y: game.height}, 2500, Phaser.Easing.Exponential.in, true);
+    tween.onComplete.add(function() {game.state.start('Cutscene');}, this);
   },
 
   //functonality for the fullscreen button
