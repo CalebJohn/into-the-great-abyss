@@ -21,9 +21,12 @@ Menu.prototype = {
     game.stage.backgroundColor = '#FFFFFF';
     game.scale.fullScreenScaleMode = Phaser.ScaleManager.NO_SCALE;
     /*Apply filter to image in background*/
-    this.backDrop = game.add.image();
+    var bdbm = game.make.bitmapData(game.width, game.height); //have to use this so the image has a texture
+    this.backDrop = game.add.image(0, game.height*0.5, bdbm);
+    this.backDrop.anchor.setTo(0.0, 0.5);
     this.backDrop.width = game.width;
     this.backDrop.height = game.height;
+    this.backDrop.scale.y = -1; //when screenshot is taken it will be upside down so we flip it
     this.backDropFilter = game.add.filter('sunset', game.width, game.height);
     this.backDrop.filters = [this.backDropFilter];
     
@@ -101,10 +104,16 @@ Menu.prototype = {
   //toggles between regular menu and options menu
   optionMenuToggle: function() {
     if (this.menuState === 'MAIN') {
+      this.backDropFilter.update({y: game.height*Math.random()}); //put sun at random location
+      this.backDrop.setTexture(this.backDrop.generateTexture()); //then take a snapshot and save it as the texture
+      this.backDrop.filters = null; //then turn off the filter so it isnt running anymore
+
       this.mainBtns.visible = false;
       this.optionBtns.visible = true;
       this.menuState = 'OPTIONS';
     } else if (this.menuState === 'OPTIONS') {
+      this.backDrop.filters = [this.backDropFilter];
+
       this.mainBtns.visible = true;
       this.optionBtns.visible = false;
       this.menuState = 'MAIN';
