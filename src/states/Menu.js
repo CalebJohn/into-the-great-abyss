@@ -95,7 +95,11 @@ Menu.prototype = {
   startGame: function() {
     this.sunPos = {y: this.sunPos.y};
 
-    var tween = game.add.tween(this.sunPos).to({y: game.height}, 2500, Phaser.Easing.Exponential.in, true);
+    var tween = game.add.tween(this.sunPos).to({y: game.height},
+                                                1500,
+                                                Phaser.Easing.Exponential.in,
+                                                true);
+
     tween.onComplete.add(function() {game.state.start('Cutscene');}, this);
   },
 
