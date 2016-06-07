@@ -7,7 +7,10 @@ var Menu = function () {
   this.titleText = null;
   this.mainBtns = null;
   this.optionBtns = null;
-  this.sunPos = game.input.activePointer;
+  // this.sunPos = game.input.activePointer;
+  this.sunPos = {y: game.height};
+  this.sunrise = true;
+  this.tween = null;
   this.menuState = 'MAIN';
 };
 
@@ -16,10 +19,22 @@ Menu.prototype = {
     game.load.shader('menuShader', 'assets/filters/shaders/menuShader.frag');
     game.load.script('sunset', 'assets/filters/menuFilter.js');
     game.load.script('buttonGroup', 'src/ButtonGroup.js');
+
+    game.load.script('WorldGenerator', 'src/WorldGenerator.js'); 
+    // game.load.spritesheet('loadingImage', 'assets/loadingImage.png', 270, 90, 3);
+    game.load.script('util', 'src/utils.js');
+    game.load.script('sceneGenerator', 'src/SceneGenerator.js');
+    game.load.script('noise', 'src/perlin.js');
+
+    // Necessary for LevelOne
+    game.load.script('buttonGroup', 'src/ButtonGroup.js');
+    game.load.script('sectorData', 'src/SectorData.js');
+    game.load.script('worldMap', 'src/WorldMap.js');
+    game.load.image('fadeButton', 'assets/fadeButton.png');
   },
 
   create: function() {
-    game.stage.backgroundColor = '#FFFFFF';
+    game.stage.backgroundColor = '#000000';
     game.scale.fullScreenScaleMode = Phaser.ScaleManager.NO_SCALE;
     /*Apply filter to image in background*/
     var bdbm = game.make.bitmapData(game.width, game.height); //have to use this so the image has a texture
@@ -39,9 +54,28 @@ Menu.prototype = {
     this.titleText.alpha = 0.5;
     // make menu buttons
     this.drawMain();
+
+    this.mainBtns.alpha = 0;
+    game.add.tween(this.mainBtns).to({alpha: 1},
+                                    2000,
+                                    Phaser.Easing.Linear.In,
+                                    true);
+    var tween = game.add.tween(this.sunPos).to({y: -50},
+                                                2000,
+                                                Phaser.Easing.Quadratic.In,
+                                                true);
+    tween.onComplete.add(function () {this.sunrise = false;}, this);
+
+    this.generator = new WorldGenerator();
+    tween.onComplete.add(this.generator.generateWorld, this.generator);
+    // utils.runInBackground(this.generator.generateWorld, this.generator);
   },
 
   update: function() {
+    var delta = (game.input.activePointer.y - this.sunPos.y) / 20;
+    if (Math.abs(delta) > 1 && !this.sunrise) {
+      this.sunPos.y += delta;
+    }
     this.backDropFilter.update(this.sunPos);
   },
 
@@ -97,10 +131,12 @@ Menu.prototype = {
 
     var tween = game.add.tween(this.sunPos).to({y: game.height},
                                                 1500,
-                                                Phaser.Easing.Exponential.in,
+                                                Phaser.Easing.Exponential.Out,
                                                 true);
 
-    tween.onComplete.add(function() {game.state.start('Cutscene');}, this);
+    utils.transitions.fadeOut(game, 1500);
+
+    tween.onComplete.add(function() {game.state.start('LevelOne');}, this);
   },
 
   //functonality for the fullscreen button

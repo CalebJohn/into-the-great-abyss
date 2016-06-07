@@ -95,5 +95,33 @@ var utils = {
   //rounds value t to the nearest multiple of r
   roundTo : function(t, r) {
     return Math.floor(t / r) * r;
+  },
+
+  //a "hacky" method to run functions in the backround with phaser
+  //it just schedules them to be run in 1ms
+  runInBackground : function(fun, ctx) {
+    game.time.events.add(2000, fun, ctx);
+  },
+
+  transitions : {
+    fade : function(game, time, from, to, fun) {
+      var filter = game.add.bitmapData(game.width, game.height);
+      filter.context.fillStyle = "#000000";
+      filter.context.fillRect(0, 0, game.width, game.height); 
+      var sprite = game.add.sprite(0, 0, filter);
+      sprite.alpha = from;
+      return game.add.tween(sprite).to({alpha: to},
+                                       time,
+                                       fun,
+                                       true);
+    },
+
+    fadeOut : function(game, time) {
+      return this.fade(game, time, 0, 1, Phaser.Easing.Quadratic.Out);
+    },
+
+    fadeIn : function(game, time) {
+      return this.fade(game, time, 1, 0, Phaser.Easing.Quadratic.In);
+    }
   }
 };
