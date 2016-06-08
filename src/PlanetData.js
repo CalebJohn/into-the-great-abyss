@@ -12,15 +12,18 @@ var PlanetData = function () {
 
   //when we generate higher level planet data we will use that to replace all the math.random() calls
   this.randEffect = Math.pow(Math.random(), 2); //warping plus log
-  this.frequency = Math.pow(Math.random()*0.1, 2)+0.001;
-  this.rfrequency = Math.pow(Math.random()*0.1, 2)+0.001//generate between 0.001 and 0.01 with weight towards a lower frequency
+  this.frequency = Math.pow(Math.random() * 0.1, 2) + 0.001;
+  this.rfrequency = Math.pow(Math.random() * 0.1, 2) + 0.001//generate between 0.001 and 0.01 with weight towards a lower frequency
   this.moisture = Math.random();
-  this.lod = 0.03+0.05*Math.random()+(1-this.moisture)*0.05; //adjusted by moisture to help fake erosion
+  this.lod = 0.03 + 0.05 * Math.random() + (1 - this.moisture) * 0.05; //adjusted by moisture to help fake erosion
+  this.erodibility = Math.random(); //I may not keep this. It just makes the water erode the river valleys a little less to help alleviate the frequency of archipelagos
   
 
-  console.log("moisture level: " + this.moisture.toPrecision(3)+
-              "\nrandom effect: " + this.randEffect.toPrecision(3)+
-              "\nfrequency: " + this.frequency.toPrecision(3)+
+  console.log("moisture level: " + this.moisture.toPrecision(3) +
+              "\nrandom effect: " + this.randEffect.toPrecision(3) +
+              "\nfrequency: " + this.frequency.toPrecision(3) +
+              "\nriver spacing: " + this.rfrequency.toPrecision(3) +
+              "\nerodibility: " + this.erodibility.toPrecision(3) +
               "\nlod: " + this.lod.toPrecision(3)
     );
   };
@@ -55,10 +58,10 @@ PlanetData.prototype = {
       rivers.push([]);
       for (var y = 0; y < this.mapData.canvas.height; y++) {
         terh = this.heightmap(x, y);
-        rv = 1 - noise.worley2(x*25*this.rfrequency+terh*3, y*25*this.rfrequency+terh*3);//curve the river based on height
+        rv = 1 - noise.worley2(x * 25 * this.rfrequency + terh * 3, y * 25 * this.rfrequency + terh * 3);//curve the river based on height
         rivers[x].push(rv);
-        buffer[x].push(terh-rv*0.8*(1-terh)*this.moisture);//decrease height around rivers
-        if (terh>peak) {
+        buffer[x].push(terh - rv * 0.8 * this.erodibility * (1 - terh) * this.moisture);//decrease height around rivers
+        if (terh > peak) {
           peak = terh;
         } else if (terh < low) {
           low = terh;
@@ -69,7 +72,7 @@ PlanetData.prototype = {
 
     //Here we will take the height data and convert it to colors
     var alpha, red, green, blue, h, c, i;
-    var waterLevel = utils.lerp(low, peak, utils.smoothstep(low, peak, this.moisture)*0.3);
+    var waterLevel = utils.lerp(low, peak, utils.smoothstep(low, peak, this.moisture) * 0.3);
     for (var x = 1; x < buffer.length - 1; x++) {
       for (var y = 1; y < buffer[x].length - 1; y++) {
         h = buffer[x][y];
@@ -79,17 +82,17 @@ PlanetData.prototype = {
         //this block determines where the rivers are
         /*todo: use an analytic derivitive to compute w rather than a logic block*/
         if (x>1&&y>1) {
-          if (((rv>=rivers[x+1][y]&&rv>=rivers[x-1][y])||(rv>=rivers[x][y+1]&&rv>=rivers[x][y-1]))&&(rv>(0.7 - this.moisture))) {
-            w = peak-h;
+          if (((rv >= rivers[x + 1][y] && rv >= rivers[x - 1][y])||(rv >= rivers[x][y + 1] && rv >= rivers[x][y - 1]))&&(rv > (0.7 - this.moisture))) {
+            w = peak - h;
           }
         }
         //determines what the color of the river will be so that they can fade in towards sea level
-        var rl = utils.mix(this.landHue, this.waterHue, utils.smoothstep(0, peak-waterLevel, w*this.moisture));
+        var rl = utils.mix(this.landHue, this.waterHue, utils.smoothstep(0, peak - waterLevel, w * this.moisture));
         //This takes the height and maps the land or water color to it
         //the smoothstep means that below 0.3 is water
         //then between 0.3-0.6 there is a smooth gradient
         //and after it is purely land
-        c = utils.mix(this.waterHue, rl, utils.smoothstep(waterLevel, waterLevel+0.2*this.moisture, h));//+0.3
+        c = utils.mix(this.waterHue, rl, utils.smoothstep(waterLevel, waterLevel + 0.2 * this.moisture, h));
         
         //calculate the normal at a given pixel
         //this allows us to cheaply shadow the terrain
@@ -98,18 +101,22 @@ PlanetData.prototype = {
         //map our normal to the range 0-1
         d.x = 0.5 * (d.x + 1);
         //this removes the normal from the water area so we only see it on land
-        d.x = utils.lerp(1, d.x, utils.smoothstep(waterLevel+0.1*this.moisture, waterLevel+0.2*this.moisture, h-w*0.5*this.moisture));//+0.1//+0.2
+        d.x = utils.lerp(1, d.x, utils.smoothstep(waterLevel + 0.1 * this.moisture, waterLevel + 0.2 * this.moisture, h - w * 0.5 * this.moisture));
         //multiply the shadow shading by individual colors and apply directly to canvas pixel buffer
         red = c.r * d.x;
         green = c.g * d.x;
         blue = c.b * d.x;
-        alpha = utils.smoothstep(0.0, 100.0, Math.min(Math.min(x, this.mapData.canvas.width - x), Math.min(y, this.mapData.canvas.height - y))) 
-              * (utils.smoothstep(0.0, waterLevel+0.2*this.moisture, h)) * 255;//+0.3
+        alpha = utils.smoothstep(0.0, 100.0, Math.min(Math.min(x, planetData.mapData.canvas.width - x), Math.min(y, planetData.mapData.canvas.height - y))) 
+          * (utils.smoothstep(0.0,0.2 * planetData.moisture, h)) * 255;
         i = 4 * (y * this.mapData.canvas.width + x);
         this.mapData.data[i] = red;
         this.mapData.data[i + 1] = green;
         this.mapData.data[i + 2] = blue;
-        this.mapData.data[i + 3] = alpha;
+        if (alpha>=255){
+          this.mapData.data[i + 3] = 0;
+        } else {
+          this.mapData.data[i + 3] = alpha;
+        }
       }
     }
 
@@ -150,26 +157,26 @@ PlanetData.prototype = {
     //this block initializes variables needed for the loop
     var lh = 0; //local hight//height of individual octave
     var p = this.frequency;
-    var s = 1/6; //scaleing factor for LOD
+    var s = 1 / 6; //scaleing factor for LOD
     var px = x, py = y;
-    var a = 0.75+0.15*noise.simplex2(px*p, py*p); //Use noise to initilize amplitude in order to create more variation
+    var a = 0.75 + 0.15 * noise.simplex2(px * p, py * p); //Use noise to initilize amplitude in order to create more variation
     var h = 0.0; //intial total height value
-    var r = [1.212, 0.656-this.randEffect*0.3, -0.856+this.randEffect*0.3, 1.537]; //rotation matrix for adding interesting effects to frequency calculation
+    var r = [1.212, 0.656 - this.randEffect * 0.3, -0.856 + this.randEffect * 0.3, 1.537]; //rotation matrix for adding interesting effects to frequency calculation
 
     //this loop will compute the height value from different octaves of noise
     for (var i = 0; i < 5; i++) {
       //rotate the scaling of the frequency to break up monotony
-      px = (px*r[0]+py*r[1]);
-      py = (px*r[2]+py*r[3]);
+      px = (px * r[0] + py * r[1]);
+      py = (px * r[2] + py * r[3]);
 
       //scale frequency based on LOD
-      p = this.frequency+Math.pow(s*(i+1), 2)*(this.lod-this.frequency);
+      p = this.frequency + Math.pow(s * (i + 1), 2) * (this.lod - this.frequency);
 
       //rotate between worley noise (voronoi) and regular simplex
-      if ((i==2)||(i==4)) {
-        lh = (0.5-noise.worley2(px*p+i*h*this.randEffect, py*p+i*h*this.randEffect)) * a;//has a warping factor added which becomes stronger at smaller octaves
+      if ((i == 2)||(i == 4)) {
+        lh = (0.5 - noise.worley2(px * p + i * h * this.randEffect, py * p + i * h * this.randEffect)) * a;//has a warping factor added which becomes stronger at smaller octaves
       } else {
-        lh = (0.5+0.5*noise.simplex2(px*p+h*4*this.randEffect, py*p+lh*4*this.randEffect)) * a;//also has warping factor where y value uses local height to help break up the appearence
+        lh = (0.5 + 0.5 * noise.simplex2(px * p + h * 4 * this.randEffect, py * p + lh * 4 * this.randEffect)) * a;//also has warping factor where y value uses local height to help break up the appearence
       }
       //add height to total height
       h += lh;
@@ -179,7 +186,7 @@ PlanetData.prototype = {
       //this has the effect of smoothing out the overall heightmap at lower heights
       //we then adjust this effect based on the overall moisture level
       //this way planets lacking moisture do not look as eroded as those with lots of moisture
-      a *= (0.4*(1-this.moisture)+h*0.5*this.moisture); 
+      a *= (0.4 * (1 - this.moisture) + h * 0.5 * this.moisture); 
     }
     return Math.abs(h); // negative values mess up coloring 
   }
