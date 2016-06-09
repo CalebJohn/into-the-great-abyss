@@ -313,7 +313,11 @@
   //o = octaves, refers to number of iterations of noise
   //f = frequency, refers to the change in coordinates each octave
   //l = lacurnity, change in amplitude per octave
-  module.fbm2 = function(x, y, o = 6, f = 2.0, l = 0.5) {
+  module.fbm2 = function(x, y, o, f, l) {
+    var o = o || 6;
+    var f = f || 2.0;
+    var l = l || 0.5;
+
     var h = 0;
     var a = 0.5;
     var p = 1.0;
@@ -331,7 +335,11 @@
   //o = octaves, refers to number of iterations of noise
   //f = frequency, refers to the change in coordinates each octave
   //l = lacurnity, change in amplitude per octave
-  module.fbm3 = function(x, y, z, o = 6, f = 2.0, l = 0.5) {
+  module.fbm3 = function(x, y, z, o, f, l) {
+    var o = o || 6;
+    var f = f || 2.0;
+    var l = l || 0.5;
+
     var h = 0;
     var a = 0.5;
     var p = 1.0;
@@ -347,7 +355,12 @@
   // x and y are coordinate locations
   // wa is the strength of the warping effect
   // the rest are standard fbm functions to be passed on
-  module.warp2 = function(x, y, wa = 1, o = 6, f = 2.0, l = 0.5) {
+  module.warp2 = function(x, y, wa, o, f, l) {
+    var wa = wa || 1;
+    var o = o || 6;
+    var f = f || 2.0;
+    var l = l || 0.5;
+
     var nx = module.fbm2(x, y, o);
     var ny = module.fbm2(x + 1.5, y + 8.7, o);
     return module.fbm2(x + wa * nx, y + wa * ny, o, f, l);
@@ -357,7 +370,12 @@
   // x, y, and z are coordinate locations
   // wa is the strength of the warping effect
   // the rest are standard fbm functions to be passed on
-  module.warp3 = function(x, y, z, wa = 1, o = 6, f = 2.0, l = 0.5) {
+  module.warp3 = function(x, y, z, wa, o, f, l) {
+    var wa = wa || 1;
+    var o = o || 6;
+    var f = f || 2.0;
+    var l = l || 0.5;
+
     var nx = module.fbm3(x, y, z, o);
     var ny = module.fbm3(x + 1.5, y + 8.7, z + 6.9, o);
     var nz = module.fbm3(x + 7.1, y + 4.9, z + 1.3, o);
