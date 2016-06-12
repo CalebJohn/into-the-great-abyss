@@ -391,14 +391,18 @@
     return 1-md;
   };
 
-  module.fworley2 = function(x, y) {
+  module.fworley2 = function(x, y, o, f, l) {
+    var o = o || 3;
+    var f = f || 2.4;
+    var l = l || 0.4;
+
     var h = 0;
     var a = 0.4;
     var p = 1.0;
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i < o; i++) {
       h += module.worley2(x * p, y * p) * a;
-      a *= 0.4;
-      p *= 2.4;
+      a *= l;
+      p *= f;
     }
     return h;
   };

@@ -5,8 +5,9 @@ var PlanetData = function () {
   // Will be set in WorldGenerator
   this.mapData = {canvas: null, ctx: null, imageData: null, data: null};
   this.mapSize = 5;
-  this.width = 700;
-  this.height = 500;
+  this.width = game.width;
+  this.height = game.height;
+  this.border = 100;
   this.landHue = null;
   this.waterHue = null;
 
@@ -17,13 +18,14 @@ var PlanetData = function () {
   this.moisture = Math.random();
   this.lod = 0.03 + 0.05 * Math.random() + (1 - this.moisture) * 0.05; //adjusted by moisture to help fake erosion
   this.erodibility = Math.random(); //I may not keep this. It just makes the water erode the river valleys a little less to help alleviate the frequency of archipelagos
-  
+  this.skew = 0.4 + Math.random()*0.6;
 
   console.log("moisture level: " + this.moisture.toPrecision(3) +
               "\nrandom effect: " + this.randEffect.toPrecision(3) +
               "\nfrequency: " + this.frequency.toPrecision(3) +
               "\nriver spacing: " + this.rfrequency.toPrecision(3) +
               "\nerodibility: " + this.erodibility.toPrecision(3) +
+              "\nskew: " + this.skew.toPrecision(3) +
               "\nlod: " + this.lod.toPrecision(3)
     );
   };
@@ -39,10 +41,10 @@ PlanetData.prototype = {
     //this entire block is used to create a canvas element and initiate all 
     //its variables that we will need to access
     this.mapData.canvas = document.createElement("canvas");
-    this.mapData.canvas.width = game.width;
-    this.mapData.canvas.height = game.height;
+    this.mapData.canvas.width = this.width;
+    this.mapData.canvas.height = this.height;
     this.mapData.ctx = this.mapData.canvas.getContext('2d');
-    this.mapData.imageData = this.mapData.ctx.getImageData(0,0,this.mapData.canvas.width, this.mapData.canvas.height);
+    this.mapData.imageData = this.mapData.ctx.getImageData(0, 0, this.mapData.canvas.width, this.mapData.canvas.height);
     this.mapData.data = this.mapData.imageData.data;
 
     //create a 2d array which holds our height data for the planet
@@ -57,7 +59,7 @@ PlanetData.prototype = {
       buffer.push([]);
       rivers.push([]);
       for (var y = 0; y < this.mapData.canvas.height; y++) {
-        terh = this.heightmap(x, y);
+        terh = this.heightmap(x * this.skew, y);
         rv = 1 - noise.worley2(x * 25 * this.rfrequency + terh * 3, y * 25 * this.rfrequency + terh * 3);//curve the river based on height
         rivers[x].push(rv);
         buffer[x].push(terh - rv * 0.8 * this.erodibility * (1 - terh) * this.moisture);//decrease height around rivers
@@ -69,7 +71,7 @@ PlanetData.prototype = {
         
       }
     }
-
+    //TODO: add texture to water
     //Here we will take the height data and convert it to colors
     var alpha, red, green, blue, h, c, i;
     var waterLevel = utils.lerp(low, peak, utils.smoothstep(low, peak, this.moisture) * 0.3);
@@ -106,8 +108,9 @@ PlanetData.prototype = {
         red = c.r * d.x;
         green = c.g * d.x;
         blue = c.b * d.x;
-        alpha = utils.smoothstep(0.0, 100.0, Math.min(Math.min(x, planetData.mapData.canvas.width - x), Math.min(y, planetData.mapData.canvas.height - y))) 
-          * (utils.smoothstep(0.0,0.2 * planetData.moisture, h)) * 255;
+        alpha = utils.smoothstep(0.0, this.border, Math.min(Math.min(x, planetData.mapData.canvas.width - x), 
+                                                   Math.min(y, planetData.mapData.canvas.height - y))) *
+                                                   255;
         i = 4 * (y * this.mapData.canvas.width + x);
         this.mapData.data[i] = red;
         this.mapData.data[i + 1] = green;

@@ -1,4 +1,4 @@
-/* globals ButtonGroup, WorldMap, SceneGenerator, planetData */
+/* globals ButtonGroup, WorldMap, SceneGenerator */
 var LevelOne = function () {
   this.baseBtns = null;
   this.map = null;
