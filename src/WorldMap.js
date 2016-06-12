@@ -23,9 +23,9 @@ WorldMap.prototype = Object.create(Phaser.Group.prototype);
 WorldMap.prototype.constructor = WorldMap;
 
 WorldMap.prototype.selected = function(btn) {
-  if (btn.faded == true) {
+  if (btn.faded === true) {
     //only update colors if not done before
-    if (btn.active == false) {
+    if (btn.active === false) {
 
       this.setAlpha(btn);
       btn.active = true;
@@ -44,7 +44,7 @@ WorldMap.prototype.selected = function(btn) {
 
         if (Math.abs(dx) <= 1 &&
             Math.abs(dy) <= 1 &&
-            oBtn.active == false) {
+            oBtn.active === false) {
           //unfortunately these both need to update every time
           //otherwise they dont blend properly
           this.blendAlpha(oBtn, dx, dy);
@@ -119,13 +119,12 @@ WorldMap.prototype.setAlpha = function(button, alpha) {
 };
 
 WorldMap.prototype.blendAlpha = function(button, dx, dy) {
-  var k;
+  var k, a;
   var x = button.x + this.position.x;
   var y = button.y + this.position.y;
   var w = this.btnWidth;
   var h = this.btnHeight;
   var fade = 1.0;
-  var a;
   for (var i = 0; i < w; i++) {
     for (var j = 0; j < h; j++) {
       k = 4 * ((j + y) * planetData.mapData.canvas.width + (i + x));
@@ -155,7 +154,7 @@ WorldMap.prototype.blendAlpha = function(button, dx, dy) {
 };
 
 WorldMap.prototype.cloudAlpha = function(button) {
-  var k;
+  var k, a;
   var x = button.x + this.position.x;
   var y = button.y + this.position.y;
   var w = this.btnWidth;
@@ -166,7 +165,6 @@ WorldMap.prototype.cloudAlpha = function(button) {
       if (x + i < planetData.mapData.canvas.width && y + j < planetData.mapData.canvas.height) {
         a = planetData.mapData.data[k + 3];
         var c = Math.max(0, a - utils.lerp(0, Math.min(a, 255 - a), utils.smoothstep(0.4, 0.7, 1 - noise.fbm2((x + i) * 0.01, (y + j) * 0.01, 4))));
-
         planetData.mapData.data[k+3] = c;
       }
     }

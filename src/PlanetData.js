@@ -14,7 +14,7 @@ var PlanetData = function () {
   //when we generate higher level planet data we will use that to replace all the math.random() calls
   this.randEffect = Math.pow(Math.random(), 2); //warping plus log
   this.frequency = Math.pow(Math.random() * 0.1, 2) + 0.001;
-  this.rfrequency = Math.pow(Math.random() * 0.1, 2) + 0.001//generate between 0.001 and 0.01 with weight towards a lower frequency
+  this.rfrequency = Math.pow(Math.random() * 0.1, 2) + 0.001;//generate between 0.001 and 0.01 with weight towards a lower frequency
   this.moisture = Math.random();
   this.lod = 0.03 + 0.05 * Math.random() + (1 - this.moisture) * 0.05; //adjusted by moisture to help fake erosion
   this.erodibility = Math.random(); //I may not keep this. It just makes the water erode the river valleys a little less to help alleviate the frequency of archipelagos
@@ -108,8 +108,8 @@ PlanetData.prototype = {
         red = c.r * d.x;
         green = c.g * d.x;
         blue = c.b * d.x;
-        alpha = utils.smoothstep(0.0, this.border, Math.min(Math.min(x, planetData.mapData.canvas.width - x), 
-                                                   Math.min(y, planetData.mapData.canvas.height - y))) *
+        alpha = utils.smoothstep(0.0, this.border, Math.min(Math.min(x, this.mapData.canvas.width - x), 
+                                                   Math.min(y, this.mapData.canvas.height - y))) *
                                                    255;
         i = 4 * (y * this.mapData.canvas.width + x);
         this.mapData.data[i] = red;
