@@ -386,7 +386,7 @@
     x = x & 255;
     y = y & 255;
     //return new Grad(Math.abs(Math.sin(x*123.657+y*46.87)*423548.15763) % 1, Math.abs(Math.sin(x*87.391+y*157.597)*587654.26461)%1, 0);
-    return new Grad( perm[x+perm[y]]/255.0, perm[y+perm[x]]/255.0, 0);
+    return new Grad(perm[x + perm[y]] / 255.0, perm[y + perm[x]] / 255.0, 0);
   }
 
   module.worley2 = function(x, y) {
@@ -398,15 +398,15 @@
     var o, r, d;
     for (var i = -1; i <= 1; i++) {
       for (var j = -1; j <= 1; j++) {
-        o = hash(i+px, j+py);
-        r = new Grad(i+o.x-fx, j+o.y-fy, 0);
-        d = (r.x*r.x+r.y*r.y);
+        o = hash(i + px, j + py);
+        r = new Grad(i + o.x - fx, j + o.y - fy, 0);
+        d = (r.x * r.x + r.y * r.y);
         if (d < md) {
           md = d;
         }
       }
     }
-    return 1-md;
+    return 1 - md;
   };
 
   module.fworley2 = function(x, y, o, f, l) {
