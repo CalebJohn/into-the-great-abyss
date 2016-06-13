@@ -83,7 +83,7 @@ PlanetData.prototype = {
 
         //this block determines where the rivers are
         /*todo: use an analytic derivitive to compute w rather than a logic block*/
-        if (x>1&&y>1) {
+        if (x > 1 && y > 1) {
           if (((rv >= rivers[x + 1][y] && rv >= rivers[x - 1][y])||(rv >= rivers[x][y + 1] && rv >= rivers[x][y - 1]))&&(rv > (0.7 - this.moisture))) {
             w = peak - h;
           }
@@ -109,8 +109,7 @@ PlanetData.prototype = {
         green = c.g * d.x;
         blue = c.b * d.x;
         alpha = utils.smoothstep(0.0, this.border, Math.min(Math.min(x, this.mapData.canvas.width - x), 
-                                                   Math.min(y, this.mapData.canvas.height - y))) *
-                                                   255;
+                                                   Math.min(y, this.mapData.canvas.height - y))) * 255;
         i = 4 * (y * this.mapData.canvas.width + x);
         this.mapData.data[i] = red;
         this.mapData.data[i + 1] = green;

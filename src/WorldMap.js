@@ -6,8 +6,8 @@ var WorldMap = function (x, y, containerLevel) {
 
   // These are the default grid size and button sizes
   this.size = planetData.mapSize;
-  this.btnWidth = (planetData.width-planetData.border*2+5) / this.size;
-  this.btnHeight = (planetData.height-planetData.border*2+5) / this.size;
+  this.btnWidth = (planetData.width - planetData.border * 2 + 5) / this.size;
+  this.btnHeight = (planetData.height - planetData.border * 2 + 5) / this.size;
 
   this.visibleAlpha = 0.4;
   this.hiddenAlpha = 0.9;
@@ -32,15 +32,15 @@ WorldMap.prototype.selected = function(btn) {
 
       var bi = this.sectorBtns.getChildIndex(btn);
       //get position in terms of array units
-      var bposx = Math.floor(bi/this.size);
-      var bposy = bi%this.size;
+      var bposx = Math.floor(bi / this.size);
+      var bposy = bi % this.size;
       // Check all buttons in the map, and lighten neighbours
       for (var i = 0; i < this.sectorBtns.length; i++) {
         var oBtn = this.sectorBtns.getChildAt(i);
-        var oposx = Math.floor(i/this.size);
-        var oposy = i%this.size;
-        var dx = oposx-bposx;
-        var dy = oposy-bposy;
+        var oposx = Math.floor(i / this.size);
+        var oposy = i % this.size;
+        var dx = oposx - bposx;
+        var dy = oposy - bposy;
 
         if (Math.abs(dx) <= 1 &&
             Math.abs(dy) <= 1 &&
