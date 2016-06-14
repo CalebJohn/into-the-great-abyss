@@ -5,10 +5,29 @@ var PlanetData = function () {
   // Will be set in WorldGenerator
   this.mapData = {canvas: null, ctx: null, imageData: null, data: null};
   this.mapSize = 5;
-  this.width = 700;
-  this.height = 500;
+  this.width = game.width;
+  this.height = game.height;
+  this.border = 100;
   this.landHue = null;
   this.waterHue = null;
+
+  //when we generate higher level planet data we will use that to replace all the math.random() calls
+  this.randEffect = Math.pow(Math.random(), 2); //warping plus log
+  this.frequency = Math.pow(Math.random() * 0.1, 2) + 0.001;
+  this.rfrequency = Math.pow(Math.random() * 0.1, 2) + 0.001;//generate between 0.001 and 0.01 with weight towards a lower frequency
+  this.moisture = Math.random();
+  this.lod = 0.03 + 0.05 * Math.random() + (1 - this.moisture) * 0.05; //adjusted by moisture to help fake erosion
+  this.erodibility = Math.random(); //I may not keep this. It just makes the water erode the river valleys a little less to help alleviate the frequency of archipelagos
+  this.skew = 0.4 + Math.random()*0.6;
+
+  console.log("moisture level: " + this.moisture.toPrecision(3) +
+              "\nrandom effect: " + this.randEffect.toPrecision(3) +
+              "\nfrequency: " + this.frequency.toPrecision(3) +
+              "\nriver spacing: " + this.rfrequency.toPrecision(3) +
+              "\nerodibility: " + this.erodibility.toPrecision(3) +
+              "\nskew: " + this.skew.toPrecision(3) +
+              "\nlod: " + this.lod.toPrecision(3)
+    );
   };
 
 PlanetData.prototype = {
@@ -25,49 +44,91 @@ PlanetData.prototype = {
     this.mapData.canvas.width = this.width;
     this.mapData.canvas.height = this.height;
     this.mapData.ctx = this.mapData.canvas.getContext('2d');
-    this.mapData.imageData = this.mapData.ctx.getImageData(0,0,this.mapData.canvas.width, this.mapData.canvas.height);
+    this.mapData.imageData = this.mapData.ctx.getImageData(0, 0, this.mapData.canvas.width, this.mapData.canvas.height);
     this.mapData.data = this.mapData.imageData.data;
 
-    // TODO: add hydro erosion to this
-    // TODO: add complex features, cliffs, rivers, etc.
     //create a 2d array which holds our height data for the planet
     //This is done so that we can avoid calling our noise function more than once per pixel
     var buffer = [];
-    for (var x = 0; x < this.width; x++) {
+    var rivers = [];
+    var peak = 0;
+    var low = 1;
+    var terrainHeight = 0;
+    var river = 0;
+    for (var x = 0; x < this.mapData.canvas.width; x++) {
       buffer.push([]);
-      for (var y = 0; y < this.height; y++) {
-        buffer[x].push(noise.fbm2(x * 0.005, y * 0.005));
+      rivers.push([]);
+      for (var y = 0; y < this.mapData.canvas.height; y++) {
+        terrainHeight = this.heightmap(x * this.skew, y);
+        river = 1 - noise.worley2(x * 25 * this.rfrequency + terrainHeight * 3, y * 25 * this.rfrequency + terrainHeight * 3);//curve the river based on height
+        rivers[x].push(river);
+        buffer[x].push(terrainHeight - river * 0.8 * this.erodibility * (1 - terrainHeight) * this.moisture);//decrease height around rivers
+        if (terrainHeight > peak) {
+          peak = terrainHeight;
+        } else if (terrainHeight < low) {
+          low = terrainHeight;
+        }
+        
       }
     }
-
+    //TODO: add texture to water
     //Here we will take the height data and convert it to colors
-    var alpha, red, green, blue, h, c, i;
-    for (var x = 0; x < this.width - 1; x++) {
-      for (var y = 0; y < this.height - 1; y++) {
+    var alpha, red, green, blue, h, c, i, riverColor, d;
+    var waterShade1, waterShade2, waterShadeLerp;
+    var waterLevel = utils.lerp(low, peak, utils.smoothstep(low, peak, this.moisture) * 0.3);
+    for (var x = 1; x < buffer.length - 1; x++) {
+      for (var y = 1; y < buffer[x].length - 1; y++) {
         h = buffer[x][y];
-        alpha = 255;
+        river = rivers[x][y];
+        var w = 0;
+
+        //this block determines where the rivers are
+        /*TODO: use an analytic derivitive to compute w rather than a logic block*/
+        if (x > 1 && y > 1) {
+          if (((river >= rivers[x + 1][y] && river >= rivers[x - 1][y]) || 
+               (river >= rivers[x][y + 1] && river >= rivers[x][y - 1])) && 
+               (river > (0.7 - this.moisture))) {
+            w = peak - h;
+          }
+        }
+        //determines what the color of the river will be so that they can fade in towards sea level
+        riverColor = utils.mix(this.landHue, this.waterHue, utils.smoothstep(0, peak - waterLevel, w * this.moisture));
         //This takes the height and maps the land or water color to it
-        //the smoothstep means that below 0.4 is solid land
-        //then between 0.4-0.7 there is a smooth gradient
-        //and after it is purely water
-        c = utils.mix(this.landHue, this.waterHue, utils.smoothstep(0.4, 0.7, h));
+        //the smoothstep means that below 0.3 is water
+        //then between 0.3-0.6 there is a smooth gradient
+        //and after it is purely land
+        c = utils.mix(this.waterHue, riverColor, utils.smoothstep(waterLevel, waterLevel + 0.2 * this.moisture, h));
+        
         //calculate the normal at a given pixel
         //this allows us to cheaply shadow the terrain
-        var d = new Phaser.Point(h - buffer[x + 1][y], h - buffer[x][y + 1]);
+        d = new Phaser.Point(h - buffer[x + 1][y], h - buffer[x][y + 1]);
         d = d.normalize();
         //map our normal to the range 0-1
         d.x = 0.5 * (d.x + 1);
         //this removes the normal from the water area so we only see it on land
-        d.x = utils.lerp(d.x, 1, utils.smoothstep(0.5, 0.6, h));
+        //point at which water is not shaded at all
+        waterShade1 = waterLevel + 0.1 * this.moisture;
+        //upper bound for water
+        waterShade2 = waterLevel + 0.2 * this.moisture;
+        //interpolation factor so water isnt treated like land with shading
+        //the subtraction makes sure the rivers receive no shading
+        waterShadeLerp = h - w * 0.5 * this.moisture;
+        d.x = utils.lerp(1, d.x, utils.smoothstep(waterShade1, waterShade2, waterShadeLerp));
         //multiply the shadow shading by individual colors and apply directly to canvas pixel buffer
         red = c.r * d.x;
         green = c.g * d.x;
         blue = c.b * d.x;
-        i = 4 * (y * this.width + x);
+        alpha = utils.smoothstep(0.0, this.border, Math.min(Math.min(x, this.mapData.canvas.width - x), 
+                                                   Math.min(y, this.mapData.canvas.height - y))) * 255;
+        i = 4 * (y * this.mapData.canvas.width + x);
         this.mapData.data[i] = red;
         this.mapData.data[i + 1] = green;
         this.mapData.data[i + 2] = blue;
-        this.mapData.data[i + 3] = alpha;
+        if (alpha>=255){
+          this.mapData.data[i + 3] = 0;
+        } else {
+          this.mapData.data[i + 3] = alpha;
+        }
       }
     }
 
@@ -79,7 +140,9 @@ PlanetData.prototype = {
       this.sectors.push([]);
       for (var y = 0; y < this.mapSize; y++) {
         //pick a spot in the middle of the sector and determine height
-        h = buffer[(x + 0.5) * (this.width / this.mapSize)][(y + 0.5) * (this.height / this.mapSize)];
+        //right now the sectors dont line up exactly with the underlying heightmap, but I think that will be fine
+        //especially once we fix this up a bit
+        h = buffer[(x + 0.5) * (this.mapData.canvas.width / this.mapSize)][(y + 0.5) * (this.mapData.canvas.height / this.mapSize)];
         //based on height pick a land type
         //This will need to be tweaked and improved once we are generating more data
         if (h > 0.7) {
@@ -98,5 +161,46 @@ PlanetData.prototype = {
 
   getSector: function(x, y) {
     return this.sectors[x][y];
+  },
+
+  //this function is used to return a height at a given point
+  //not completely accurate because river valleys are computed after the fact
+  heightmap: function(x, y) {
+    //this block initializes variables needed for the loop
+    var lh = 0; //local height//height of individual octave
+    var p = this.frequency;
+    var s = 1 / 6; //scaling factor for LOD
+    var px = x, py = y;
+    var a = 0.75 + 0.15 * noise.simplex2(px * p, py * p); //Use noise to initilize amplitude in order to create more variation
+    var h = 0.0; //initial total height value
+    var r = [1.212, 0.656 - this.randEffect * 0.3, -0.856 + this.randEffect * 0.3, 1.537]; //rotation matrix for adding interesting effects to frequency calculation
+
+    //this loop will compute the height value from different octaves of noise
+    for (var i = 0; i < 5; i++) {
+      //rotate the scaling of the frequency to break up monotony
+      px = (px * r[0] + py * r[1]);
+      py = (px * r[2] + py * r[3]);
+
+      //scale frequency based on LOD
+      p = this.frequency + Math.pow(s * (i + 1), 2) * (this.lod - this.frequency);
+
+      //rotate between worley noise (voronoi) and regular simplex
+      if ((i === 2)||(i === 4)) {
+        lh = (0.5 - noise.worley2(px * p + i * h * this.randEffect, py * p + i * h * this.randEffect)) * a;//has a warping factor added which becomes stronger at smaller octaves
+      } else {
+        lh = (0.5 + 0.5 * noise.simplex2(px * p + h * 4 * this.randEffect, py * p + lh * 4 * this.randEffect)) * a;//also has warping factor where y value uses local height to help break up the appearence
+      }
+      //add height to total height
+      h += lh;
+
+      //this last term is more complicated, normally as you increase octaves you decrease the impact each subsequent octave
+      //has on the total value. But in our case we are faking hydrolic erosion by lowering the impact of noise at lower heights
+      //this has the effect of smoothing out the overall heightmap at lower heights
+      //we then adjust this effect based on the overall moisture level
+      //this way planets lacking moisture do not look as eroded as those with lots of moisture
+      a *= (0.4 * (1 - this.moisture) + h * 0.5 * this.moisture); 
+    }
+    return Math.abs(h); // negative values mess up coloring 
   }
+
 };
