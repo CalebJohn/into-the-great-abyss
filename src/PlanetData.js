@@ -53,64 +53,73 @@ PlanetData.prototype = {
     var rivers = [];
     var peak = 0;
     var low = 1;
-    var terh = 0;
-    var rv = 0;
+    var terrainHeight = 0;
+    var river = 0;
     for (var x = 0; x < this.mapData.canvas.width; x++) {
       buffer.push([]);
       rivers.push([]);
       for (var y = 0; y < this.mapData.canvas.height; y++) {
-        terh = this.heightmap(x * this.skew, y);
-        rv = 1 - noise.worley2(x * 25 * this.rfrequency + terh * 3, y * 25 * this.rfrequency + terh * 3);//curve the river based on height
-        rivers[x].push(rv);
-        buffer[x].push(terh - rv * 0.8 * this.erodibility * (1 - terh) * this.moisture);//decrease height around rivers
-        if (terh > peak) {
-          peak = terh;
-        } else if (terh < low) {
-          low = terh;
+        terrainHeight = this.heightmap(x * this.skew, y);
+        river = 1 - noise.worley2(x * 25 * this.rfrequency + terrainHeight * 3, y * 25 * this.rfrequency + terrainHeight * 3);//curve the river based on height
+        rivers[x].push(river);
+        buffer[x].push(terrainHeight - river * 0.8 * this.erodibility * (1 - terrainHeight) * this.moisture);//decrease height around rivers
+        if (terrainHeight > peak) {
+          peak = terrainHeight;
+        } else if (terrainHeight < low) {
+          low = terrainHeight;
         }
         
       }
     }
     //TODO: add texture to water
     //Here we will take the height data and convert it to colors
-    var alpha, red, green, blue, h, c, i;
+    var alpha, red, green, blue, h, c, i, riverColor, d;
+    var waterShade1, waterShade2, waterShadeLerp;
     var waterLevel = utils.lerp(low, peak, utils.smoothstep(low, peak, this.moisture) * 0.3);
     for (var x = 1; x < buffer.length - 1; x++) {
       for (var y = 1; y < buffer[x].length - 1; y++) {
         h = buffer[x][y];
-        rv = rivers[x][y];
+        river = rivers[x][y];
         var w = 0;
 
         //this block determines where the rivers are
-        /*todo: use an analytic derivitive to compute w rather than a logic block*/
+        /*TODO: use an analytic derivitive to compute w rather than a logic block*/
         if (x>1&&y>1) {
-          if (((rv >= rivers[x + 1][y] && rv >= rivers[x - 1][y])||(rv >= rivers[x][y + 1] && rv >= rivers[x][y - 1]))&&(rv > (0.7 - this.moisture))) {
+          if (((river >= rivers[x + 1][y] && river >= rivers[x - 1][y]) || 
+               (river >= rivers[x][y + 1] && river >= rivers[x][y - 1])) && 
+               (river > (0.7 - this.moisture))) {
             w = peak - h;
           }
         }
         //determines what the color of the river will be so that they can fade in towards sea level
-        var rl = utils.mix(this.landHue, this.waterHue, utils.smoothstep(0, peak - waterLevel, w * this.moisture));
+        riverColor = utils.mix(this.landHue, this.waterHue, utils.smoothstep(0, peak - waterLevel, w * this.moisture));
         //This takes the height and maps the land or water color to it
         //the smoothstep means that below 0.3 is water
         //then between 0.3-0.6 there is a smooth gradient
         //and after it is purely land
-        c = utils.mix(this.waterHue, rl, utils.smoothstep(waterLevel, waterLevel + 0.2 * this.moisture, h));
+        c = utils.mix(this.waterHue, riverColor, utils.smoothstep(waterLevel, waterLevel + 0.2 * this.moisture, h));
         
         //calculate the normal at a given pixel
         //this allows us to cheaply shadow the terrain
-        var d = new Phaser.Point(h - buffer[x + 1][y], h - buffer[x][y + 1]);
+        d = new Phaser.Point(h - buffer[x + 1][y], h - buffer[x][y + 1]);
         d = d.normalize();
         //map our normal to the range 0-1
         d.x = 0.5 * (d.x + 1);
         //this removes the normal from the water area so we only see it on land
-        d.x = utils.lerp(1, d.x, utils.smoothstep(waterLevel + 0.1 * this.moisture, waterLevel + 0.2 * this.moisture, h - w * 0.5 * this.moisture));
+        //point at which water is not shaded at all
+        waterShade1 = waterLevel + 0.1 * this.moisture;
+        //upper bound for water
+        waterShade2 = waterLevel + 0.2 * this.moisture;
+        //interpolation factor so water isnt treated like land with shading
+        //the subtraction makes sure the rivers receive no shading
+        waterShadeLerp = h - w * 0.5 * this.moisture;
+        d.x = utils.lerp(1, d.x, utils.smoothstep(waterShade1, waterShade2, waterShadeLerp));
         //multiply the shadow shading by individual colors and apply directly to canvas pixel buffer
         red = c.r * d.x;
         green = c.g * d.x;
         blue = c.b * d.x;
         alpha = utils.smoothstep(0.0, this.border, Math.min(Math.min(x, this.mapData.canvas.width - x), 
-                                                   Math.min(y, this.mapData.canvas.height - y))) *
-                                                   255;
+                                                   Math.min(y, this.mapData.canvas.height - y))) * 255;
         i = 4 * (y * this.mapData.canvas.width + x);
         this.mapData.data[i] = red;
         this.mapData.data[i + 1] = green;
@@ -158,12 +167,12 @@ PlanetData.prototype = {
   //not completely accurate because river valleys are computed after the fact
   heightmap: function(x, y) {
     //this block initializes variables needed for the loop
-    var lh = 0; //local hight//height of individual octave
+    var lh = 0; //local height//height of individual octave
     var p = this.frequency;
-    var s = 1 / 6; //scaleing factor for LOD
+    var s = 1 / 6; //scaling factor for LOD
     var px = x, py = y;
     var a = 0.75 + 0.15 * noise.simplex2(px * p, py * p); //Use noise to initilize amplitude in order to create more variation
-    var h = 0.0; //intial total height value
+    var h = 0.0; //initial total height value
     var r = [1.212, 0.656 - this.randEffect * 0.3, -0.856 + this.randEffect * 0.3, 1.537]; //rotation matrix for adding interesting effects to frequency calculation
 
     //this loop will compute the height value from different octaves of noise
@@ -176,7 +185,7 @@ PlanetData.prototype = {
       p = this.frequency + Math.pow(s * (i + 1), 2) * (this.lod - this.frequency);
 
       //rotate between worley noise (voronoi) and regular simplex
-      if ((i == 2)||(i == 4)) {
+      if ((i === 2)||(i === 4)) {
         lh = (0.5 - noise.worley2(px * p + i * h * this.randEffect, py * p + i * h * this.randEffect)) * a;//has a warping factor added which becomes stronger at smaller octaves
       } else {
         lh = (0.5 + 0.5 * noise.simplex2(px * p + h * 4 * this.randEffect, py * p + lh * 4 * this.randEffect)) * a;//also has warping factor where y value uses local height to help break up the appearence

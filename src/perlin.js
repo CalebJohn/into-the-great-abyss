@@ -382,13 +382,16 @@
     return module.fbm3(x + wa * nx, y + wa * ny, z + wa * nz, o, f, l);
   };
 
+  //returns a random value from our precomputed table of random values
   function hash(x, y) {
     x = x & 255;
     y = y & 255;
-    //return new Grad(Math.abs(Math.sin(x*123.657+y*46.87)*423548.15763) % 1, Math.abs(Math.sin(x*87.391+y*157.597)*587654.26461)%1, 0);
     return new Grad( perm[x+perm[y]]/255.0, perm[y+perm[x]]/255.0, 0);
   }
 
+  //worley noise is a type of per-pixel noise where the color of each pixel is essentially the distance to the closest random 
+  //point in black and white. 
+  //this function essentially returns the distance to the nearest random point
   module.worley2 = function(x, y) {
     var px = Math.floor(x);
     var py = Math.floor(y);
@@ -409,6 +412,11 @@
     return 1-md;
   };
 
+  //fractal version of worley noise
+  //takes in x, y, and z coordinates and returns distance to nearest random point
+  //o = octaves, refers to number of iterations of noise
+  //f = frequency, refers to the change in coordinates of each octave
+  //l = lacurnity, change in amplitude per octave
   module.fworley2 = function(x, y, o, f, l) {
     var o = o || 3;
     var f = f || 2.4;

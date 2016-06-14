@@ -13,7 +13,7 @@ var WorldMap = function (x, y, containerLevel) {
   this.hiddenAlpha = 0.9;
   this.peakAlpha = 0.8;
 
-  this.bkrd = null;
+  this.background = null;
 
   this.position.setTo(planetData.border, planetData.border);
   this.create();
@@ -30,26 +30,26 @@ WorldMap.prototype.selected = function(btn) {
       this.setAlpha(btn);
       btn.active = true;
 
-      var bi = this.sectorBtns.getChildIndex(btn);
       //get position in terms of array units
-      var bposx = Math.floor(bi/this.size);
-      var bposy = bi%this.size;
+      var bi = this.sectorBtns.getChildIndex(btn);
+      var bPosx = Math.floor(bi/this.size);
+      var bPosy = bi%this.size;
       // Check all buttons in the map, and lighten neighbours
       for (var i = 0; i < this.sectorBtns.length; i++) {
-        var oBtn = this.sectorBtns.getChildAt(i);
-        var oposx = Math.floor(i/this.size);
-        var oposy = i%this.size;
-        var dx = oposx-bposx;
-        var dy = oposy-bposy;
+        var sectorBtn = this.sectorBtns.getChildAt(i);
+        var sectorPosx = Math.floor(i/this.size);
+        var sectorPosy = i%this.size;
+        var dx = sectorPosx-bPosx;
+        var dy = sectorPosy-bPosy;
 
         if (Math.abs(dx) <= 1 &&
             Math.abs(dy) <= 1 &&
-            oBtn.active === false) {
+            sectorBtn.active === false) {
           //unfortunately these both need to update every time
           //otherwise they dont blend properly
-          this.blendAlpha(oBtn, dx, dy);
-          this.cloudAlpha(oBtn);
-          oBtn.faded = true;
+          this.blendAlpha(sectorBtn, dx, dy);
+          this.cloudAlpha(sectorBtn);
+          sectorBtn.faded = true;
         }
       }
     }
@@ -86,14 +86,14 @@ WorldMap.prototype.create = function() {
   var startBtn = btns[Math.floor(Math.random() * btns.length)];
   startBtn.faded = true;
 
-  this.bkrd = game.add.sprite(-this.position.x, -this.position.y);
-  this.bkrd.texture = PIXI.Texture.fromCanvas(planetData.mapData.canvas);
+  this.background = game.add.sprite(-this.position.x, -this.position.y);
+  this.background.texture = PIXI.Texture.fromCanvas(planetData.mapData.canvas);
 
-  this.setAlpha(startBtn, 128);
+  this.setAlpha(startBtn);
   this.cloudAlpha(startBtn);
 
   this.sectorBtns = new ButtonGroup(this, 0, 0, btns);
-  this.add(this.bkrd);
+  this.add(this.background);
   this.add(this.sectorBtns);
 };
 
@@ -115,7 +115,7 @@ WorldMap.prototype.setAlpha = function(button, alpha) {
   }
 
   planetData.mapData.ctx.putImageData(planetData.mapData.imageData, 0, 0);
-  this.bkrd.texture.baseTexture.dirty();
+  this.background.texture.baseTexture.dirty();
 };
 
 WorldMap.prototype.blendAlpha = function(button, dx, dy) {
@@ -150,7 +150,7 @@ WorldMap.prototype.blendAlpha = function(button, dx, dy) {
   }
 
   planetData.mapData.ctx.putImageData(planetData.mapData.imageData, 0, 0);
-  this.bkrd.texture.baseTexture.dirty();
+  this.background.texture.baseTexture.dirty();
 };
 
 WorldMap.prototype.cloudAlpha = function(button) {
@@ -171,5 +171,5 @@ WorldMap.prototype.cloudAlpha = function(button) {
   }
 
   planetData.mapData.ctx.putImageData(planetData.mapData.imageData, 0, 0);
-  this.bkrd.texture.baseTexture.dirty();
+  this.background.texture.baseTexture.dirty();
 };
