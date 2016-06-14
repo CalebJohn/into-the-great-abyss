@@ -84,7 +84,7 @@ PlanetData.prototype = {
 
         //this block determines where the rivers are
         /*TODO: use an analytic derivitive to compute w rather than a logic block*/
-        if (x>1&&y>1) {
+        if (x > 1 && y > 1) {
           if (((river >= rivers[x + 1][y] && river >= rivers[x - 1][y]) || 
                (river >= rivers[x][y + 1] && river >= rivers[x][y - 1])) && 
                (river > (0.7 - this.moisture))) {

@@ -6,8 +6,8 @@ var WorldMap = function (x, y, containerLevel) {
 
   // These are the default grid size and button sizes
   this.size = planetData.mapSize;
-  this.btnWidth = (planetData.width-planetData.border*2+5) / this.size;
-  this.btnHeight = (planetData.height-planetData.border*2+5) / this.size;
+  this.btnWidth = (planetData.width - planetData.border * 2 + 5) / this.size;
+  this.btnHeight = (planetData.height - planetData.border * 2 + 5) / this.size;
 
   this.visibleAlpha = 0.4;
   this.hiddenAlpha = 0.9;
@@ -32,15 +32,15 @@ WorldMap.prototype.selected = function(btn) {
 
       //get position in terms of array units
       var bi = this.sectorBtns.getChildIndex(btn);
-      var bPosx = Math.floor(bi/this.size);
-      var bPosy = bi%this.size;
+      var bPosx = Math.floor(bi / this.size);
+      var bPosy = bi % this.size;
       // Check all buttons in the map, and lighten neighbours
       for (var i = 0; i < this.sectorBtns.length; i++) {
         var sectorBtn = this.sectorBtns.getChildAt(i);
-        var sectorPosx = Math.floor(i/this.size);
-        var sectorPosy = i%this.size;
-        var dx = sectorPosx-bPosx;
-        var dy = sectorPosy-bPosy;
+        var sectorPosx = Math.floor(i / this.size);
+        var sectorPosy = i % this.size;
+        var dx = sectorPosx - bPosx;
+        var dy = sectorPosy - bPosy;
 
         if (Math.abs(dx) <= 1 &&
             Math.abs(dy) <= 1 &&
@@ -173,3 +173,4 @@ WorldMap.prototype.cloudAlpha = function(button) {
   planetData.mapData.ctx.putImageData(planetData.mapData.imageData, 0, 0);
   this.background.texture.baseTexture.dirty();
 };
+

@@ -386,7 +386,7 @@
   function hash(x, y) {
     x = x & 255;
     y = y & 255;
-    return new Grad( perm[x+perm[y]]/255.0, perm[y+perm[x]]/255.0, 0);
+    return new Grad( perm[x + perm[y]] / 255.0, perm[y + perm[x]] / 255.0, 0);
   }
 
   //worley noise is a type of per-pixel noise where the color of each pixel is essentially the distance to the closest random 
@@ -401,15 +401,15 @@
     var o, r, d;
     for (var i = -1; i <= 1; i++) {
       for (var j = -1; j <= 1; j++) {
-        o = hash(i+px, j+py);
-        r = new Grad(i+o.x-fx, j+o.y-fy, 0);
-        d = (r.x*r.x+r.y*r.y);
+        o = hash(i + px, j + py);
+        r = new Grad(i + o.x - fx, j + o.y - fy, 0);
+        d = (r.x * r.x + r.y * r.y);
         if (d < md) {
           md = d;
         }
       }
     }
-    return 1-md;
+    return 1 - md;
   };
 
   //fractal version of worley noise
