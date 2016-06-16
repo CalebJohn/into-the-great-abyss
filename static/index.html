@@ -6,13 +6,13 @@
         <style type="text/css">
             body { margin:0; }
         </style>
-        <script src="assets/phaser.min.js"></script>
     </head>
     <body>
     <script>
         var supportsWebGL = ( function () { try { return !! window.WebGLRenderingContext && !! document.createElement( 'canvas' ).  getContext( 'experimental-webgl' ); } catch( e ) { return false; } } )();
         if(supportsWebGL){
-            document.write("<script src=\"src/main.js\"><\/script>");
+            document.write("<script src=\"scripts/phaser.min.js\"><\/script>");
+            document.write("<script src=\"scripts/game.js\"><\/script>");
         } else {
             document.write("You have not enabled WebGL :( You can't run the game");
         }

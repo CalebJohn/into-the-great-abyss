@@ -68,3 +68,4 @@ ButtonGroup.prototype.makeButton = function(ctx, btn) {
     this.add(button);
 };
 
+export default ButtonGroup;

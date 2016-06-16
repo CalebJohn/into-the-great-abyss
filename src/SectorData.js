@@ -31,3 +31,5 @@ SectorData.prototype = {
     console.log(btn.text);
   }
 };
+
+export default SectorData;

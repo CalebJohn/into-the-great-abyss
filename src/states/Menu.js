@@ -1,62 +1,56 @@
 /* globals ButtonGroup */
 //In later changes I may want to create a list of buttons rather than store each individually
 //It may be nice to have something more dynamic
-var Menu = function () {
-  this.backDropFilter = null;
-  this.backDrop = null;
-  this.titleText = null;
-  this.mainBtns = null;
-  this.optionBtns = null;
-  this.menuState = 'MAIN';
-};
 
-Menu.prototype = {
-  preload: function() {
-    game.load.shader('menuShader', 'assets/filters/shaders/menuShader.frag');
-    game.load.script('sunset', 'assets/filters/menuFilter.js');
-    game.load.script('buttonGroup', 'src/ButtonGroup.js');
-  },
+import sunset from 'filters/menuFilter.js';
+import ButtonGroup from 'ButtonGroup.js';
 
-  create: function() {
-    game.stage.backgroundColor = '#FFFFFF';
-    game.scale.fullScreenScaleMode = Phaser.ScaleManager.NO_SCALE;
+class Menu extends Phaser.State {
+
+  preload() {
+    window.game.load.shader('menuShader', 'shaders/menuShader.frag');
+  }
+
+  create() {
+    window.game.stage.backgroundColor = '#FFFFFF';
+    window.game.scale.fullScreenScaleMode = Phaser.ScaleManager.NO_SCALE;
     /*Apply filter to image in background*/
-    var bdbm = game.make.bitmapData(game.width, game.height); //have to use this so the image has a texture
-    this.backDrop = game.add.image(0, game.height*0.5, bdbm);
+    var bdbm = window.game.make.bitmapData(window.game.width, window.game.height); //have to use this so the image has a texture
+    this.backDrop = window.game.add.image(0, window.game.height*0.5, bdbm);
     this.backDrop.anchor.setTo(0.0, 0.5);
-    this.backDrop.width = game.width;
-    this.backDrop.height = game.height;
+    this.backDrop.width = window.game.width;
+    this.backDrop.height = window.game.height;
     this.backDrop.scale.y = -1; //when screenshot is taken it will be upside down so we flip it
-    this.backDropFilter = game.add.filter('sunset', game.width, game.height);
+    this.backDropFilter = window.game.add.filter('sunset', window.game.width, window.game.height);
     this.backDrop.filters = [this.backDropFilter];
     
     //draw title text
-    this.titleText = game.add.text((game.width * 0.5 - 64) * 0.5, (game.height * 0.5 - 70) * 0.61, 'POTENTIAL FORTNIGHT');
+    this.titleText = window.game.add.text((window.game.width * 0.5 - 64) * 0.5, (window.game.height * 0.5 - 70) * 0.61, 'POTENTIAL FORTNIGHT');
     this.titleText.anchor.setTo(0.5, 0.5);
     this.titleText.fontSize = 30;
     this.titleText.fill = 'white';
     this.titleText.alpha = 0.5;
     // make menu buttons
     this.drawMain();
-  },
+  }
 
-  update: function() {
-    this.backDropFilter.update(game.input.activePointer);
-  },
+  update() {
+    this.backDropFilter.update(window.game.input.activePointer);
+  }
 
-  render: function() {
+  render() {
     
-  },
+  }
 
-  drawMain: function() {
+  drawMain() {
     //make buttons and initialize their functions
     this.mainBtns = new ButtonGroup(this,
-                                    game.world.centerX, game.world.centerY,
+                                    window.game.world.centerX, window.game.world.centerY,
                                     [{name: 'START',
                                       x: 0,
                                       y: -20,
                                       anchor: [0.5, 0.5],
-                                      callback: function() {game.state.start('Cutscene');}},
+                                      callback() {window.game.state.start('Cutscene');}},
                                      {name: 'OPTIONS',
                                       x: 0,
                                       y: 20,
@@ -64,19 +58,19 @@ Menu.prototype = {
                                       callback: this.optionMenuToggle}]);
 
     this.optionBtns = new ButtonGroup(this,
-                                      game.world.centerX, game.world.centerY,
+                                      window.game.world.centerX, window.game.world.centerY,
                                       [{name: 'FULLSCREEN',
                                         x: 0,
                                         y: -60,
                                         anchor: [0.5, 0.5],
                                         callback: this.fullscreenToggle},
-                                       {name: 'SOUND: ' + (game.sound.mute ? 'OFF':'ON'),
+                                       {name: 'SOUND: ' + (window.game.sound.mute ? 'OFF':'ON'),
                                         x: 0,
                                         y: -20,
                                         anchor: [0.5, 0.5],
                                         callback: function(target) {
-                                          game.sound.mute = game.sound.mute === false;
-                                          target.setText('SOUND: '+ (game.sound.mute ? 'OFF':'ON'));
+                                          window.game.sound.mute = window.game.sound.mute === false;
+                                          target.setText('SOUND: '+ (window.game.sound.mute ? 'OFF':'ON'));
                                         }},
                                        {name: 'SEED: ',
                                         x: 0,
@@ -88,23 +82,23 @@ Menu.prototype = {
                                         anchor: [0.5, 0.5],
                                         callback: this.optionMenuToggle}]);
     this.optionBtns.visible = false;
-  },
+  }
 
   //functonality for the fullscreen button
-  fullscreenToggle: function() {
-    if (game.scale.isFullScreen) {
+  fullscreenToggle() {
+    if (window.game.scale.isFullScreen) {
       this.resizeGame(1000, 600);
-      game.scale.stopFullScreen();
+      window.game.scale.stopFullScreen();
     } else {
       this.resizeGame(screen.width, screen.height);
-      game.scale.startFullScreen();   
+      window.game.scale.startFullScreen();   
     }
-  },
+  }
 
   //toggles between regular menu and options menu
-  optionMenuToggle: function() {
+  optionMenuToggle() {
     if (this.menuState === 'MAIN') {
-      this.backDropFilter.update({y: game.height*Math.random()}); //put sun at random location
+      this.backDropFilter.update({y: window.game.height*Math.random()}); //put sun at random location
       this.backDrop.setTexture(this.backDrop.generateTexture()); //then take a snapshot and save it as the texture
       this.backDrop.filters = null; //then turn off the filter so it isnt running anymore
 
@@ -118,17 +112,19 @@ Menu.prototype = {
       this.optionBtns.visible = false;
       this.menuState = 'MAIN';
     }
-  },
+  }
 
-  // called in order to resize the game window, used with fullscreen
-  resizeGame: function(w, h) {
-    game.scale.setGameSize(w, h);
-    this.backDropFilter.setResolution(game.width, game.height);
-    this.backDrop.width = game.width;
-    this.backDrop.height = game.height;
-    this.titleText.position.setTo((game.width * 0.5 - 64) * 0.5, (game.height * 0.5 - 70) * 0.61);
+  // called in order to resize the window.game window, used with fullscreen
+  resizeGame(w, h) {
+    window.game.scale.setGameSize(w, h);
+    this.backDropFilter.setResolution(window.game.width, window.game.height);
+    this.backDrop.width = window.game.width;
+    this.backDrop.height = window.game.height;
+    this.titleText.position.setTo((window.game.width * 0.5 - 64) * 0.5, (window.game.height * 0.5 - 70) * 0.61);
 
-    this.mainBtns.position.setTo(game.world.centerX, game.world.centerY);
-    this.optionBtns.position.setTo(game.world.centerX, game.world.centerY);
+    this.mainBtns.position.setTo(window.game.world.centerX, window.game.world.centerY);
+    this.optionBtns.position.setTo(window.game.world.centerX, window.game.world.centerY);
   }
 };
+
+export default Menu

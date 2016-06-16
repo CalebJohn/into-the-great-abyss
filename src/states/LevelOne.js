@@ -1,4 +1,9 @@
 /* globals ButtonGroup, WorldMap, SceneGenerator */
+import WorldMap from 'WorldMap.js';
+import ButtonGroup from 'ButtonGroup.js';
+import SceneGenerator from 'SceneGenerator.js';
+import sceneFilter from 'filters/sceneFilter.js';
+
 var LevelOne = function () {
   this.baseBtns = null;
   this.map = null;
@@ -16,8 +21,7 @@ LevelOne.prototype = {
     this.backgroundImg.texture = PIXI.Texture.fromCanvas(game.cache.getCanvas('background'));
     this.backgroundImg.width = game.width;
     this.backgroundImg.height = game.height;
-    game.load.shader('sceneShader', 'assets/filters/shaders/sceneShader.frag');
-    game.load.script('sceneFilter', 'assets/filters/sceneFilter.js');
+    game.load.shader('sceneShader', 'shaders/sceneShader.frag');
     this.returnBtn = {name: 'Return to Map',
                       x: game.world.width + 10,
                       y: 10,
@@ -76,3 +80,5 @@ LevelOne.prototype = {
 
   }
 };
+
+export default LevelOne;

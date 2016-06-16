@@ -1,44 +1,47 @@
 /* globals SectorData, utils, noise */
+import noise from 'perlin.js';
+import utils from 'utils.js';
+import SectorData from 'SectorData.js';
 
-var PlanetData = function () {
-  this.sectors = [];
-  // Will be set in WorldGenerator
-  this.mapData = {canvas: null, ctx: null, imageData: null, data: null};
-  this.mapSize = 5;
-  this.width = game.width;
-  this.height = game.height;
-  this.border = 100;
-  this.landHue = null;
-  this.waterHue = null;
+class PlanetData {
+  constructor() {
+    this.sectors = [];
+    // Will be set in WorldGenerator
+    this.mapData = {canvas: null, ctx: null, imageData: null, data: null};
+    this.mapSize = 5;
+    this.width = game.width;
+    this.height = game.height;
+    this.border = 100;
+    this.landHue = null;
+    this.waterHue = null;
 
-  //when we generate higher level planet data we will use that to replace all the math.random() calls
-  this.randEffect = Math.pow(Math.random(), 2); //warping plus log
-  this.frequency = Math.pow(Math.random() * 0.1, 2) + 0.001;
-  this.rfrequency = Math.pow(Math.random() * 0.1, 2) + 0.001;//generate between 0.001 and 0.01 with weight towards a lower frequency
-  this.moisture = Math.random();
-  this.lod = 0.03 + 0.05 * Math.random() + (1 - this.moisture) * 0.05; //adjusted by moisture to help fake erosion
-  this.erodibility = Math.random(); //I may not keep this. It just makes the water erode the river valleys a little less to help alleviate the frequency of archipelagos
-  this.skew = 0.4 + Math.random()*0.6;
+    //when we generate higher level planet data we will use that to replace all the math.random() calls
+    this.randEffect = Math.pow(Math.random(), 2); //warping plus log
+    this.frequency = Math.pow(Math.random() * 0.1, 2) + 0.001;
+    this.rfrequency = Math.pow(Math.random() * 0.1, 2) + 0.001;//generate between 0.001 and 0.01 with weight towards a lower frequency
+    this.moisture = Math.random();
+    this.lod = 0.03 + 0.05 * Math.random() + (1 - this.moisture) * 0.05; //adjusted by moisture to help fake erosion
+    this.erodibility = Math.random(); //I may not keep this. It just makes the water erode the river valleys a little less to help alleviate the frequency of archipelagos
+    this.skew = 0.4 + Math.random()*0.6;
 
-  console.log("moisture level: " + this.moisture.toPrecision(3) +
-              "\nrandom effect: " + this.randEffect.toPrecision(3) +
-              "\nfrequency: " + this.frequency.toPrecision(3) +
-              "\nriver spacing: " + this.rfrequency.toPrecision(3) +
-              "\nerodibility: " + this.erodibility.toPrecision(3) +
-              "\nskew: " + this.skew.toPrecision(3) +
-              "\nlod: " + this.lod.toPrecision(3)
+    console.log("moisture level: " + this.moisture.toPrecision(3) +
+                "\nrandom effect: " + this.randEffect.toPrecision(3) +
+                "\nfrequency: " + this.frequency.toPrecision(3) +
+                "\nriver spacing: " + this.rfrequency.toPrecision(3) +
+                "\nerodibility: " + this.erodibility.toPrecision(3) +
+                "\nskew: " + this.skew.toPrecision(3) +
+                "\nlod: " + this.lod.toPrecision(3)
     );
-  };
+  }
 
-PlanetData.prototype = {
-  generateMap: function() {
+  generateMap() {
     // TODO: clean up formatting issues, add warp functions
     //this creates our base color for the land and water
     //once we generate material data we can use those to influence the color choice
     this.landHue = utils.palette(Math.random(), {bc: 150, f: 1, o: 0, a: 100}, {bc: 90, f: 2, o: 0, a: 90}, {bc: 75, f: 0.8, o: 0, a: 75});
     this.waterHue = utils.palette(Math.random(), {bc: 75, f: 0.5, o: 0, a: 75}, {bc: 128, f: 2, o: 0, a: 128}, {bc: 200, f: 1, o: 0, a: 55});
 
-    //this entire block is used to create a canvas element and initiate all 
+    //this entire block is used to create a canvas element and initiate all
     //its variables that we will need to access
     this.mapData.canvas = document.createElement("canvas");
     this.mapData.canvas.width = this.width;
@@ -68,7 +71,7 @@ PlanetData.prototype = {
         } else if (terrainHeight < low) {
           low = terrainHeight;
         }
-        
+
       }
     }
     //TODO: add texture to water
@@ -85,8 +88,8 @@ PlanetData.prototype = {
         //this block determines where the rivers are
         /*TODO: use an analytic derivitive to compute w rather than a logic block*/
         if (x > 1 && y > 1) {
-          if (((river >= rivers[x + 1][y] && river >= rivers[x - 1][y]) || 
-               (river >= rivers[x][y + 1] && river >= rivers[x][y - 1])) && 
+          if (((river >= rivers[x + 1][y] && river >= rivers[x - 1][y]) ||
+               (river >= rivers[x][y + 1] && river >= rivers[x][y - 1])) &&
                (river > (0.7 - this.moisture))) {
             w = peak - h;
           }
@@ -98,7 +101,7 @@ PlanetData.prototype = {
         //then between 0.3-0.6 there is a smooth gradient
         //and after it is purely land
         c = utils.mix(this.waterHue, riverColor, utils.smoothstep(waterLevel, waterLevel + 0.2 * this.moisture, h));
-        
+
         //calculate the normal at a given pixel
         //this allows us to cheaply shadow the terrain
         d = new Phaser.Point(h - buffer[x + 1][y], h - buffer[x][y + 1]);
@@ -118,7 +121,7 @@ PlanetData.prototype = {
         red = c.r * d.x;
         green = c.g * d.x;
         blue = c.b * d.x;
-        alpha = utils.smoothstep(0.0, this.border, Math.min(Math.min(x, this.mapData.canvas.width - x), 
+        alpha = utils.smoothstep(0.0, this.border, Math.min(Math.min(x, this.mapData.canvas.width - x),
                                                    Math.min(y, this.mapData.canvas.height - y))) * 255;
         i = 4 * (y * this.mapData.canvas.width + x);
         this.mapData.data[i] = red;
@@ -157,15 +160,15 @@ PlanetData.prototype = {
         this.sectors[x].push(new SectorData(type));
       }
     }
-  },
+  }
 
-  getSector: function(x, y) {
+  getSector(x, y) {
     return this.sectors[x][y];
-  },
+  }
 
   //this function is used to return a height at a given point
   //not completely accurate because river valleys are computed after the fact
-  heightmap: function(x, y) {
+  heightmap(x, y) {
     //this block initializes variables needed for the loop
     var lh = 0; //local height//height of individual octave
     var p = this.frequency;
@@ -198,9 +201,11 @@ PlanetData.prototype = {
       //this has the effect of smoothing out the overall heightmap at lower heights
       //we then adjust this effect based on the overall moisture level
       //this way planets lacking moisture do not look as eroded as those with lots of moisture
-      a *= (0.4 * (1 - this.moisture) + h * 0.5 * this.moisture); 
+      a *= (0.4 * (1 - this.moisture) + h * 0.5 * this.moisture);
     }
-    return Math.abs(h); // negative values mess up coloring 
+    return Math.abs(h); // negative values mess up coloring
   }
 
 };
+
+export default PlanetData;

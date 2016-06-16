@@ -97,3 +97,5 @@ var utils = {
     return Math.floor(t / r) * r;
   }
 };
+
+export default utils;
