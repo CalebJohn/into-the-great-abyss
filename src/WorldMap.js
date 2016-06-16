@@ -1,4 +1,8 @@
 /* globals ButtonGroup, planetData, noise, utils */
+import noise from 'perlin.js';
+import utils from 'utils.js';
+import ButtonGroup from 'ButtonGroup.js';
+
 var WorldMap = function (x, y, containerLevel) {
   Phaser.Group.call(this, game);
   this.sectorBtns = null;
@@ -174,3 +178,4 @@ WorldMap.prototype.cloudAlpha = function(button) {
   this.background.texture.baseTexture.dirty();
 };
 
+export default WorldMap;

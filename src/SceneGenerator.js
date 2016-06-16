@@ -29,4 +29,4 @@ SceneGenerator.prototype.remake = function() {
   this.inView.filters = [this.scene];
 };
 
-
+export default SceneGenerator;

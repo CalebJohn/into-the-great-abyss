@@ -1,4 +1,6 @@
 /* globals planetData, utils, noise */
+import noise from 'perlin.js';
+import utils from 'utils.js';
 
 var WorldGenerator = function () {
   this.isFinished = false;
@@ -42,3 +44,5 @@ WorldGenerator.prototype = {
     this.isFinished = true;
   }
 };
+
+export default WorldGenerator;
