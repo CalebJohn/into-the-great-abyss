@@ -1,4 +1,4 @@
-/* globals ButtonGroup, WorldMap, SceneGenerator */
+/* globals ButtonGroup, WorldMap, SceneGenerator, utils */
 var LevelOne = function () {
   this.baseBtns = null;
   this.map = null;
@@ -11,6 +11,7 @@ var LevelOne = function () {
 LevelOne.prototype = {
 
   preload: function() {
+    game.state.backgroundColor = '#000000';
     game.load.shader('sceneShader', 'assets/filters/shaders/sceneShader.frag');
     game.load.script('sceneFilter', 'assets/filters/sceneFilter.js');
     this.returnBtn = {name: 'Return to Map',
@@ -78,5 +79,3 @@ LevelOne.prototype = {
 
   }
 };
-    // game.stage.backgroundColor = '#444444';
-    game.stage.backgroundColor = '#000000';

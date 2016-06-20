@@ -1,4 +1,4 @@
-/* globals ButtonGroup */
+/* globals ButtonGroup, WorldGenerator, utils */
 //In later changes I may want to create a list of buttons rather than store each individually
 //It may be nice to have something more dynamic
 var Menu = function () {
@@ -7,10 +7,18 @@ var Menu = function () {
   this.titleText = null;
   this.mainBtns = null;
   this.optionBtns = null;
-  // this.sunPos = game.input.activePointer;
   this.sunPos = {y: game.height};
-  this.sunrise = true;
-  this.tween = null;
+  // true if the sun should follow the mouse
+  this.followMouse = false;
+  // Time it takes for the sun to rise (just before loading)
+  this.riseTime = 2000;
+  // Time it takes for the sun to lower before switching states
+  this.settingTime = 1500;
+  // This is how quickly the sun will follow the mouse
+  // a larger number will follow slower, see the update function
+  // for more information
+  this.followFactor = 20;
+
   this.menuState = 'MAIN';
 };
 
@@ -21,7 +29,6 @@ Menu.prototype = {
     game.load.script('buttonGroup', 'src/ButtonGroup.js');
 
     game.load.script('WorldGenerator', 'src/WorldGenerator.js'); 
-    // game.load.spritesheet('loadingImage', 'assets/loadingImage.png', 270, 90, 3);
     game.load.script('util', 'src/utils.js');
     game.load.script('sceneGenerator', 'src/SceneGenerator.js');
     game.load.script('noise', 'src/perlin.js');
@@ -52,30 +59,31 @@ Menu.prototype = {
     this.titleText.fontSize = 30;
     this.titleText.fill = 'white';
     this.titleText.alpha = 0.5;
-    // make menu buttons
+    // make menu buttons (They won't be visible yet)
     this.drawMain();
-
-    this.mainBtns.alpha = 0;
-    game.add.tween(this.mainBtns).to({alpha: 1},
-                                    2000,
-                                    Phaser.Easing.Linear.In,
-                                    true);
-    var tween = game.add.tween(this.sunPos).to({y: -50},
-                                                2000,
-                                                Phaser.Easing.Quadratic.In,
-                                                true);
-    tween.onComplete.add(function () {this.sunrise = false;}, this);
-
-    this.generator = new WorldGenerator();
-    tween.onComplete.add(this.generator.generateWorld, this.generator);
-    // utils.runInBackground(this.generator.generateWorld, this.generator);
+    // Initiate the sunrise
+    this.loadGame();
   },
 
   update: function() {
-    var delta = (game.input.activePointer.y - this.sunPos.y) / 20;
-    if (Math.abs(delta) > 1 && !this.sunrise) {
-      this.sunPos.y += delta;
+    // This is the mouse tracking code for the sun, it won't be called
+    // during sunrise or sunset
+    if (this.followMouse) {
+      // This is the amount to move the sun towards the mouse cursor
+      // because of the follow factor the movement of the sun towards
+      // the cursor will slow down as it approaches, the larger the factor
+      // the slower the sun will approach the cursor
+      var delta = (game.input.activePointer.y - this.sunPos.y) / this.followFactor;
+
+      // Only move the sun if the change would be more than 1 pixel
+      // this makes the sun settle into position more smoothly but it
+      // means that the sun can only settle within followFactor pixels
+      // of the mouse cursor
+      if (Math.abs(delta) > 1) {
+        this.sunPos.y += delta;
+      }
     }
+
     this.backDropFilter.update(this.sunPos);
   },
 
@@ -122,19 +130,44 @@ Menu.prototype = {
                                         y: 60,
                                         anchor: [0.5, 0.5],
                                         callback: this.optionMenuToggle}]);
+    
+    this.mainBtns.alpha = 0;
     this.optionBtns.visible = false;
   },
 
-  //plays a simple animation and switches to cutsence state
-  startGame: function() {
-    this.sunPos = {y: this.sunPos.y};
+  // Fades in the menu buttons and triggers a sunrise
+  loadGame: function() {
+    // Fade in the main game buttons
+    game.add.tween(this.mainBtns).to(
+        {alpha: 1},
+        this.riseTime,
+        Phaser.Easing.Linear.In,
+        true);
 
+    // Move the sun to the top of the screen
+    var tween = game.add.tween(this.sunPos).to(
+        {y: -50},
+        this.riseTime,
+        Phaser.Easing.Linear.In,
+        true);
+
+    // Setting sunrise to false triggers the sun to follow the mouse
+    // this is in the update code
+    tween.onComplete.add(function () {this.followMouse = true;}, this);
+
+    this.generator = new WorldGenerator();
+    tween.onComplete.add(this.generator.generateWorld, this.generator);
+  },
+
+  //plays a simple animation and switches to the main game state
+  startGame: function() {
+    this.followMouse = false;
     var tween = game.add.tween(this.sunPos).to({y: game.height},
-                                                1500,
+                                                this.settingTime,
                                                 Phaser.Easing.Exponential.Out,
                                                 true);
 
-    utils.transitions.fadeOut(game, 1500);
+    utils.transitions.fadeOut(game, this.settingTime);
 
     tween.onComplete.add(function() {game.state.start('LevelOne');}, this);
   },
