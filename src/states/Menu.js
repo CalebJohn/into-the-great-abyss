@@ -174,12 +174,12 @@ Menu.prototype = {
     // After the please wait has faded out, fade in the actual title
     tween.onComplete.add(function () {
       this.titleText.text = 'POTENTIAL FORTNIGHT';
-        var tween = game.add.tween(this.titleText).to(
+        game.add.tween(this.titleText).to(
             {alpha: 1},
             1000,
             Phaser.Easing.Linear.In,
             true);
-    }, this)
+    }, this);
   },
 
   //plays a simple animation and switches to the main game state
