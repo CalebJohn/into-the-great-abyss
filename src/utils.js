@@ -111,11 +111,11 @@ var utils = {
     },
 
     fadeOut : function(game, time) {
-      return this.fade(game, time, 0, 1, Phaser.Easing.Linear.Out);
+      return this.fade(game, time, 0, 1, Phaser.Easing.Quartic.Out);
     },
 
     fadeIn : function(game, time) {
-      return this.fade(game, time, 1, 0, Phaser.Easing.Linear.In);
+      return this.fade(game, time, 1, 0, Phaser.Easing.Quartic.In);
     }
   }
 };
