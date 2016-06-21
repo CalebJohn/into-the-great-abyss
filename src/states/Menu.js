@@ -54,15 +54,14 @@ Menu.prototype = {
     this.backDrop.filters = [this.backDropFilter];
     
     //draw title text
-    this.titleText = game.add.text((game.width * 0.5 - 64) * 0.5, (game.height * 0.5 - 70) * 0.61, 'POTENTIAL FORTNIGHT');
+    this.titleText = game.add.text((game.width * 0.5 - 64) * 0.5, (game.height * 0.5 - 70) * 0.61, 'PLEASE WAIT...');
     this.titleText.anchor.setTo(0.5, 0.5);
     this.titleText.fontSize = 30;
     this.titleText.fill = 'white';
     this.titleText.alpha = 0.5;
     // make menu buttons (They won't be visible yet)
     this.drawMain();
-    // Initiate the sunrise
-    this.loadGame();
+    this.initiateSunrise();
   },
 
   update: function() {
@@ -132,36 +131,66 @@ Menu.prototype = {
                                         callback: this.optionMenuToggle}]);
     
     this.mainBtns.alpha = 0;
+    this.mainBtns.visible = false;
     this.optionBtns.visible = false;
   },
 
-  // Fades in the menu buttons and triggers a sunrise
-  loadGame: function() {
-    // Fade in the main game buttons
-    game.add.tween(this.mainBtns).to(
-        {alpha: 1},
-        this.riseTime,
-        Phaser.Easing.Linear.In,
-        true);
-
+  // Triggers a sunrise
+  initiateSunrise: function() {
     // Move the sun to the top of the screen
+    // 50pixels was determined to be enough to hide the sun off screen
     var tween = game.add.tween(this.sunPos).to(
         {y: -50},
         this.riseTime,
         Phaser.Easing.Linear.In,
         true);
 
-    // Setting sunrise to false triggers the sun to follow the mouse
-    // this is in the update code
-    tween.onComplete.add(function () {this.followMouse = true;}, this);
+    tween.onComplete.add(function () {this.loadGame();}, this);
+  },
 
+  loadGame: function() {
     this.generator = new WorldGenerator();
-    tween.onComplete.add(this.generator.generateWorld, this.generator);
+    // tween.onComplete.add(this.generator.generateWorld, this.generator);
+    this.generator.generateWorld();
+
+    // Fade in the main game buttons
+    this.mainBtns.visible = true;
+    game.add.tween(this.mainBtns).to(
+        {alpha: 1},
+        500,
+        Phaser.Easing.Linear.In,
+        true);
+
+    // Fades out the please wait message
+    var tween = game.add.tween(this.titleText).to(
+        {alpha: 0},
+        200,
+        Phaser.Easing.Linear.In,
+        true);
+    // Setting followMouse to true triggers the sun to follow the mouse
+    // this is in the update code
+    this.followMouse = true;
+
+    // After the please wait has faded out, fade in the actual title
+    tween.onComplete.add(function () {
+      this.titleText.text = 'POTENTIAL FORTNIGHT';
+        var tween = game.add.tween(this.titleText).to(
+            {alpha: 1},
+            1000,
+            Phaser.Easing.Linear.In,
+            true);
+    }, this)
   },
 
   //plays a simple animation and switches to the main game state
   startGame: function() {
     this.followMouse = false;
+    // Hide all text
+    this.titleText.visible = false;
+    this.mainBtns.visible = false;
+    this.optionBtns.visible = false;
+
+    // The sun will move down and off the screen
     var tween = game.add.tween(this.sunPos).to({y: game.height},
                                                 this.settingTime,
                                                 Phaser.Easing.Exponential.Out,
