@@ -13,7 +13,7 @@ var Menu = function () {
   // Time it takes for the sun to rise (just before loading)
   this.riseTime = 2000;
   // Time it takes for the sun to lower before switching states
-  this.settingTime = 1500;
+  this.settingTime = 5000;
   // This is how quickly the sun will follow the mouse
   // a larger number will follow slower, see the update function
   // for more information
