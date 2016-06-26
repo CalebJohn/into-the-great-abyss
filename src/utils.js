@@ -95,5 +95,27 @@ var utils = {
   //rounds value t to the nearest multiple of r
   roundTo : function(t, r) {
     return Math.floor(t / r) * r;
+  },
+
+  transitions : {
+    fade : function(game, time, from, to, fun) {
+      var filter = game.add.bitmapData(game.width, game.height);
+      filter.context.fillStyle = "#000000";
+      filter.context.fillRect(0, 0, game.width, game.height); 
+      var sprite = game.add.sprite(0, 0, filter);
+      sprite.alpha = from;
+      return game.add.tween(sprite).to({alpha: to},
+                                       time,
+                                       fun,
+                                       true);
+    },
+
+    fadeOut : function(game, time) {
+      return this.fade(game, time, 0, 1, Phaser.Easing.Quartic.Out);
+    },
+
+    fadeIn : function(game, time) {
+      return this.fade(game, time, 1, 0, Phaser.Easing.Quartic.In);
+    }
   }
 };
