@@ -25,9 +25,13 @@ ButtonGroup.prototype.makeButton = function(ctx, btn) {
     var downAlpha = btn.downAlpha;
     var upAlpha = btn.upAlpha;
     var overAlpha = btn.overAlpha;
+    var active = btn.active;
+    var faded = btn.faded;
     if (downAlpha == null) {downAlpha = 0.8;}
     if (upAlpha == null) {upAlpha = 1;}
     if (overAlpha == null) {overAlpha = 0.5;}
+    if (active == null) {active = false;}
+    if (faded == null) {faded = false;}
 
     var style = btn.style || {fontSize: size,
                               fill: 'white'};
@@ -56,6 +60,8 @@ ButtonGroup.prototype.makeButton = function(ctx, btn) {
     button.events.onInputOver.add(function(target) {target.alpha = target.overAlpha;});
     button.events.onInputOut.add(function(target) {target.alpha = target.upAlpha;});
 
+    button.active = active;
+    button.faded = faded;
     // txt is referenced using a closure
     button.setText = function(text) {txt.setText(text); this.text = text;};
 

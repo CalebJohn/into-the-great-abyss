@@ -1,4 +1,4 @@
-/* globals ButtonGroup, planetData */
+/* globals ButtonGroup, planetData, noise, utils */
 var WorldMap = function (x, y, containerLevel) {
   Phaser.Group.call(this, game);
   this.sectorBtns = null;
@@ -6,14 +6,16 @@ var WorldMap = function (x, y, containerLevel) {
 
   // These are the default grid size and button sizes
   this.size = planetData.mapSize;
-  this.btnWidth = planetData.width / this.size;
-  this.btnHeight = planetData.height / this.size;
+  this.btnWidth = (planetData.width - planetData.border * 2 + 5) / this.size;
+  this.btnHeight = (planetData.height - planetData.border * 2 + 5) / this.size;
 
   this.visibleAlpha = 0.4;
   this.hiddenAlpha = 0.9;
   this.peakAlpha = 0.8;
 
-  this.position.setTo(x - this.size * this.btnWidth / 2, y - this.size * this.btnHeight / 2); // Can't set an anchor
+  this.background = null;
+
+  this.position.setTo(planetData.border, planetData.border);
   this.create();
 };
 
@@ -21,22 +23,34 @@ WorldMap.prototype = Object.create(Phaser.Group.prototype);
 WorldMap.prototype.constructor = WorldMap;
 
 WorldMap.prototype.selected = function(btn) {
-  if (btn.upAlpha === this.visibleAlpha || btn.upAlpha === 0) {
-    // Make button transparent so the map can be seen
-    btn.upAlpha = 0;
-    btn.overAlpha = 0;
-    btn.downAlpha = this.visibleAlpha;
+  if (btn.faded === true) {
+    //only update colors if not done before
+    if (btn.active === false) {
 
-    // Check all buttons in the map, and lighten neighbours
-    for (var i = 0; i < this.sectorBtns.length; i++) {
-      var oBtn = this.sectorBtns.getChildAt(i);
+      this.setAlpha(btn);
+      btn.active = true;
 
-      if (Math.abs(oBtn.x - btn.x) <= this.btnWidth &&
-          Math.abs(oBtn.y - btn.y) <= this.btnHeight &&
-          oBtn.upAlpha > 0) {
-        oBtn.upAlpha = this.visibleAlpha;
-        oBtn.overAlpha = this.visibleAlpha;
-        oBtn.alpha = oBtn.upAlpha;
+      //get position in terms of array units
+      var bi = this.sectorBtns.getChildIndex(btn);
+      var bPosx = Math.floor(bi / this.size);
+      var bPosy = bi % this.size;
+      // Check all buttons in the map, and lighten neighbours
+      for (var i = 0; i < this.sectorBtns.length; i++) {
+        var sectorBtn = this.sectorBtns.getChildAt(i);
+        var sectorPosx = Math.floor(i / this.size);
+        var sectorPosy = i % this.size;
+        var dx = sectorPosx - bPosx;
+        var dy = sectorPosy - bPosy;
+
+        if (Math.abs(dx) <= 1 &&
+            Math.abs(dy) <= 1 &&
+            sectorBtn.active === false) {
+          //unfortunately these both need to update every time
+          //otherwise they dont blend properly
+          this.blendAlpha(sectorBtn, dx, dy);
+          this.cloudAlpha(sectorBtn);
+          sectorBtn.faded = true;
+        }
       }
     }
     var indices = this.sectorIndex(btn);
@@ -61,18 +75,102 @@ WorldMap.prototype.create = function() {
                  y: y * this.btnHeight,
                  imgSize: [this.btnWidth, this.btnHeight],
                  callback: this.selected,
-                 upAlpha: this.hiddenAlpha,
-                 overAlpha: this.hiddenAlpha,
-                 downAlpha: this.peakAlpha});
+                 upAlpha: 0,
+                 overAlpha: 0,
+                 downAlpha: this.visibleAlpha, //leaving this in to show which sector was clicked//TODO: make nicer / add feedback on hover
+                 active: false,
+                 faded: false});
     }
   }
-  var startBtn = btns[Math.floor(Math.random() * btns.length)];
-  startBtn.upAlpha = this.visibleAlpha;
-  startBtn.overAlpha = this.visibleAlpha;
 
-  var bkrd = new Phaser.Sprite(game, 0, 0, planetData.mapData);
+  var startBtn = btns[Math.floor(Math.random() * btns.length)];
+  startBtn.faded = true;
+
+  this.background = game.add.sprite(-this.position.x, -this.position.y);
+  this.background.texture = PIXI.Texture.fromCanvas(planetData.mapData.canvas);
+
+  this.setAlpha(startBtn);
+  this.cloudAlpha(startBtn);
 
   this.sectorBtns = new ButtonGroup(this, 0, 0, btns);
-  this.add(bkrd);
+  this.add(this.background);
   this.add(this.sectorBtns);
 };
+
+//rename this to something more appropriate
+WorldMap.prototype.setAlpha = function(button, alpha) {
+  var k;
+  var x = button.x + this.position.x;
+  var y = button.y + this.position.y;
+  var w = this.btnWidth;
+  var h = this.btnHeight;
+  var alpha = alpha || 255;
+  for (var i = 0; i < w; i++) {
+    for (var j = 0; j < h; j++) {
+      k = 4 * ((j + y) * planetData.mapData.canvas.width + (i + x));
+      if (x + i < planetData.mapData.canvas.width && y + j < planetData.mapData.canvas.height) {
+        planetData.mapData.data[k + 3] = alpha; 
+      }
+    }
+  }
+
+  planetData.mapData.ctx.putImageData(planetData.mapData.imageData, 0, 0);
+  this.background.texture.baseTexture.dirty();
+};
+
+WorldMap.prototype.blendAlpha = function(button, dx, dy) {
+  var k, a;
+  var x = button.x + this.position.x;
+  var y = button.y + this.position.y;
+  var w = this.btnWidth;
+  var h = this.btnHeight;
+  var fade = 1.0;
+  for (var i = 0; i < w; i++) {
+    for (var j = 0; j < h; j++) {
+      k = 4 * ((j + y) * planetData.mapData.canvas.width + (i + x));
+      if (x + i < planetData.mapData.canvas.width && y + j < planetData.mapData.canvas.height) {
+
+        //so the fade is calculated correctly
+        fade = 1.0;
+        if (dx < 0) {
+          fade *= (i / w);
+        } else if (dx > 0) {
+          fade *= (1 - i / w);
+        }
+        if (dy < 0) {
+          fade *= (j / h);
+        } else if (dy > 0) {
+          fade *= (1 - j / h);
+        }
+        fade = fade * fade * fade * (fade * (6 * fade - 15) + 10); //perlins quintic interpolation
+        a = planetData.mapData.data[k + 3];
+        planetData.mapData.data[k + 3] = utils.lerp(0, 254, Math.max(fade, a / 254));
+      }
+    }
+  }
+
+  planetData.mapData.ctx.putImageData(planetData.mapData.imageData, 0, 0);
+  this.background.texture.baseTexture.dirty();
+};
+
+WorldMap.prototype.cloudAlpha = function(button) {
+  var k, a;
+  var x = button.x + this.position.x;
+  var y = button.y + this.position.y;
+  var w = this.btnWidth;
+  var h = this.btnHeight;
+  for (var i = 0; i < w; i++) {
+    for (var j = 0; j < h; j++) {
+      k = 4 * ((j + y) * planetData.mapData.canvas.width + (i + x));
+      if (x + i < planetData.mapData.canvas.width && y + j < planetData.mapData.canvas.height) {
+        a = planetData.mapData.data[k + 3];
+        var c = Math.max(0, a - utils.lerp(0, Math.min(a, 255 - a), utils.smoothstep(0.4, 0.7, 1 - noise.fbm2((x + i) * 0.01, (y + j) * 0.01, 4))));
+        planetData.mapData.data[k+3] = c;
+      }
+    }
+  }
+
+  planetData.mapData.ctx.putImageData(planetData.mapData.imageData, 0, 0);
+  this.background.texture.baseTexture.dirty();
+};
+
