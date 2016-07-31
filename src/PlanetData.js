@@ -17,8 +17,9 @@ var PlanetData = function () {
   this.rfrequency = Math.pow(Math.random() * 0.1, 2) + 0.001;//generate between 0.001 and 0.01 with weight towards a lower frequency
   this.erodibility = Math.random(); //I may not keep this. It just makes the water erode the river valleys a little less to help alleviate the frequency of archipelagos
   this.skew = 0.4 + Math.random()*0.6;
-  this.altitude = 1.0;//Math.random(); //effects the variance in altidude of the map, currently it is a scaling factor, this can change
-  this.moisture = Math.random();
+  this.altitudeVariance = Math.random(); //effects the variance in altidude 
+  this.altitude = 0.0;
+  this.moisture = Math.random() * this.altitudeVariance;
   this.lod = 0.03 + 0.05 * Math.random() + (1 - this.moisture) * 0.05; //adjusted by moisture to help fake erosion
 
   console.log("moisture level: " + this.moisture.toPrecision(3) +
@@ -28,7 +29,7 @@ var PlanetData = function () {
               "\nerodibility: " + this.erodibility.toPrecision(3) +
               "\nskew: " + this.skew.toPrecision(3) +
               "\nlod: " + this.lod.toPrecision(3) +
-              "\naltitude: " + this.altitude.toPrecision(3)
+              "\naltitudeVariance: " + this.altitudeVariance.toPrecision(3)
     );
   };
 
@@ -62,6 +63,7 @@ PlanetData.prototype = {
       buffer.push([]);
       rivers.push([]);
       for (var y = 0; y < this.mapData.canvas.height; y++) {
+        this.altitude = (noise.simplex2(x*0.002, y*0.002)*0.5+0.5)*this.altitudeVariance; //add freq scaling
         terrainHeight = this.heightmap(x * this.skew, y);
         river = 1 - noise.worley2(x * 25 * this.rfrequency + terrainHeight * 3, y * 25 * this.rfrequency + terrainHeight * 3);//curve the river based on height
         rivers[x].push(river);
@@ -105,8 +107,9 @@ PlanetData.prototype = {
         
         //calculate the normal at a given pixel
         //this allows us to cheaply shadow the terrain
-        d = new Phaser.Point(h - buffer[x + 1][y], h - buffer[x][y + 1]);
-        d = d.normalize();
+        d = {x: h - buffer[x + 1][y], y: 0.002, z: h - buffer[x][y + 1]};
+        var dlen = Math.sqrt(d.x*d.x+d.y*d.y+d.z*d.z);
+        d = {x: d.x/dlen, y: d.y/dlen, z: d.z/dlen};
         //map our normal to the range 0-1
         d.x = 0.5 * (d.x + 1);
         //this removes the normal from the water area so we only see it on land
@@ -176,7 +179,7 @@ PlanetData.prototype = {
     var p = this.frequency;
     var s = 1 / 6; //scaling factor for LOD
     var px = x, py = y;
-    var a = (0.75 + 0.15 * noise.simplex2(px * p, py * p)); //Use noise to initilize amplitude in order to create more variation
+    var a = (0.75 + 0.15 * noise.simplex2(px * p, py * p)) * this.altitude; //Use noise to initilize amplitude in order to create more variation
     var h = 0.0; //initial total height value
     var r = [1.212, 0.656 - this.randEffect * 0.3, -0.856 + this.randEffect * 0.3, 1.537]; //rotation matrix for adding interesting effects to frequency calculation
 
