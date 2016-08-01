@@ -14,6 +14,8 @@ LevelOne.prototype = {
     game.state.backgroundColor = '#000000';
     game.load.shader('sceneShader', 'assets/filters/shaders/sceneShader.frag');
     game.load.script('sceneFilter', 'assets/filters/sceneFilter.js');
+    game.load.script('BlurX', 'assets/filters/BlurX.js');
+    game.load.script('BlurY', 'assets/filters/BlurY.js');
     this.returnBtn = {name: 'Return to Map',
                       x: game.world.width + 10,
                       y: 10,
@@ -25,7 +27,7 @@ LevelOne.prototype = {
                       callback: this.drawScene};
   },
 
-  // TODO : This needs to be re-written to not destroy the buttons evertime
+  // TODO : This needs to be re-written to not destroy the buttons everytime
   updateButtons: function(sector) {
     var children = this.baseBtns.children;
     for (var i = 0; i < children.length; i++) {
@@ -49,10 +51,15 @@ LevelOne.prototype = {
   
   drawScene: function() {
     if (!this.scene.visible) {
+      var blurX = game.add.filter('BlurX');
+      var blurY = game.add.filter('BlurY');
+
+      this.backgroundImg.filters = [blurX, blurY];
       this.scene.remake();
       this.scene.visible = true;
     } else {
       this.scene.visible = false;
+      this.backgroundImg.filters = [];
     }
   },
 
