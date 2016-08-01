@@ -80,7 +80,6 @@ PlanetData.prototype = {
       }
     }
 
-    console.log("peak: "+peak+" low: "+low);
     //TODO: add texture to water
     //Here we will take the height data and convert it to colors
     var alpha, red, green, blue, h, c, i, riverColor, d;
