@@ -17,11 +17,11 @@ var PlanetData = function () {
   this.rFrequency = Math.pow(Math.random() * 0.1, 2) + 0.001;//generate between 0.001 and 0.01 with weight towards a lower frequency//river frequency
   this.erodibility = Math.random(); //I may not keep this. It just makes the water erode the river valleys a little less to help alleviate the frequency of archipelagos
   this.skew = 0.4 + Math.random() * 0.6;
-  this.aVariance = Math.random() * 0.9 + 0.1; //effects the variance in altitude 
+  this.aVariance = Math.sqrt(Math.random() * 0.8 + 0.2); //effects the variance in altitude 
   this.aFrequency = Math.random() * 0.005 + 0.0005; //frequency of amplitude damping
   this.aSkew = Math.random() > 0.5? Math.random() : 1.0 + Math.random() * 3.0; //skew towards lower or higher values
   this.altitude = 0.0;
-  this.moisture = Math.random() * 0.8 * this.aVariance;
+  this.moisture = Math.random() * 0.6 * this.aVariance;
   this.lod = 0.03 + 0.05 * Math.random() + (1 - this.moisture) * 0.05; //adjusted by moisture to help fake erosion
 
   console.log("moisture level: " + this.moisture.toPrecision(3) +
@@ -64,11 +64,11 @@ PlanetData.prototype = {
       buffer.push([]);
       rivers.push([]);
       for (var y = 0; y < this.mapData.canvas.height; y++) {
-        this.altitude = Math.pow((noise.simplex2(x * this.aFrequency, y * this.aFrequency) * 0.5 + 0.5), this.aSkew) * this.aVariance;
+        this.altitude = 0.2 + 0.8 * Math.pow((noise.simplex2(x * this.aFrequency, y * this.aFrequency) * 0.5 + 0.5), this.aSkew) * this.aVariance;
         terrainHeight = this.heightmap(x * this.skew, y) * this.altitude;
         river = 1 - noise.worley2(x * 25 * this.rFrequency + terrainHeight * 3, y * 25 * this.rFrequency + terrainHeight * 3);//curve the river based on height
         rivers[x].push(river);
-        terrainHeight = terrainHeight - river * 0.8 * this.erodibility * (this.altitude - terrainHeight) * this.moisture;
+        terrainHeight = terrainHeight - (river * 0.8 * this.erodibility * (this.altitude - terrainHeight) * this.moisture * this.altitude);
         buffer[x].push(terrainHeight);//decrease height around rivers
 
         if (terrainHeight > peak) {
@@ -82,8 +82,8 @@ PlanetData.prototype = {
 
     //TODO: add texture to water
     //Here we will take the height data and convert it to colors
-    var alpha, red, green, blue, h, c, i, riverColor, d;
-    var waterShade1, waterShade2, waterShadeLerp;
+    var alpha, red, green, blue, h, c, i, riverColor, d, rd;
+    var waterShade1, waterShade2;
     var waterLevel = utils.lerp(low, peak, utils.smoothstep(low, peak, this.moisture) * 0.3);
     //point at which water is not shaded at all
     waterShade1 = waterLevel + 0.1 * this.moisture * (peak - low);
@@ -105,13 +105,16 @@ PlanetData.prototype = {
             w = peak - h;
           }
         }
-        //determines what the color of the river will be so that they can fade in towards sea level
-        riverColor = utils.mix(this.landHue, this.waterHue, utils.smoothstep(0, peak - waterLevel, w));
-        //This takes the height and maps the land or water color to it
-        //the smoothstep means that below 0.3 is water
-        //then between 0.3-0.6 there is a smooth gradient
-        //and after it is purely land
-        c = utils.mix(this.waterHue, riverColor, utils.smoothstep(waterLevel, waterLevel + 0.2 * this.moisture * (peak - low), h));
+        
+        //rough slope
+        if (x > 4 && x < buffer.length - 4 && y > 4 && y < buffer[x].length - 4) {
+          rd = {x: h - buffer[x + 4][y], y: 0.008, z: h - buffer[x][y + 4]};
+          var rdlen = Math.sqrt(rd.x * rd.x + rd.y * rd.y + rd.z * rd.z);
+          rd = {x: rd.x / rdlen, y: rd.y / rdlen, z: rd.z / rdlen};
+          rd.x = 0.5 * rd.x + 0.5;
+        } else {
+          rd = {x: 1.0, y: 1.0, z: 1.0};
+        }
         
         //calculate the normal at a given pixel
         //this allows us to cheaply shadow the terrain
@@ -119,14 +122,23 @@ PlanetData.prototype = {
         var dlen = Math.sqrt(d.x * d.x + d.y * d.y + d.z * d.z);
         d = {x: d.x / dlen, y: d.y / dlen, z: d.z / dlen};
         //map our normal to the range 0-1
-        d.x = 0.5 * (d.x + 1);
+        d.x = 0.5 * d.x + 0.5;
+        d.x = Math.min(d.x, rd.x);
         //this removes the normal from the water area so we only see it on land
         
         //interpolation factor so water isnt treated like land with shading
-        //the subtraction makes sure the rivers receive no shading
-        waterShadeLerp = h - w * 0.5 * this.moisture;
-        d.x = utils.lerp(1, d.x, utils.smoothstep(waterShade1, waterShade2, waterShadeLerp));
+        d.x = utils.lerp(1.0, d.x, utils.smoothstep(waterShade1, waterShade2, h));
+
+        //determines what the color of the river will be so that they can fade in towards sea level
+        riverColor = utils.mix(this.landHue, this.waterHue, utils.smoothstep(0.0, peak - waterLevel + rd.y, w));
+        //This takes the height and maps the land or water color to it
+        //the smoothstep means that below 0.3 is water
+        //then between 0.3-0.6 there is a smooth gradient
+        //and after it is purely land
+        c = utils.mix(this.waterHue, riverColor, utils.smoothstep(waterLevel, waterLevel + 0.2 * this.moisture * (peak - low), h));
+
         //multiply the shadow shading by individual colors and apply directly to canvas pixel buffer
+        //d.x *= 1 + (Math.random()*d.x);
         red = c.r * d.x;
         green = c.g * d.x;
         blue = c.b * d.x;
@@ -213,6 +225,7 @@ PlanetData.prototype = {
       //this way planets lacking moisture do not look as eroded as those with lots of moisture
       a *= (0.4 * (1 - this.moisture) + h * 0.5 * this.moisture); 
       a *= utils.lerp(0.5, 1.0, this.altitude);
+
     }
     return Math.abs(h); // negative values mess up coloring 
   }
