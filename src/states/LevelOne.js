@@ -6,6 +6,7 @@ var LevelOne = function () {
   this.sceneBtn = null;
   this.scene = null;
   this.backgroundImg = null;
+
 };
 
 LevelOne.prototype = {
@@ -31,16 +32,15 @@ LevelOne.prototype = {
   updateButtons: function(sector) {
     var children = this.baseBtns.children;
     for (var i = 0; i < children.length; i++) {
-      if ((children[i] != this.map)&&(children[i] != this.scene)) {
+      if ((children[i] != this.map)) {
         children[i].destroy();
       }
     }
+
     this.baseBtns = new ButtonGroup(this, 0, 0, sector.buttons);
-    this.baseBtns.add(this.scene);
     this.baseBtns.makeButton(this, this.returnBtn);
     this.baseBtns.makeButton(this, this.sceneBtn);
     this.baseBtns.add(this.map);
-    
   },
 
   toggleView: function() {
@@ -48,18 +48,24 @@ LevelOne.prototype = {
 
     game.add.tween(this.baseBtns).to({x: groupPos}, 700, Phaser.Easing.Quadratic.In, true);
   },
-  
+
   drawScene: function() {
     if (!this.scene.visible) {
       var blurX = game.add.filter('BlurX');
       var blurY = game.add.filter('BlurY');
 
-      this.backgroundImg.filters = [blurX, blurY];
+      this.backgroundImg.filters = [blurX];//could add blurY both look cool
+      this.baseBtns.filters = [blurX];
       this.scene.remake();
+      game.world.bringToTop(this.scene);
       this.scene.visible = true;
+      this.baseBtns.toggleFreeze(this.sceneBtn);
     } else {
       this.scene.visible = false;
-      this.backgroundImg.filters = [];
+      this.backgroundImg.filters = null;
+      this.baseBtns.toggleFreeze(this.sceneBtn);
+
+      this.baseBtns.filters = null;
     }
   },
 
@@ -70,10 +76,11 @@ LevelOne.prototype = {
     this.backgroundImg.height = game.height;
 
     this.map = new WorldMap(game.world.centerX, game.world.centerY, this);
-    this.scene = new SceneGenerator('sceneFilter', game.width * 0.75, game.height * 0.75);
+    
     this.baseBtns = new ButtonGroup(this, 0, 0, [this.returnBtn]);
+    this.scene = new SceneGenerator('sceneFilter', game.width * 0.75, game.height * 0.75);
     this.baseBtns.add(this.map);
-    this.baseBtns.add(this.scene);    
+    //this.baseBtns.add(this.scene);    
 
     utils.transitions.fadeIn(game, 1500);
   },

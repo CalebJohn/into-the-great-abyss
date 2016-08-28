@@ -15,8 +15,11 @@ Phaser.Filter.sceneFilter = function (game) {
     this.uniforms.roughness = {type: '1f', value: 1.0};
     this.uniforms.water = {type: '1f', value: 0.0};
     this.uniforms.TimeOfDay = {type: '1f', value: 0.0};
+
     var c = planetData.landHue;
     this.uniforms.baseHue = {type: '3f', value: {x: c.r / 255, y: c.g / 255, z: c.b / 255}};
+    c = planetData.waterHue;
+    this.uniforms.waterHue = {type: '3f', value: {x: c.r / 255+0.2, y: c.g / 255+0.2, z: c.b / 255+0.1}};
     //try to add in as many uniforms as possible, then our decisions on making terrain can be adjusted from a much higher level standpoint
     this.fragmentSrc = game.cache.getShader('sceneShader');
    
