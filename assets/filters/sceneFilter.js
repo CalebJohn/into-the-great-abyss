@@ -10,11 +10,16 @@ Phaser.Filter.sceneFilter = function (game) {
     //not used
     this.uniforms.iChannel0 = { type: 'sampler2D', value: null, textureData: { repeat: true } };
     this.uniforms.loc = {type: '2f', value: null};
-    this.uniforms.fog = {type: '1f', value: 0.0};
+    this.uniforms.fog = {type: '1f', value: 0.5}; //[0-1); 0 is complete fog; 1 regular draw distance 
     this.uniforms.warp = {type: '1f', value: 1.0};
     this.uniforms.roughness = {type: '1f', value: 1.0};
+    this.uniforms.water = {type: '1f', value: 0.0};
     this.uniforms.TimeOfDay = {type: '1f', value: 0.0};
-    this.uniforms.baseHue = {type: '3f', value: {x:0.5, y:0.7, z:0.4}};
+
+    var c = planetData.landHue;
+    this.uniforms.baseHue = {type: '3f', value: {x: c.r / 255, y: c.g / 255, z: c.b / 255}};
+    c = planetData.waterHue;
+    this.uniforms.waterHue = {type: '3f', value: {x: c.r / 255+0.2, y: c.g / 255+0.2, z: c.b / 255+0.1}};
     //try to add in as many uniforms as possible, then our decisions on making terrain can be adjusted from a much higher level standpoint
     this.fragmentSrc = game.cache.getShader('sceneShader');
    

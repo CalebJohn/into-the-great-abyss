@@ -68,3 +68,11 @@ ButtonGroup.prototype.makeButton = function(ctx, btn) {
     this.add(button);
 };
 
+ButtonGroup.prototype.toggleFreeze = function(exception) {
+    var children = this.children;
+    for (var i = 0; i < children.length; i++) {
+      if ((children[i].text != exception.name)) {
+        children[i].inputEnabled = children[i].inputEnabled == false;
+      }
+    }
+};

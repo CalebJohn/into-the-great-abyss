@@ -8,6 +8,12 @@ uniform sampler2D iChannel0;
 uniform vec2      loc;
 uniform float     TimeOfDay;
 uniform vec3      baseHue;
+uniform vec3      waterHue;
+
+uniform float     fog;
+uniform float     warp;
+uniform float     roughness;
+uniform float     water;
 
 const mat3 m = mat3( -0.70,  0.80,  0.60,
                     -0.80,  0.36, -0.48,
@@ -137,7 +143,7 @@ float intersect( in vec3 ro, in vec3 rd)
         vec3 pos = ro + t*rd;
         float res = map( pos );
         if( res<(0.001*t) || t>tmax  ) break;
-        t += res;
+        t += res * res;
   }
 
   return t;
@@ -154,7 +160,7 @@ vec3 material(vec3 p, vec3 n, float t) {
   vec3 I = normalize(vec3(cos(TimeOfDay)*200.0, sin(TimeOfDay)*100.0, 100.0));
   float s = clamp(smoothstep(0.0, 0.5, dot(I, n)), 0.0, 1.0);
 
-  return mix(col * vec3(0.4+0.6*s), vec3(0.7, 0.7, 1.0), smoothstep(0.0, 1.0, t/25.0));
+  return mix(col * vec3(0.4+0.6*s), waterHue, smoothstep(0.0, 1.0, t/(25.0*fog)));
 }
 
 
@@ -168,8 +174,8 @@ void main( void) {
   //rd = normalize(rd);
   float t = intersect(ro, rd);
 
-  if (t>=25.0) {
-    col = vec3(0.7, 0.7, 1.0);
+  if (t>=(25.0*fog)) {
+    col = waterHue;
   } else {
     vec3 n = calcNormal(ro+t*rd, t);
     col = material(ro+t*rd, n, t);
