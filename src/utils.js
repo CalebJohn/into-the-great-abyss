@@ -66,6 +66,22 @@ var utils = {
     return t * t * (3.0 - 2.0 * t);
   },
 
+  //using math equations to define a crater
+  //c is distance from epicenter
+  //a is size of the lip
+  //b is the falloff curve of the basin
+  //a low number for b makes the sides flat (linear slope)
+  //a high number for b makes the basin have a flat bottom and steep sides
+  crater : function(a, b, c) {
+    var t = Math.max(Math.min(c, 1.0), 0.0);
+    var l = 1.0/t;
+    t *= a;
+    t = Math.pow(t, b);
+    t = Math.min(t, l);
+    var i = this.smoothstep(0.0, a-1.0, 1.0-c);
+    return this.lerp(1, t, i)
+  },
+
   //standard linear interpolation
   // 0 <= c <= 1
   //interpolate between a and b by c
