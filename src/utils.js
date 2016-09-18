@@ -79,7 +79,7 @@ var utils = {
     t = Math.pow(t, b);
     t = Math.min(t, l);
     var i = this.smoothstep(0.0, a-1.0, 1.0-c);
-    return this.lerp(1, t, i)
+    return this.lerp(1, t, i);
   },
 
   //standard linear interpolation

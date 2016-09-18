@@ -205,11 +205,11 @@ PlanetData.prototype = {
     for (var i = -size; i < size;i++) {
       for (var j = -size; j < size;j++) {
         var px = (Math.floor(x) + i);
-        if (px < 0) px = this.width - px - 1;
-        if (px >= this.width) px -= this.width;
+        if (px < 0) {px = this.width - px - 1;}
+        if (px >= this.width) {px -= this.width;}
         var py = (Math.floor(y) + j);
-        if (py < 0) py = this.height - py - 1;
-        if (py >= this.height) py -= this.height;
+        if (py < 0) {py = this.height - py - 1;}
+        if (py >= this.height) {py -= this.height;}
         var height = utils.crater(lip, base, Math.sqrt(i * i + j * j) / size);
         heightmap[px][py] *= utils.lerp(1.0, height, strength);
       }
