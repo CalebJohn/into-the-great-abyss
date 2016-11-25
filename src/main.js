@@ -10,6 +10,8 @@ Main.prototype = {
   preload: function() {
     game.load.script('menu', 'src/states/Menu.js'); 
     game.load.script('levelone', 'src/states/LevelOne.js'); 
+    game.load.script('utils', 'src/utils.js');
+    game.load.script('archetypes', 'src/archetype.js');
     game.load.script('planetData', 'src/PlanetData.js');
   },
   
