@@ -1,55 +1,6 @@
 /* globals utils */
 /* exported Resources*/
 
-
-//initialize parameters for the archetype resources
-//these will denote the values that do not change between planets
-//consider this a type of struct or definition
-var Archetypes = function() {
-  this.metal = new Material({activation:{max:70, min:30}, potential:{max:100, min:50}, hardness:{max:90, min:40}, distribution: 1});
-  this.rock = new Material({activation:{max:100, min:50}, potential:{max:80, min:30}, hardness:{max:100, min:70}, distribution: 1});
-  this.liquid = new Material({activation:{max:80, min:0}, potential:{max:70, min:40}, hardness:{max:10, min:0}, distribution: 1});//maybe curve towards high number
-  this.wood = new Material({activation:{max:30, min:0}, potential:{max:40, min:30}, hardness:{max:50, min:30}, distribution: 1});
-  this.plant = new Material({activation:{max:20, min:0}, potential:{max:30, min:20}, hardness:{max:30, min:10}, distribution: 1});
-  this.gas = new Material({activation:{max:50, min:0}, potential:{max:50, min:10}, hardness:{max:5, min:0}, distribution: 1});
-};
-
-//this gives a specific planet unique properties based on our Archetypal materials
-//this should be the only function called from other files
-var Resources = function() {
-  archetypes = new Archetypes();
-  this.metal = archetypes.metal.generate_instance();
-  this.rock = archetypes.rock.generate_instance();
-  this.liquid = archetypes.liquid.generate_instance();
-  this.wood = archetypes.wood.generate_instance();
-  this.plant = archetypes.plant.generate_instance();
-  this.gas = archetypes.gas.generate_instance();
-
-};
-
-Resources.prototype = {
-  print: function() {
-    this.metal.print('metal');
-    this.rock.print('rock');
-    this.liquid.print('liquid');
-    this.wood.print('wood');
-    this.plant.print('plant');
-    this.gas.print('gas');
-  },
-
-  //clone the object so we dont have to pass by reference
-  clone: function() {
-    var r = new Resources();
-    r.metal = this.metal.clone();
-    r.rock = this.rock.clone();
-    r.liquid = this.liquid.clone();
-    r.wood = this.wood.clone();
-    r.plant = this.plant.clone();
-    r.gas = this.gas.clone();
-    return r;
-  }
-};
-
 //hold max and min values for each archetype
 //could hold material specific properties and methods as well
 //also used for Resources, I know its ugly cause resources dont hold a max and min
@@ -100,7 +51,7 @@ var Material = function(mat) {
 Material.prototype = {
   //Outputs an instance of the material within the parameters
   //should be used on a planetary scale
-  generate_instance: function() {
+  generateInstance: function() {
     //precompute the distribution for properties so we can base our abundance on the quality of the material
     var hd = Math.pow(Math.random(), this.distribution);
     var ad = Math.pow(Math.random(), this.distribution);
@@ -133,3 +84,53 @@ Material.prototype = {
     return new Material({hardness:this.hardness, activation:this.activation, potential:this.potential, distribution:this.distribution, abundance:this.abundance});
   }
 };
+
+//initialize parameters for the archetype resources
+//these will denote the values that do not change between planets
+//consider this a type of struct or definition
+var Archetypes = function() {
+  this.metal = new Material({activation:{max:70, min:30}, potential:{max:100, min:50}, hardness:{max:90, min:40}, distribution: 1});
+  this.rock = new Material({activation:{max:100, min:50}, potential:{max:80, min:30}, hardness:{max:100, min:70}, distribution: 1});
+  this.liquid = new Material({activation:{max:80, min:0}, potential:{max:70, min:40}, hardness:{max:10, min:0}, distribution: 1});//maybe curve towards high number
+  this.wood = new Material({activation:{max:30, min:0}, potential:{max:40, min:30}, hardness:{max:50, min:30}, distribution: 1});
+  this.plant = new Material({activation:{max:20, min:0}, potential:{max:30, min:20}, hardness:{max:30, min:10}, distribution: 1});
+  this.gas = new Material({activation:{max:50, min:0}, potential:{max:50, min:10}, hardness:{max:5, min:0}, distribution: 1});
+};
+
+//this gives a specific planet unique properties based on our Archetypal materials
+//this should be the only function called from other files
+var Resources = function() {
+  var archetypes = new Archetypes();
+  this.metal = archetypes.metal.generateInstance();
+  this.rock = archetypes.rock.generateInstance();
+  this.liquid = archetypes.liquid.generateInstance();
+  this.wood = archetypes.wood.generateInstance();
+  this.plant = archetypes.plant.generateInstance();
+  this.gas = archetypes.gas.generateInstance();
+
+};
+
+Resources.prototype = {
+  print: function() {
+    this.metal.print('metal');
+    this.rock.print('rock');
+    this.liquid.print('liquid');
+    this.wood.print('wood');
+    this.plant.print('plant');
+    this.gas.print('gas');
+  },
+
+  //clone the object so we dont have to pass by reference
+  clone: function() {
+    var r = new Resources();
+    r.metal = this.metal.clone();
+    r.rock = this.rock.clone();
+    r.liquid = this.liquid.clone();
+    r.wood = this.wood.clone();
+    r.plant = this.plant.clone();
+    r.gas = this.gas.clone();
+    return r;
+  }
+};
+
+
