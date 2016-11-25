@@ -29,10 +29,8 @@ Menu.prototype = {
     game.load.script('buttonGroup', 'src/ButtonGroup.js');
 
     game.load.script('WorldGenerator', 'src/WorldGenerator.js'); 
-    game.load.script('util', 'src/utils.js');
     game.load.script('sceneGenerator', 'src/SceneGenerator.js');
     game.load.script('noise', 'src/perlin.js');
-    game.load.script('resources', 'src/archetype.js');
 
     // Necessary for LevelOne
     game.load.script('buttonGroup', 'src/ButtonGroup.js');

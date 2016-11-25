@@ -43,7 +43,7 @@ var PlanetData = function () {
 PlanetData.prototype = {
   generateMap: function() {
     //TODO: Make the color picking smarter and more aesthetic
-    //this creates our base color for the land and water, distribution: 1
+    //this creates our base color for the land and water
     //once we generate material data we can use those to influence the color choice
     this.landHue = utils.palette(Math.random(), {bc: 150, f: 1, o: 0, a: 100}, {bc: 90, f: 2, o: 0, a: 90}, {bc: 75, f: 0.8, o: 0, a: 75});
     this.waterHue = utils.palette(Math.random(), {bc: 75, f: 0.5, o: 0, a: 75}, {bc: 128, f: 2, o: 0, a: 128}, {bc: 200, f: 1, o: 0, a: 55});

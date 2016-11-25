@@ -14,15 +14,8 @@ var Archetypes = function() {
   this.gas = new Material({activation:{max:50, min:0}, potential:{max:50, min:10}, hardness:{max:5, min:0}, distribution: 1});
 };
 
-
-Archetypes.prototype = {
-  generate_properties: function() {
-    //this would in theory randomize by definitions//likely shouldnt be used at all
-  }
-};
-
-//this gives a specific planet unique properties based on our Archetypal materials, distribution: 1
-//
+//this gives a specific planet unique properties based on our Archetypal materials
+//this should be the only function called from other files
 var Resources = function() {
   archetypes = new Archetypes();
   this.metal = archetypes.metal.generate_instance();
@@ -44,6 +37,7 @@ Resources.prototype = {
     this.gas.print('gas');
   },
 
+  //clone the object so we dont have to pass by reference
   clone: function() {
     var r = new Resources();
     r.metal = this.metal.clone();
@@ -58,6 +52,8 @@ Resources.prototype = {
 
 //hold max and min values for each archetype
 //could hold material specific properties and methods as well
+//also used for Resources, I know its ugly cause resources dont hold a max and min
+//but it works fine and I didnt wanna make two seperate objects
 var Material = function(mat) {
   //how long something lasts
   //but also makes more brittle
@@ -117,10 +113,13 @@ Material.prototype = {
     //this is based on the assumption that high hardness is a positive
     //and that low activation energy is good
     //and that high potential energy is good
+    //makes higher quality materials less abundant
     var ab = 1.0 - ((hd+(1.0 - ad)+pd)/3.0);
     return new Material({hardness:h, activation:a, potential:p, abundance:ab});
   }, 
 
+  //prints out material information to the console
+  //X should be the type of material that it is
   print: function(x) {
    console.log(x + ":" +
               "\nhardness: " + this.hardness.toPrecision(3) +
@@ -129,6 +128,7 @@ Material.prototype = {
               "\nabundance: " + this.abundance.toPrecision(3));
   },
 
+  //returns new material with the same properties as the current one
   clone: function() {
     return new Material({hardness:this.hardness, activation:this.activation, potential:this.potential, distribution:this.distribution, abundance:this.abundance});
   }
