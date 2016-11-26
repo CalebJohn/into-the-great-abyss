@@ -1,4 +1,4 @@
-/* globals ButtonGroup, WorldMap, SceneGenerator, utils */
+/* globals ButtonGroup, WorldMap, SceneGenerator, utils, planetData */
 var LevelOne = function () {
   this.baseBtns = null;
   this.map = null;
@@ -72,7 +72,16 @@ LevelOne.prototype = {
   },
 
   update: function() {
-
+    //need to add something akin to button group which can be updated every frame
+    //maybe call it textGroup
+    for (var i = 0; i < planetData.mapSize; i++) {
+      for (var j = 0; j < planetData.mapSize; j++) {
+        var sec = planetData.getSector(i, j);
+        if (sec.base != null) {
+          sec.base.update();
+        }
+      }
+    }
   },
 
   render: function() {

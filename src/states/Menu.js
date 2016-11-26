@@ -35,6 +35,7 @@ Menu.prototype = {
     // Necessary for LevelOne
     game.load.script('buttonGroup', 'src/ButtonGroup.js');
     game.load.script('sectorData', 'src/SectorData.js');
+    game.load.script('baseObject', 'src/BaseObject.js');
     game.load.script('worldMap', 'src/WorldMap.js');
     game.load.image('fadeButton', 'assets/fadeButton.png');
   },

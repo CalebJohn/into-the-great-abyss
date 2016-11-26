@@ -26,10 +26,10 @@ var SectorData = function (type, resources) {
                   y: 100, 
                   anchor: [0.0, 0.0],
                   context: this,
-                  callback: null}];
+                  callback: this.printBaseInfo}];
 
   this.resources = resources;
-              
+  this.base = null;            
 };
 
 SectorData.prototype = {
@@ -43,5 +43,9 @@ SectorData.prototype = {
 
   collectResources: function(btn) {
     console.log(btn.text);
+  },
+
+  printBaseInfo: function(btn) {
+    console.log(this.base)
   }
 };
