@@ -33,6 +33,7 @@ LevelOne.prototype = {
         children[i].destroy();
       }
     }
+    this.baseData = new TextGroup(this, 0, 0, sector.labels);
     this.baseBtns = new ButtonGroup(this, 0, 0, sector.buttons);
     this.baseBtns.add(this.scene);
     this.baseBtns.makeButton(this, this.returnBtn);
@@ -45,6 +46,10 @@ LevelOne.prototype = {
     var groupPos = this.baseBtns.x === 0 ? -game.world.width : 0;
 
     game.add.tween(this.baseBtns).to({x: groupPos}, 700, Phaser.Easing.Quadratic.In, true);
+    var dataGroupPos = this.baseData.x === 0 ? -game.world.width : 0;
+
+    game.add.tween(this.baseData).to({x: dataGroupPos}, 700, Phaser.Easing.Quadratic.In, true);
+  
   },
   
   drawScene: function() {

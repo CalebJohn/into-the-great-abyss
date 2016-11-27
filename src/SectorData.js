@@ -14,8 +14,9 @@ var SectorData = function (type, resources) {
                    y: game.world.centerY,
                    anchor: [0.5, 0.5],
                    context: this,
-                   callback: this.collectResources},
-                  {name: 'Resources:' + //this shouldnt be a button, its just a temporary measure for now
+                   callback: this.collectResources}];
+
+  this.labels = [{name: 'Resources:' + //this shouldnt be a button, its just a temporary measure for now
                          '\nMetal: ' + resources.metal.abundance.toPrecision(3) + 
                          '\nRock: ' + resources.rock.abundance.toPrecision(3) +
                          '\nLiquid: ' + resources.liquid.abundance.toPrecision(3) +
@@ -25,8 +26,7 @@ var SectorData = function (type, resources) {
                   x: 20 + game.world.width,
                   y: 100, 
                   anchor: [0.0, 0.0],
-                  context: this,
-                  callback: this.printBaseInfo}];
+                  context: this}];
 
   this.resources = resources;
   this.base = null;            
