@@ -43,6 +43,42 @@ BaseObject.prototype = {
     this.woodCount += this.globalRate * this.woodGatherers * this.resources.wood.abundance;
     this.plantCount += this.globalRate * this.plantGatherers * this.resources.plant.abundance;
     this.gasCount += this.globalRate * this.gasGatherers * this.resources.gas.abundance;
+  },
+
+  getResources: function() {
+    //returns a formatted string with all the resources and curent values
+    //currently only shows an integer version of resources but can even
+    return 'Resources:' +
+           '\nMetal: ' + Math.floor(this.metalCount) + 
+           '\nRock: ' + Math.floor(this.rockCount) +
+           '\nLiquid: ' + Math.floor(this.liquidCount) +
+           '\nWood: ' + Math.floor(this.woodCount) +
+           '\nPlant: ' + Math.floor(this.plantCount) +
+           '\nGas: ' + Math.floor(this.gasCount);
+  },
+
+  getGatherers: function() {
+    //returns a formatted string of how many workers there are in each resource
+    return 'Workers:' +
+           '\nMetal: ' + Math.floor(this.metalGatherers) + 
+           '\nRock: ' + Math.floor(this.rockGatherers) +
+           '\nLiquid: ' + Math.floor(this.liquidGatherers) +
+           '\nWood: ' + Math.floor(this.woodGatherers) +
+           '\nPlant: ' + Math.floor(this.plantGatherers) +
+           '\nGas: ' + Math.floor(this.gasGatherers);
+
+  }, 
+
+  getAbundance: function() {
+    //return a formatted string with the abundance of each resource in this sector
+    return 'Abundance:' +
+           '\nMetal: ' + Math.floor(this.resources.metal.abundance) + 
+           '\nRock: ' + Math.floor(this.resources.rock.abundance) +
+           '\nLiquid: ' + Math.floor(this.resources.liquid.abundance) +
+           '\nWood: ' + Math.floor(this.resources.wood.abundance) +
+           '\nPlant: ' + Math.floor(this.resources.plant.abundance) +
+           '\nGas: ' + Math.floor(this.resources.gas.abundance);
+
   }
 
 };

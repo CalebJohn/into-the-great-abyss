@@ -16,13 +16,8 @@ var SectorData = function (type, resources) {
                    context: this,
                    callback: this.collectResources}];
 
-  this.labels = [{name: 'Resources:' + //this shouldnt be a button, its just a temporary measure for now
-                         '\nMetal: ' + resources.metal.abundance.toPrecision(3) + 
-                         '\nRock: ' + resources.rock.abundance.toPrecision(3) +
-                         '\nLiquid: ' + resources.liquid.abundance.toPrecision(3) +
-                         '\nWood: ' + resources.wood.abundance.toPrecision(3) +
-                         '\nPlant: ' + resources.plant.abundance.toPrecision(3) +
-                         '\nGas: ' + resources.gas.abundance.toPrecision(3),
+  //this should be used for miscelleneaus labels which do not need to be updated in real time
+  this.labels = [{name: 'No Base in this sector',
                   x: 20 + game.world.width,
                   y: 100, 
                   anchor: [0.0, 0.0],

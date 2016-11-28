@@ -1,11 +1,13 @@
 /* globals ButtonGroup, WorldMap, SceneGenerator, utils, planetData */
 var LevelOne = function () {
   this.baseBtns = null;
+  this.baseData = null;
   this.map = null;
   this.returnBtn = null;
   this.sceneBtn = null;
   this.scene = null;
   this.backgroundImg = null;
+  this.activeSector = null;
 };
 
 LevelOne.prototype = {
@@ -27,13 +29,16 @@ LevelOne.prototype = {
 
   // TODO : This needs to be re-written to not destroy the buttons evertime
   updateButtons: function(sector) {
+    this.activeSector = sector;
     var children = this.baseBtns.children;
     for (var i = 0; i < children.length; i++) {
       if ((children[i] != this.map)&&(children[i] != this.scene)) {
         children[i].destroy();
       }
     }
-    this.baseData = new TextGroup(this, 0, 0, sector.labels);
+
+    this.baseData.destroy();
+    this.baseData = new TextGroup(this, 0, 0, this.activeSector.labels);
     this.baseBtns = new ButtonGroup(this, 0, 0, sector.buttons);
     this.baseBtns.add(this.scene);
     this.baseBtns.makeButton(this, this.returnBtn);
@@ -61,6 +66,13 @@ LevelOne.prototype = {
     }
   },
 
+  updateBase: function(sector) {
+    // TODO figure out a way to update only the proper label
+    this.activeSector.labels[0].name = this.activeSector.base.getResources();
+    this.baseData.getChildAt(0).setText(this.activeSector.labels[0].name);
+    
+  },
+
   create: function() {
     this.backgroundImg = game.add.image(0, 0);
     this.backgroundImg.texture = PIXI.Texture.fromCanvas(game.cache.getCanvas('background'));
@@ -72,19 +84,26 @@ LevelOne.prototype = {
     this.baseBtns = new ButtonGroup(this, 0, 0, [this.returnBtn]);
     this.baseBtns.add(this.map);
     this.baseBtns.add(this.scene);    
+    //basedata init is very ugly I know
+    this.baseData = new TextGroup(this, 0, 0, [{name: ' ', x:0, y:0}]);
 
     utils.transitions.fadeIn(game, 1500);
   },
 
   update: function() {
-    //need to add something akin to button group which can be updated every frame
-    //maybe call it textGroup
+    // TODO only update current sector here
+    //    will have to wait until we have the update function decoupled from framerate
     for (var i = 0; i < planetData.mapSize; i++) {
       for (var j = 0; j < planetData.mapSize; j++) {
         var sec = planetData.getSector(i, j);
         if (sec.base != null) {
           sec.base.update();
         }
+      }
+    }
+    if (this.activeSector != null) {
+      if (this.activeSector.base != null) {
+        this.updateBase();  
       }
     }
   },
