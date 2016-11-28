@@ -1,4 +1,4 @@
-/* globals ButtonGroup, planetData, noise, utils, BaseObject */
+/* globals ButtonGroup, planetData, noise, utils */
 var WorldMap = function (x, y, containerLevel) {
   Phaser.Group.call(this, game);
   this.sectorBtns = null;

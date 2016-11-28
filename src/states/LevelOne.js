@@ -1,4 +1,4 @@
-/* globals ButtonGroup, WorldMap, SceneGenerator, utils, planetData */
+/* globals ButtonGroup, WorldMap, SceneGenerator, utils, planetData, TextGroup */
 var LevelOne = function () {
   this.baseBtns = null;
   this.baseData = null;
@@ -26,8 +26,7 @@ LevelOne.prototype = {
                       y: game.world.height - 10,
                       anchor: [1.0, 1.0],
                       callback: this.drawScene};
-
-     },
+  },
 
   // TODO : This needs to be re-written to not destroy the buttons evertime
   updateButtons: function(sector) {

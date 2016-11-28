@@ -1,3 +1,4 @@
+/* globals BaseObject */
 var SectorData = function (type, resources) {
   this.type = type;
   this.visible = false;
@@ -37,7 +38,7 @@ SectorData.prototype = {
     console.log(btn.text);
   },
 
-  printBaseInfo: function(btn) {
-    console.log(this.base)
+  printBaseInfo: function() {
+    console.log(this.base);
   }
 };
