@@ -18,11 +18,7 @@ TextGroup.prototype.addLabel = function(ctx, text) {
       throw "Button Creation Error: Must provide an x and y coordinate";
     }
 
-    // This is not a default value
-    // it just allows overriding of the button context
-    var context = text.context || ctx;
-
-    // The following are to guarentee certain button behaviors
+    // The following are to guarentee certain appearance
     var size = text.size || 25;
 
     var style = text.style || {fontSize: size,

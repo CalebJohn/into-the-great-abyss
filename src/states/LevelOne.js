@@ -8,6 +8,7 @@ var LevelOne = function () {
   this.scene = null;
   this.backgroundImg = null;
   this.activeSector = null;
+  this.noBase = null;
 };
 
 LevelOne.prototype = {
@@ -25,7 +26,8 @@ LevelOne.prototype = {
                       y: game.world.height - 10,
                       anchor: [1.0, 1.0],
                       callback: this.drawScene};
-  },
+
+     },
 
   // TODO : This needs to be re-written to not destroy the buttons evertime
   updateButtons: function(sector) {
@@ -37,8 +39,7 @@ LevelOne.prototype = {
       }
     }
 
-    this.baseData.destroy();
-    this.baseData = new TextGroup(this, 0, 0, this.activeSector.labels);
+    this.baseData = sector.base.infoDisplay || this.noBase; 
     this.baseBtns = new ButtonGroup(this, 0, 0, sector.buttons);
     this.baseBtns.add(this.scene);
     this.baseBtns.makeButton(this, this.returnBtn);
@@ -66,13 +67,6 @@ LevelOne.prototype = {
     }
   },
 
-  updateBase: function(sector) {
-    // TODO figure out a way to update only the proper label
-    this.activeSector.labels[0].name = this.activeSector.base.getResources();
-    this.baseData.getChildAt(0).setText(this.activeSector.labels[0].name);
-    
-  },
-
   create: function() {
     this.backgroundImg = game.add.image(0, 0);
     this.backgroundImg.texture = PIXI.Texture.fromCanvas(game.cache.getCanvas('background'));
@@ -84,8 +78,12 @@ LevelOne.prototype = {
     this.baseBtns = new ButtonGroup(this, 0, 0, [this.returnBtn]);
     this.baseBtns.add(this.map);
     this.baseBtns.add(this.scene);    
-    //basedata init is very ugly I know
-    this.baseData = new TextGroup(this, 0, 0, [{name: ' ', x:0, y:0}]);
+
+     //I dont love this but it is the easiest solution for now
+    this.noBase = new TextGroup(this, 0, 0, [{name: 'No Base in this Sector',
+                                              x: 150 + game.world.width,
+                                              y: 100,
+                                              anchor: [0.0, 0.0]}]);
 
     utils.transitions.fadeIn(game, 1500);
   },
@@ -101,9 +99,10 @@ LevelOne.prototype = {
         }
       }
     }
+
     if (this.activeSector != null) {
-      if (this.activeSector.base != null) {
-        this.updateBase();  
+      if (this.activeSector.base.active) {
+        this.activeSector.base.updateText();
       }
     }
   },

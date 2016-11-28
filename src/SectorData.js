@@ -16,15 +16,12 @@ var SectorData = function (type, resources) {
                    context: this,
                    callback: this.collectResources}];
 
-  //this should be used for miscelleneaus labels which do not need to be updated in real time
-  this.labels = [{name: 'No Base in this sector',
-                  x: 20 + game.world.width,
-                  y: 100, 
-                  anchor: [0.0, 0.0],
-                  context: this}];
-
   this.resources = resources;
-  this.base = null;            
+  //initialize a base object for every sector
+  //the current implementation limits us to one base per sector
+  //but I think that makes more sense for now
+  //essentially we have a base per sector that we can activate
+  this.base = new BaseObject(resources); 
 };
 
 SectorData.prototype = {
