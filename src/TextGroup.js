@@ -15,10 +15,10 @@ TextGroup.prototype.constructor = TextGroup;
 
 TextGroup.prototype.addLabel = function(ctx, text) {
     if (!('x' in text) || !('y' in text)) {
-      throw "Button Creation Error: Must provide an x and y coordinate";
+      throw "Label Creation Error: Must provide an x and y coordinate";
     }
 
-    // The following are to guarentee certain appearance
+    // The following are to guarentee certain  behaviors
     var size = text.size || 25;
 
     var style = text.style || {fontSize: size,
