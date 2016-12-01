@@ -1,3 +1,4 @@
+/* globals BaseObject */
 var SectorData = function (type, resources) {
   this.type = type;
   this.visible = false;
@@ -14,22 +15,14 @@ var SectorData = function (type, resources) {
                    y: game.world.centerY,
                    anchor: [0.5, 0.5],
                    context: this,
-                   callback: this.collectResources},
-                  {name: 'Resources:' + //this shouldnt be a button, its just a temporary measure for now
-                         '\nMetal: ' + resources.metal.abundance.toPrecision(3) + 
-                         '\nRock: ' + resources.rock.abundance.toPrecision(3) +
-                         '\nLiquid: ' + resources.liquid.abundance.toPrecision(3) +
-                         '\nWood: ' + resources.wood.abundance.toPrecision(3) +
-                         '\nPlant: ' + resources.plant.abundance.toPrecision(3) +
-                         '\nGas: ' + resources.gas.abundance.toPrecision(3),
-                  x: 20 + game.world.width,
-                  y: 100, 
-                  anchor: [0.0, 0.0],
-                  context: this,
-                  callback: null}];
+                   callback: this.collectResources}];
 
   this.resources = resources;
-              
+  //initialize a base object for every sector
+  //the current implementation limits us to one base per sector
+  //but I think that makes more sense for now
+  //essentially we have a base per sector that we can activate
+  this.base = new BaseObject(resources); 
 };
 
 SectorData.prototype = {
@@ -43,5 +36,9 @@ SectorData.prototype = {
 
   collectResources: function(btn) {
     console.log(btn.text);
+  },
+
+  printBaseInfo: function() {
+    console.log(this.base);
   }
 };

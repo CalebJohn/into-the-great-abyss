@@ -1,6 +1,7 @@
 # Vim undo files #
 ##################
 *.un~
+*.swp
 *~
 
 # OS generated files #

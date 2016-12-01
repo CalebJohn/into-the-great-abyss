@@ -85,6 +85,11 @@ WorldMap.prototype.create = function() {
 
   var startBtn = btns[Math.floor(Math.random() * btns.length)];
   startBtn.faded = true;
+  
+  //add a base to the starting sector
+  var ind = this.sectorIndex(startBtn);
+  var sec = planetData.getSector(ind[0], ind[1]);
+  sec.base.active = true;
 
   this.background = game.add.sprite(-this.position.x, -this.position.y);
   this.background.texture = PIXI.Texture.fromCanvas(planetData.mapData.canvas);
