@@ -1,4 +1,4 @@
-/* globals SectorData, utils, noise, Resources */
+/* globals SectorData, utils, noise, Resources, resourceNames, rcrs */
 
 var PlanetData = function () {
   this.sectors = [];

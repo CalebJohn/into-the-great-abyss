@@ -1,4 +1,4 @@
-/* globals TextGroup*/
+/* globals TextGroup, resourceNames*/
 var BaseObject = function(resources) {
   //whether or not a base is active
   //needs to be like this so we can use a getter and setter
