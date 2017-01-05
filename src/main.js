@@ -2,6 +2,8 @@
 
 var game = new Phaser.Game(1000, 600, Phaser.Auto, '');
 var planetData = null;
+var resourceNames = ["Metal", "Rock", "Liquid", "Wood", "Plant", "Gas"];
+var rcrs = {Metal:0, Rock:1, Liquid:2, Wood:3, Plant:4, Gas:5};
 
 var Main = function() {};
 

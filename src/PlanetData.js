@@ -12,6 +12,7 @@ var PlanetData = function () {
   this.waterHue = null;
 
   this.resourcetypes = new Resources();
+  this.resourcetypes.generate();
   //this.resourcetypes.print();
 
   //when we generate higher level planet data we will use that to replace all the math.random() calls
@@ -187,13 +188,13 @@ PlanetData.prototype = {
         // based on the type of area assign properties
         // TODO make abundance decisions better
         if (type == 'Humid') {
-          resources.liquid.abundance = 1.0;
+          resources.type[rcrs.Liquid].abundance = 1.0;
         } else if (type == 'Fertile') {
-          resources.plant.abundance = 1.0;
+          resources.type[rcrs.Plant].abundance = 1.0;
         } else if (type == 'Rocky') {
-          resources.rock.abundance = 1.0;
+          resources.type[rcrs.Rock].abundance = 1.0;
         } else if (type == 'Mountainous') {
-          resources.metal.abundance = 1.0;
+          resources.type[rcrs.Metal].abundance = 1.0;
         } else {
           type = 'Fertile';
           console.log('invalid type passed into sector at: x: ' + x + ' y: '+ y);
