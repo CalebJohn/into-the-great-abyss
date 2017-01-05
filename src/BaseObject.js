@@ -1,31 +1,20 @@
-/* globals TextGroup*/
+/* globals TextGroup, resourceNames*/
 var BaseObject = function(resources) {
   //whether or not a base is active
   //needs to be like this so we can use a getter and setter
   this._active = false;
+
   //reference to the resource composition of the sector
   //can be used to lower resource abundance in sector data
   //but currently just used to read abundance of each material
   this.resources = resources;
 
-  //for now list all the possible resources
-  //must correspond with those defined in archetype.js
-  //later we may want a more robust approach
-  this.metalCount = 0;
-  this.rockCount = 0;
-  this.liquidCount = 0;
-  this.woodCount = 0;
-  this.plantCount = 0;
-  this.gasCount = 0;
+  //resources to be counted
+  this.resourceCount = [0, 0, 0, 0, 0, 0];
 
   //gatherers represent arbitrary units which gather resources
   //we can make them automiton or people for gameplay sake
-  this.metalGatherers = 1;
-  this.rockGatherers = 1;
-  this.liquidGatherers = 1;
-  this.woodGatherers = 1;
-  this.plantGatherers = 1;
-  this.gasGatherers = 1;
+  this.gatherers = [1, 1, 1, 1, 1, 1];
 
   //used to offset the rate of resource gathering
   //but at some point this should be tied into time rather than arbitrary units
@@ -69,12 +58,9 @@ BaseObject.prototype = {
   //    accept a delta time in the function 
   //      in order to do this we need to first keep track of time globally
   update: function() {
-    this.metalCount += this.globalRate * this.metalGatherers * this.resources.metal.abundance;
-    this.rockCount += this.globalRate * this.rockGatherers * this.resources.rock.abundance;
-    this.liquidCount += this.globalRate * this.liquidGatherers * this.resources.liquid.abundance;
-    this.woodCount += this.globalRate * this.woodGatherers * this.resources.wood.abundance;
-    this.plantCount += this.globalRate * this.plantGatherers * this.resources.plant.abundance;
-    this.gasCount += this.globalRate * this.gasGatherers * this.resources.gas.abundance;
+    for (var i = 0; i < this.resourceCount.length; i++) {
+      this.resourceCount[i] += this.globalRate * this.gatherers[i] * this.resources.type[i].abundance;
+    }
   },
 
   //use getters and setters so that the textgroup is initialized when the base is created
@@ -107,39 +93,31 @@ BaseObject.prototype = {
     //the use of context here may seem a tad hacky but it is the only way for the information to
     //be both easily updated and manually retreived
     var context = ctx || this;
-    return 'Resources:' +
-           '\nMetal: ' + Math.floor(context.metalCount) + 
-           '\nRock: ' + Math.floor(context.rockCount) +
-           '\nLiquid: ' + Math.floor(context.liquidCount) +
-           '\nWood: ' + Math.floor(context.woodCount) +
-           '\nPlant: ' + Math.floor(context.plantCount) +
-           '\nGas: ' + Math.floor(context.gasCount);
+    var txt = "Resources:";
+    for (var i = 0; i < context.resourceCount.length; i++) {
+      txt += "\n" + resourceNames[i] + ": " + Math.floor(context.resourceCount[i]);
+    }
+    return txt;
   },
 
   getGatherers: function(ctx) {
     //returns a formatted string of how many workers there are in each resource
     var context = ctx || this;
-    return 'Workers:' +
-           '\nMetal: ' + Math.floor(context.metalGatherers) + 
-           '\nRock: ' + Math.floor(context.rockGatherers) +
-           '\nLiquid: ' + Math.floor(context.liquidGatherers) +
-           '\nWood: ' + Math.floor(context.woodGatherers) +
-           '\nPlant: ' + Math.floor(context.plantGatherers) +
-           '\nGas: ' + Math.floor(context.gasGatherers);
-
+    var txt = "Workers:";
+    for (var i = 0; i < context.gatherers.length; i++) {
+      txt += "\n" + resourceNames[i] + ": " + Math.floor(context.gatherers[i]);
+    }
+    return txt;
   }, 
 
   getAbundance: function(ctx) {
     //return a formatted string with the abundance of each resource in this sector
     var context = ctx || this;
-    return 'Abundance:' +
-           '\nMetal: ' + context.resources.metal.abundance.toPrecision(3) + 
-           '\nRock: ' + context.resources.rock.abundance.toPrecision(3) +
-           '\nLiquid: ' + context.resources.liquid.abundance.toPrecision(3) +
-           '\nWood: ' + context.resources.wood.abundance.toPrecision(3) +
-           '\nPlant: ' + context.resources.plant.abundance.toPrecision(3) +
-           '\nGas: ' + context.resources.gas.abundance.toPrecision(3);
-
+    var txt = "Abundance:";
+    for (var i = 0; i < context.resources.type.length; i++) {
+      txt += "\n" + resourceNames[i] + ": " + context.resources.type[i].abundance.toPrecision(3);
+    }
+    return txt;
   }
 
 };
