@@ -1,4 +1,4 @@
-/* globals TextGroup, resourceNames*/
+/* globals TextGroup, resourceNames, rcrs*/
 var BaseObject = function(resources, primaryResource) {
   //whether or not a base is active
   //needs to be like this so we can use a getter and setter
@@ -166,10 +166,25 @@ BaseObject.prototype = {
   //maybe make it a total of wealth (sum of all resource values)
   //TODO maybe remove this in favor of integrating it with the scene button
   //  that way exploration gives random resource
-  collectRandom: function(btn) {
-    var ran = Math.floor(Math.random() * 6);
-    this.resourceCount[ran] += 5.0;
-    console.log("5 added to " + resourceNames[ran]);    
+  //this picks a random resource weighted by abundance
+  collectRandom: function() {
+    var totalAbundance = 0.0;
+    var resourceList = [];
+    for (var i = 0; i < this.resources.type.length; i++) {
+      totalAbundance += this.resources.type[i].abundance;
+      resourceList.push(totalAbundance);
+    }
+
+    var ran = Math.random() * totalAbundance;
+    var res = 0;
+    for (var i = this.resources.type.length - 1; i >= 0; i--) {
+      if (resourceList[i] > ran) {
+        res = i;
+      }
+    }
+
+    this.resourceCount[res] += 5.0;
+    console.log("5 added to " + resourceNames[res]);    
   },
 
   collectResource: function(btn) {
@@ -178,7 +193,7 @@ BaseObject.prototype = {
   },
 
   expandProduction: function(btn) {
-    this.gatherers[rcrs[btn.resourceType]] += 1
+    this.gatherers[rcrs[btn.resourceType]] += 1;
     console.log("1 " + btn.resourceType + " gatherer added!");
   },
 
