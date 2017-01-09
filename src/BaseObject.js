@@ -1,5 +1,5 @@
 /* globals TextGroup, resourceNames*/
-var BaseObject = function(resources) {
+var BaseObject = function(resources, primaryResource) {
   //whether or not a base is active
   //needs to be like this so we can use a getter and setter
   this._active = false;
@@ -26,24 +26,66 @@ var BaseObject = function(resources) {
   this.information = [{name: 'Resources',
                        type: 'resource', // type may be unecessary
                        x: 20 + game.world.width,
-                       y: 100,
+                       y: game.world.centerY,
                        anchor: [0.0, 0.0],
                        context: this,
                        updater: this.getResources},
                        {name: 'Gatherers',
                        type: 'gatherers', 
                        x: 170 + game.world.width,
-                       y: 100,
+                       y: game.world.centerY,
                        anchor: [0.0, 0.0],
                        context: this,
                        updater: this.getGatherers},
                        {name: 'abundance',
                        type: 'abundance', 
                        x: 300 + game.world.width,
-                       y: 100,
+                       y: game.world.centerY,
                        anchor: [0.0, 0.0],
                        context: this,
                        updater: this.getAbundance}];
+
+  this.buttons = [{name: primaryResource,
+                   x: 10 + game.world.width,
+                   y: game.world.height - 10,
+                   anchor: [0.0, 1.0],
+                   context: this,
+                   callback: this.collectRandom}];
+  //setup up buttons for manually collecting each resource
+  //timer should be shared across all buttons
+  for (var i = 0; i < resourceNames.length; i++) {
+    this.buttons.push({name: "Collect " + resourceNames[i],
+                       resourceType: resourceNames[i], //could use index but this way it is more informative for error handling 
+                       x: 200 + game.world.width, 
+                       y: 10 + i * 30,
+                       context: this, 
+                       callback: this.collectResource});
+  }
+  
+  //setup for building gatheres of each resource
+  //TODO make the name more interesting
+  //  e.g add robotic smelter for metal
+  //  this could be tied into procedural resource generation
+  for (var i = 0; i < resourceNames.length; i++) {
+    this.buttons.push({name: "Expand " + resourceNames[i] + " Production",
+                       resourceType: resourceNames[i], //could use index but this way it is more informative for error handling 
+                       x: game.world.width * 2 - 620, 
+                       y: 10 + i * 30,
+                       context: this, 
+                       callback: this.expandProduction});
+  }
+
+  //setup for building storage of each resource
+  //TODO implement storage capacities for resources
+  //  or productions capacities? (gatherer cap rather than resource cap)
+  for (var i = 0; i < resourceNames.length; i++) {
+    this.buttons.push({name: "Build " + resourceNames[i] + " Storage",
+                       resourceType: resourceNames[i], //could use index but this way it is more informative for error handling 
+                       x: game.world.width * 2 - 290, 
+                       y: 10 + i * 30,
+                       context: this, 
+                       callback: this.buildStorage});
+  }
 
   //and this is the object that actually displays our text
   //it might not be a bad idea to move all this stuff into the sectordata object
@@ -118,6 +160,30 @@ BaseObject.prototype = {
       txt += "\n" + resourceNames[i] + ": " + context.resources.type[i].abundance.toPrecision(3);
     }
     return txt;
+  },
+
+  //TODO the amount added each time should be balanced as a gameplay feature
+  //maybe make it a total of wealth (sum of all resource values)
+  //TODO maybe remove this in favor of integrating it with the scene button
+  //  that way exploration gives random resource
+  collectRandom: function(btn) {
+    var ran = Math.floor(Math.random() * 6);
+    this.resourceCount[ran] += 5.0;
+    console.log("5 added to " + resourceNames[ran]);    
+  },
+
+  collectResource: function(btn) {
+    this.resourceCount[rcrs[btn.resourceType]] += 5.0;
+    console.log(btn.resourceType);
+  },
+
+  expandProduction: function(btn) {
+    this.gatherers[rcrs[btn.resourceType]] += 1
+    console.log("1 " + btn.resourceType + " gatherer added!");
+  },
+
+  buildStorage: function(btn) {
+    console.log("add storage to " + btn.resourceType);
   }
 
 };
