@@ -16,10 +16,6 @@ var BaseObject = function(resources) {
   //we can make them automiton or people for gameplay sake
   this.gatherers = [1, 1, 1, 1, 1, 1];
 
-  //used to offset the rate of resource gathering
-  //but at some point this should be tied into time rather than arbitrary units
-  this.globalRate = 0.01;
-
   //this is an object that should hold all the info that the base is going to display
   //should have a type 'label' which doesnt get updated
   //and allows us to display information about the base
@@ -54,12 +50,9 @@ var BaseObject = function(resources) {
 
 BaseObject.prototype = {
   //updates our resource count every frame
-  // TODO decouple this from frame
-  //    accept a delta time in the function 
-  //      in order to do this we need to first keep track of time globally
   update: function() {
     for (var i = 0; i < this.resourceCount.length; i++) {
-      this.resourceCount[i] += this.globalRate * this.gatherers[i] * this.resources.type[i].abundance;
+      this.resourceCount[i] += game.time.physicsElapsed * this.gatherers[i] * this.resources.type[i].abundance;
     }
   },
 
