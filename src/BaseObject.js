@@ -17,10 +17,8 @@ var BaseObject = function(resources, primaryResource) {
   //we can make them automiton or people for gameplay sake
   this.gatherers = [1, 1, 1, 1, 1, 1];
 
-  //capacity represents a cap on resources and gatherers
-  this.capacityModifier = [1, 1, 1, 1, 1, 1];
-  this.resourceBaseCapacity = 10;
-  this.gathererBaseCapacity = 5;
+  //capacity represents a cap on resources
+  this.capacity = [10, 10, 10, 10, 10, 10];
 
   //this is an object that should hold all the info that the base is going to display
   //should have a type 'label' which doesnt get updated
@@ -52,14 +50,7 @@ var BaseObject = function(resources, primaryResource) {
                        y: game.world.centerY,
                        anchor: [0.0, 0.0],
                        context: this,
-                       updater: this.getStorage},
-                      {name: 'Space', 
-                       type: 'space', 
-                       x: 600 + game.world.width,
-                       y: game.world.centerY,
-                       anchor: [0.0, 0.0], 
-                       context: this, 
-                       updater: this.getSpace }];
+                       updater: this.getStorage}];
 
   this.buttons = [{name: primaryResource,
                    x: 10 + game.world.width,
@@ -116,18 +107,9 @@ BaseObject.prototype = {
     }
 
     for (var i = 0; i < resourceNames.length; i++) {
-      var cap = this.resourceBaseCapacity * this.capacityModifier[i];
-      if (this.resourceCount[i] > cap) {
-        this.resourceCount[i] = cap;
+      if (this.resourceCount[i] > this.capacity[i]) {
+        this.resourceCount[i] = this.capacity[i];
         //console.log(resourceNames[i] + " exceeded resource capacity no more resources will be stored until storage expanded")
-      }
-    }
-
-    for (var i = 0; i < resourceNames.length; i++) {
-      var cap = this.gathererBaseCapacity * this.capacityModifier[i];
-      if (this.gatherers[i] > cap) {
-        this.gatherers[i] = cap;
-        //console.log(resourceNames[i] + " exceeded gatherer capacity no more gatherers can be added until storage expanded")
       }
     }
   },
@@ -194,17 +176,7 @@ BaseObject.prototype = {
     var context = ctx || this;
     var txt = "Storage:";
     for (var i = 0; i < context.resources.type.length; i++) {
-      txt += "\n" + resourceNames[i] + ": " + Math.floor(context.resourceBaseCapacity * context.capacityModifier[i]);
-    }
-    return txt;
-  },
-
-  getSpace: function(ctx) {
-    //return a formatted string with the storage caps of each gatherer in this sector
-    var context = ctx || this;
-    var txt = "Space:";
-    for (var i = 0; i < context.resources.type.length; i++) {
-      txt += "\n" + resourceNames[i] + ": " + Math.floor(context.gathererBaseCapacity * context.capacityModifier[i]);
+      txt += "\n" + resourceNames[i] + ": " + context.capacity[i];
     }
     return txt;
   },
@@ -248,7 +220,7 @@ BaseObject.prototype = {
   //TODO change the amount that the capacity increase by for better gameplay
   //TODO cost and growth curves should be edited for gameplay sake
   buildStorage: function(btn) {
-    this.capacityModifier[rcrs[btn.resourceType]] += 1.0;
+    this.capacity[rcrs[btn.resourceType]] += 10;
     console.log("add storage to " + btn.resourceType);
   }
 
