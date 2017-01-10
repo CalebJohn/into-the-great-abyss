@@ -17,7 +17,7 @@ var BaseObject = function(resources, primaryResource) {
   //we can make them automiton or people for gameplay sake
   this.gatherers = [1, 1, 1, 1, 1, 1];
 
-  //capacity represents a cap on
+  //capacity represents a cap on resources and gatherers
   this.capacityModifier = [1, 1, 1, 1, 1, 1];
   this.resourceBaseCapacity = 10;
   this.gathererBaseCapacity = 5;
@@ -53,13 +53,13 @@ var BaseObject = function(resources, primaryResource) {
                        anchor: [0.0, 0.0],
                        context: this,
                        updater: this.getStorage},
-                       {name: 'Space', 
-                        type: 'space', 
-                        x: 600 + game.world.width,
-                        y: game.world.centerY,
-                        anchor: [0.0, 0.0], 
-                        context: this, 
-                        updater: this.getSpace }];
+                      {name: 'Space', 
+                       type: 'space', 
+                       x: 600 + game.world.width,
+                       y: game.world.centerY,
+                       anchor: [0.0, 0.0], 
+                       context: this, 
+                       updater: this.getSpace }];
 
   this.buttons = [{name: primaryResource,
                    x: 10 + game.world.width,
