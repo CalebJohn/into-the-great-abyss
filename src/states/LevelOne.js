@@ -17,6 +17,7 @@ LevelOne.prototype = {
     game.state.backgroundColor = '#000000';
     game.load.shader('sceneShader', 'assets/filters/shaders/sceneShader.frag');
     game.load.script('sceneFilter', 'assets/filters/sceneFilter.js');
+    //these stay with levelone instead of base because they need access to callback functions
     this.returnBtn = {name: 'Return to Map',
                       x: game.world.width + 10,
                       y: 10,
@@ -39,7 +40,7 @@ LevelOne.prototype = {
     }
 
     this.baseData = sector.base.infoDisplay || this.noBase; 
-    this.baseBtns = new ButtonGroup(this, 0, 0, sector.buttons);
+    this.baseBtns = new ButtonGroup(this, 0, 0, sector.base.buttons);
     this.baseBtns.add(this.scene);
     this.baseBtns.makeButton(this, this.returnBtn);
     this.baseBtns.makeButton(this, this.sceneBtn);
