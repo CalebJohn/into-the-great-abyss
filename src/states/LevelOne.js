@@ -40,10 +40,15 @@ LevelOne.prototype = {
     }
 
     this.baseData = sector.base.infoDisplay || this.noBase; 
-    this.baseBtns = new ButtonGroup(this, 0, 0, sector.base.buttons);
+    //this is a bit hacky but it fixes an issue with displaying buttons when there is no base
+    if (this.baseData != this.noBase) {
+      this.baseBtns = new ButtonGroup(this, 0, 0, sector.base.buttons);
+      this.baseBtns.makeButton(this, this.sceneBtn);
+    } else {
+      this.baseBtns = new ButtonGroup(this, 0, 0, [this.sceneBtn]);
+    }
     this.baseBtns.add(this.scene);
     this.baseBtns.makeButton(this, this.returnBtn);
-    this.baseBtns.makeButton(this, this.sceneBtn);
     this.baseBtns.add(this.map);
     
   },

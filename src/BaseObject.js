@@ -10,11 +10,15 @@ var BaseObject = function(resources, primaryResource) {
   this.resources = resources;
 
   //resources to be counted
+  //TODO initialize this to the length of resourceNames
   this.resourceCount = [0, 0, 0, 0, 0, 0];
 
   //gatherers represent arbitrary units which gather resources
   //we can make them automiton or people for gameplay sake
   this.gatherers = [1, 1, 1, 1, 1, 1];
+
+  //capacity represents a cap on resources
+  this.capacity = [10, 10, 10, 10, 10, 10];
 
   //this is an object that should hold all the info that the base is going to display
   //should have a type 'label' which doesnt get updated
@@ -26,20 +30,27 @@ var BaseObject = function(resources, primaryResource) {
                        anchor: [0.0, 0.0],
                        context: this,
                        updater: this.getResources},
-                       {name: 'Gatherers',
+                      {name: 'Gatherers',
                        type: 'gatherers', 
                        x: 170 + game.world.width,
                        y: game.world.centerY,
                        anchor: [0.0, 0.0],
                        context: this,
                        updater: this.getGatherers},
-                       {name: 'abundance',
+                      {name: 'abundance',
                        type: 'abundance', 
                        x: 300 + game.world.width,
                        y: game.world.centerY,
                        anchor: [0.0, 0.0],
                        context: this,
-                       updater: this.getAbundance}];
+                       updater: this.getAbundance},
+                      {name: 'Storage', 
+                       type: 'storage',
+                       x: 450 + game.world.width,
+                       y: game.world.centerY,
+                       anchor: [0.0, 0.0],
+                       context: this,
+                       updater: this.getStorage}];
 
   this.buttons = [{name: primaryResource,
                    x: 10 + game.world.width,
@@ -72,8 +83,6 @@ var BaseObject = function(resources, primaryResource) {
   }
 
   //setup for building storage of each resource
-  //TODO implement storage capacities for resources
-  //  or productions capacities? (gatherer cap rather than resource cap)
   for (var i = 0; i < resourceNames.length; i++) {
     this.buttons.push({name: "Build " + resourceNames[i] + " Storage",
                        resourceType: resourceNames[i], //could use index but this way it is more informative for error handling 
@@ -95,6 +104,13 @@ BaseObject.prototype = {
   update: function() {
     for (var i = 0; i < this.resourceCount.length; i++) {
       this.resourceCount[i] += game.time.physicsElapsed * this.gatherers[i] * this.resources.type[i].abundance;
+    }
+
+    for (var i = 0; i < resourceNames.length; i++) {
+      if (this.resourceCount[i] > this.capacity[i]) {
+        this.resourceCount[i] = this.capacity[i];
+        //console.log(resourceNames[i] + " exceeded resource capacity no more resources will be stored until storage expanded")
+      }
     }
   },
 
@@ -155,6 +171,16 @@ BaseObject.prototype = {
     return txt;
   },
 
+  getStorage: function(ctx) {
+    //return a formatted string with the storage caps of each resource in this sector
+    var context = ctx || this;
+    var txt = "Storage:";
+    for (var i = 0; i < context.resources.type.length; i++) {
+      txt += "\n" + resourceNames[i] + ": " + context.capacity[i];
+    }
+    return txt;
+  },
+
   //TODO the amount added each time should be balanced as a gameplay feature
   //maybe make it a total of wealth (sum of all resource values)
   //TODO maybe remove this in favor of integrating it with the scene button
@@ -185,12 +211,16 @@ BaseObject.prototype = {
     console.log(btn.resourceType);
   },
 
+  //TODO add costs for building and varying degrees of payoff
   expandProduction: function(btn) {
     this.gatherers[rcrs[btn.resourceType]] += 1;
     console.log("1 " + btn.resourceType + " gatherer added!");
   },
 
+  //TODO change the amount that the capacity increase by for better gameplay
+  //TODO cost and growth curves should be edited for gameplay sake
   buildStorage: function(btn) {
+    this.capacity[rcrs[btn.resourceType]] += 10;
     console.log("add storage to " + btn.resourceType);
   }
 
