@@ -1,4 +1,4 @@
-/* globals SectorData, utils, noise */
+/* globals SectorData, utils, noise, Resources, rcrs */
 
 var PlanetData = function () {
   this.sectors = [];
@@ -10,6 +10,10 @@ var PlanetData = function () {
   this.border = 100;
   this.landHue = null;
   this.waterHue = null;
+
+  this.resourcetypes = new Resources();
+  this.resourcetypes.generate();
+  //this.resourcetypes.print();
 
   //when we generate higher level planet data we will use that to replace all the math.random() calls
   this.randEffect = Math.pow(Math.random(), 2); //warping plus log
@@ -23,6 +27,7 @@ var PlanetData = function () {
   this.altitude = 0.0;
   this.moisture = Math.random() * 0.6 * this.aVariance;
   this.lod = 0.03 + 0.05 * Math.random() + (1 - this.moisture) * 0.05; //adjusted by moisture to help fake erosion
+  this.craters = Math.floor(Math.random() * 25) + 5;
 
   console.log("moisture level: " + this.moisture.toPrecision(3) +
               "\nrandom effect: " + this.randEffect.toPrecision(3) +
@@ -31,7 +36,8 @@ var PlanetData = function () {
               "\nerodibility: " + this.erodibility.toPrecision(3) +
               "\nskew: " + this.skew.toPrecision(3) +
               "\nlod: " + this.lod.toPrecision(3) +
-              "\naltitudeVariance: " + this.aVariance.toPrecision(3)
+              "\naltitudeVariance: " + this.aVariance.toPrecision(3) +
+              "\nCraters: " + this.craters.toPrecision(3)
     );
   };
 
@@ -52,6 +58,8 @@ PlanetData.prototype = {
     this.mapData.imageData = this.mapData.ctx.getImageData(0, 0, this.mapData.canvas.width, this.mapData.canvas.height);
     this.mapData.data = this.mapData.imageData.data;
 
+    //TODO create a crater map which influences terrain generation
+      //this should look better than applying the craters on top
     //create a 2d array which holds our height data for the planet
     //This is done so that we can avoid calling our noise function more than once per pixel
     var buffer = [];
@@ -60,10 +68,10 @@ PlanetData.prototype = {
     var low = 1;
     var terrainHeight = 0;
     var river = 0;
-    for (var x = 0; x < this.mapData.canvas.width; x++) {
+    for (var x = 0; x < this.width; x++) {
       buffer.push([]);
       rivers.push([]);
-      for (var y = 0; y < this.mapData.canvas.height; y++) {
+      for (var y = 0; y < this.height; y++) {
         this.altitude = 0.2 + 0.8 * Math.pow((noise.simplex2(x * this.aFrequency, y * this.aFrequency) * 0.5 + 0.5), this.aSkew) * this.aVariance;
         terrainHeight = this.heightmap(x * this.skew, y) * this.altitude;
         river = 1 - noise.worley2(x * 25 * this.rFrequency + terrainHeight * 3, y * 25 * this.rFrequency + terrainHeight * 3);//curve the river based on height
@@ -78,6 +86,12 @@ PlanetData.prototype = {
         }
         
       }
+    }
+
+    for (var i = 0;i<this.craters;i++) {
+      var x = this.width*Math.random();
+      var y = this.height*Math.random();
+      buffer = this.impact(x, y, Math.floor(Math.random() * 160 + 40), buffer);
     }
 
     //TODO: add texture to water
@@ -160,32 +174,57 @@ PlanetData.prototype = {
     //Applies the pixel buffer back into the canvas
     this.mapData.ctx.putImageData(this.mapData.imageData, 0, 0);
 
+    //setup Sector Data object
     var type;
+    var resources;
     for (var x = 0; x < this.mapSize; x++) {
       this.sectors.push([]);
       for (var y = 0; y < this.mapSize; y++) {
         //pick a spot in the middle of the sector and determine height
-        //right now the sectors dont line up exactly with the underlying heightmap, but I think that will be fine
-        //especially once we fix this up a bit
-        h = buffer[(x + 0.5) * (this.mapData.canvas.width / this.mapSize)][(y + 0.5) * (this.mapData.canvas.height / this.mapSize)];
-        //based on height pick a land type
-        //This will need to be tweaked and improved once we are generating more data
-        if (h > 0.7) {
-          type = 'Humid';
-        } else if (h > 0.5) {
-          type = 'Fertile';
-        } else if (h > 0.4) {
-          type = 'Rocky';
+        var sx = Math.floor((x + 0.5) * (this.mapData.canvas.width / this.mapSize));
+        var sy = Math.floor((y + 0.5) * (this.mapData.canvas.height / this.mapSize));
+        type = this.getSectorType(sx, sy, peak, low, buffer);
+        resources = this.resourcetypes.clone();
+        // based on the type of area assign properties
+        // TODO make abundance decisions better
+        if (type == 'Humid') {
+          resources.type[rcrs.Liquid].abundance = 1.0;
+        } else if (type == 'Fertile') {
+          resources.type[rcrs.Plant].abundance = 1.0;
+        } else if (type == 'Rocky') {
+          resources.type[rcrs.Rock].abundance = 1.0;
+        } else if (type == 'Mountainous') {
+          resources.type[rcrs.Metal].abundance = 1.0;
         } else {
-          type = 'Mountainous';
+          type = 'Fertile';
+          console.log('invalid type passed into sector at: x: ' + x + ' y: '+ y);
         }
-        this.sectors[x].push(new SectorData(type));
+        this.sectors[x].push(new SectorData(type, resources));
       }
     }
   },
 
   getSector: function(x, y) {
     return this.sectors[x][y];
+  },
+
+  impact: function(x, y, size, heightmap) {
+    var lip = 1.1 + Math.random() * 0.5 * this.randEffect;
+    var base = 2 + (4 * Math.pow(Math.random(), 2));
+    var strength = (Math.random() * 0.7 + 0.3) * (size / 200.0);
+    for (var i = -size; i < size;i++) {
+      for (var j = -size; j < size;j++) {
+        var px = (Math.floor(x) + i);
+        if (px < 0) {px = this.width - px - 1;}
+        if (px >= this.width) {px -= this.width;}
+        var py = (Math.floor(y) + j);
+        if (py < 0) {py = this.height - py - 1;}
+        if (py >= this.height) {py -= this.height;}
+        var height = utils.crater(lip, base, Math.sqrt(i * i + j * j) / size);
+        heightmap[px][py] *= utils.lerp(1.0, height, strength);
+      }
+    }
+    return heightmap;
   },
 
   //this function is used to return a height at a given point
@@ -228,6 +267,27 @@ PlanetData.prototype = {
 
     }
     return Math.abs(h); // negative values mess up coloring 
+  },
+
+  getSectorType: function(x, y, maxh, minh, heights) {
+    var h = heights[x][y];
+    // t is fraction between max and min
+    var t = (minh-h) / (minh-maxh);
+    //after this we should look at the slope
+    //and distance from water
+    //and maybe something akin to a biome map if those dont add enough variation
+    // TODO incorpoarte above considerations into this
+    var type;
+    if (t > 0.3) {
+      type = 'Mountainous';
+    } else if (t > 0.2) {
+      type = 'Rocky';
+    } else if (t > 0.1) {
+      type = 'Fertile';
+    } else {
+      type = 'Humid';
+    }
+    return type;
   }
 
 };

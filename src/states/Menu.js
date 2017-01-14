@@ -29,13 +29,14 @@ Menu.prototype = {
     game.load.script('buttonGroup', 'src/ButtonGroup.js');
 
     game.load.script('WorldGenerator', 'src/WorldGenerator.js'); 
-    game.load.script('util', 'src/utils.js');
     game.load.script('sceneGenerator', 'src/SceneGenerator.js');
     game.load.script('noise', 'src/perlin.js');
 
     // Necessary for LevelOne
     game.load.script('buttonGroup', 'src/ButtonGroup.js');
+    game.load.script('textGroup', 'src/TextGroup.js');
     game.load.script('sectorData', 'src/SectorData.js');
+    game.load.script('baseObject', 'src/BaseObject.js');
     game.load.script('worldMap', 'src/WorldMap.js');
     game.load.image('fadeButton', 'assets/fadeButton.png');
   },

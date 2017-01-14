@@ -64,6 +64,7 @@ ButtonGroup.prototype.makeButton = function(ctx, btn) {
     button.faded = faded;
     // txt is referenced using a closure
     button.setText = function(text) {txt.setText(text); this.text = text;};
+    button.resourceType = btn.resourceType || "non-resource";
 
     this.add(button);
 };
