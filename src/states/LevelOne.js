@@ -7,12 +7,8 @@ var LevelOne = function () {
   this.sceneBtn = null;
   this.scene = null;
   this.backgroundImg = null;
-<<<<<<< HEAD
-
-=======
   this.activeSector = null;
   this.noBase = null;
->>>>>>> master
 };
 
 LevelOne.prototype = {
