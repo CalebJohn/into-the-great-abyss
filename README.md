@@ -43,3 +43,5 @@ Contributing
 This branch is using [godotengine](https://godotengine.org) rather than the Phaser web framework. 
 
 In order to contribute download the godot executable and run it from the parent directory of potential-fortnight. 
+
+Although style and code formatting is a very important aspect in project development, for the purposes of this prototype we will be focussing on content rather than quality in order to get a prototype finished as soon as possible.

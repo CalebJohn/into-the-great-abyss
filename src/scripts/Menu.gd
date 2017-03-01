@@ -1,14 +1,19 @@
 
 extends Control
 
-# member variables here, example:
-# var a=2
-# var b="textvar"
-#
-#
+func _start():
+    #get_tree().change_scene(res://src/scenes/Level.tscn)
+
+func _toggle_options():
+    #get_node("StartButton").hide()
+    #get_node("OptionButton").hide()
+    #get_node("FullscreenButton").show()
+    #get_node("VolumeButton").show()
+    #get_node("SeedButton").show()
+
+
 func _ready():
-	# Called every time the node is added to the scene.
-	# Initialization here
+  #connect buttons here
 	pass
 
 

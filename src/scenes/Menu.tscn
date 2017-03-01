@@ -1,8 +1,8 @@
 [gd_scene load_steps=8 format=1]
 
-[ext_resource path="res://src/Main.gd" type="Script" id=1]
-[ext_resource path="res://src/Menu.gd" type="Script" id=2]
-[ext_resource path="res://src/MenuBackground.gd" type="Script" id=3]
+[ext_resource path="res://src/scripts/Main.gd" type="Script" id=1]
+[ext_resource path="res://src/scripts/Menu.gd" type="Script" id=2]
+[ext_resource path="res://src/scripts/MenuBackground.gd" type="Script" id=3]
 [ext_resource path="res://assets/fonts/Title.fnt" type="BitmapFont" id=4]
 [ext_resource path="res://assets/fonts/default.fnt" type="BitmapFont" id=5]
 
