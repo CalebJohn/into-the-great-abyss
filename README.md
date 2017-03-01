@@ -37,3 +37,9 @@ This project will defer to [idiomatic.js](https://github.com/rwaldron/idiomatic.
 * Along with the previous point, avoid automatic type coercion tricks such as `var b = +"1"; // b = 1`
 
 It is recommended that you read through [idiomatic.js](https://github.com/rwaldron/idiomatic.js/) to get a sense of Javascript style before contributing.
+
+Contributing
+-----------
+This branch is using [godotengine](https://godotengine.org) rather than the Phaser web framework. 
+
+In order to contribute download the godot executable and run it from the parent directory of potential-fortnight. 
