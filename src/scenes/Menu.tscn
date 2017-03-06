@@ -323,7 +323,8 @@ __meta__ = { "_edit_lock_":true }
 
 visibility/behind_parent = true
 material/material = SubResource( 11 )
-polygon = Vector2Array( 0, 0, 1000, 0, 1000, 600, 0, 600 )
+transform/scale = Vector2( 1000, 600 )
+polygon = Vector2Array( 0, 0, 1, 0, 1, 1, 0, 1 )
 uv = Vector2Array( 0, 0, 1, 0, 1, 1, 0, 1 )
 color = Color( 1, 1, 1, 1 )
 vertex_colors = ColorArray(  )
