@@ -65,13 +65,12 @@ func _toggle_fullscreen():
 		OS.set_window_fullscreen(false)
 		global.fullscreen = false
 		global.size = Vector2(Globals.get("display/width"), Globals.get("display/height"))
-		set_size(global.size)
+		
 	else:
 		OS.set_window_fullscreen(true)
 		global.fullscreen = true
 		global.size = OS.get_screen_size()
-		set_size(global.size)
-	background.update_resolution(true)
+	background.update_resolution()
 
 #called when mute is pressed
 func _toggle_mute():
