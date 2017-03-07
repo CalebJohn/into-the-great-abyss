@@ -1,15 +1,45 @@
-[gd_scene load_steps=8 format=1]
+[gd_scene load_steps=16 format=1]
 
 [ext_resource path="res://src/scripts/Generator.gd" type="Script" id=1]
 
 [sub_resource type="CanvasItemShader" id=1]
 
-_code = { "fragment":"float noise(vec2 x) {\n\tvec2 p = floor(x);\n\tvec2 f = fract(x);\n\tf = f*f*f*((6.0*f-vec2(15.0))*f+vec2(10.0));\n\tvec2 a = vec2(1.0, 0.0);\n\tfloat h = mix(mix(fract(sin(dot((p+a.yy)*19.19, vec2(14.73, 43.97)))*252849.342871), \n\t\t\t\t\t  fract(sin(dot((p+a.xy)*19.19, vec2(14.73, 43.97)))*252849.342871), f.x),\n\t\t\t\t  mix(fract(sin(dot((p+a.yx)*19.19, vec2(14.73, 43.97)))*252849.342871),\n\t\t\t\t\t  fract(sin(dot((p+a.xx)*19.19, vec2(14.73, 43.97)))*252849.342871), f.x), f.y);\n\treturn h;\n}\n\n//Based off of iq\'s described here: http://www.iquilezles.org/www/articles/voronoilin\nfloat cell(vec2 p, float s) {\n  vec2 n = floor(p);\n  vec2 f = fract(p);\n  float md = 5.0;\n  vec2 m = vec2(0.0);\n//Repeat enough times\n//-1, -1\n      vec2 g = vec2(-1, -1);\n\t  vec2 hash2 = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      vec2 o = hash2*vec2(s, s);\n      o = vec2(0.5, 0.5) + vec2(0.5, 0.5) * vec2(sin(0.64 + 5.038*o.x), sin(0.64 + 5.038*o.y));\n      vec2 r = g + o - f;\n      float d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//-1, 0\n      g = vec2(-1.0, 0.0);\n\t  hash2 = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      o = hash2*s;\n      o = vec2(0.5, 0.5) + vec2(0.5, 0.5) * vec2(sin(0.64 + 5.038*o.x), sin(0.64 + 5.038*o.y));\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//-1, 1\n      g = vec2(-1, 1);\n\t  hash2 = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      o = hash2*s;\n      o = vec2(0.5, 0.5) + vec2(0.5, 0.5) * vec2(sin(0.64 + 5.038*o.x), sin(0.64 + 5.038*o.y));\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//0, -1\n      g = vec2(0, -1);\n\t  hash2 = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      o = hash2*s;\n      o = vec2(0.5, 0.5) + vec2(0.5, 0.5) * vec2(sin(0.64 + 5.038*o.x), sin(0.64 + 5.038*o.y));\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//0, 0\n      g = vec2(0, 0);\n\t  hash2 = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      o = hash2*s;\n      o = vec2(0.5, 0.5) + vec2(0.5, 0.5) * vec2(sin(0.64 + 5.038*o.x), sin(0.64 + 5.038*o.y));\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//0, 1\n      g = vec2(0, 1);\n\t  hash2 = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      o = hash2*s;\n      o = vec2(0.5, 0.5) + vec2(0.5, 0.5) * vec2(sin(0.64 + 5.038*o.x), sin(0.64 + 5.038*o.y));\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//1, -1\n      g = vec2(1, -1);\n\t  hash2 = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      o = hash2*s;\n      o = vec2(0.5, 0.5) + vec2(0.5, 0.5) * vec2(sin(0.64 + 5.038*o.x), sin(0.64 + 5.038*o.y));\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//1, 0\n      g = vec2(1, 0);\n\t  hash2 = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      o = hash2*s;\n      o = vec2(0.5, 0.5) + vec2(0.5, 0.5) * vec2(sin(0.64 + 5.038*o.x), sin(0.64 + 5.038*o.y));\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//1, 1\n      g = vec2(1, 1);\n\t  hash2 = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      o = hash2*s;\n      o = vec2(0.5, 0.5) + vec2(0.5, 0.5) * vec2(sin(0.64 + 5.038*o.x), sin(0.64 + 5.038*o.y));\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n\treturn md;\n}\n\nvec2 pos = SCREEN_UV*20.0;\npos.x += TIME;\nfloat height = noise(pos)*0.5+noise(pos*2)*0.35+noise(pos*4)*0.15;\nheight -= cell(pos*0.5, 1.0)*0.5+cell(pos*1, 1.0)*0.35+cell(pos*4, 1.0)*0.15;\nvec3 col = vec3(height);\nCOLOR = vec4(col, 1.0);", "fragment_ofs":0, "light":"", "light_ofs":0, "vertex":"", "vertex_ofs":0 }
+_code = { "fragment":"//could switch to gradient noise like the clouds\n//likely would not be any slower\nfloat noise(vec2 x) {\n\tvec2 p = floor(x);\n\tvec2 f = fract(x);\n\tf = f*f*f*((6.0*f-vec2(15.0))*f+vec2(10.0));\n\tvec2 a = vec2(1.0, 0.0);\n\tfloat h = mix(mix(fract(sin(dot((p+a.yy)*19.19, vec2(14.73, 43.97)))*252849.342871), \n\t\t\t\t\t  fract(sin(dot((p+a.xy)*19.19, vec2(14.73, 43.97)))*252849.342871), f.x),\n\t\t\t\t  mix(fract(sin(dot((p+a.yx)*19.19, vec2(14.73, 43.97)))*252849.342871),\n\t\t\t\t\t  fract(sin(dot((p+a.xx)*19.19, vec2(14.73, 43.97)))*252849.342871), f.x), f.y);\n\treturn h;\n}\n\n//Based off of iq\'s described here: http://www.iquilezles.org/www/articles/voronoilin\nfloat cell(vec2 p) {\n  vec2 n = floor(p);\n  vec2 f = fract(p);\n  float md = 5.0;\n  vec2 m = vec2(0.0);\n//Repeat enough times\n//-1, -1\n      vec2 g = vec2(-1, -1);\n      vec2 o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      vec2 r = g + o - f;\n      float d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//-1, 0\n      g = vec2(-1.0, 0.0);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//-1, 1\n      g = vec2(-1, 1);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//0, -1\n      g = vec2(0, -1);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//0, 0\n      g = vec2(0, 0);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//0, 1\n      g = vec2(0, 1);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//1, -1\n      g = vec2(1, -1);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//1, 0\n      g = vec2(1, 0);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//1, 1\n      g = vec2(1, 1);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n\treturn md;\n}\n\nvec2 pos = SCREEN_UV*20.0;\n//calculate height\nfloat height = noise(pos)*0.5+noise(pos*2)*0.35+noise(pos*4)*0.15;\n//fake erosion with cellular noise\nheight -= cell(pos*0.5)*0.5+cell(pos*1)*0.35+cell(pos*4)*0.15;\nvec3 col = vec3(height);\nCOLOR = vec4(col, 1.0);", "fragment_ofs":0, "light":"", "light_ofs":0, "vertex":"", "vertex_ofs":0 }
 
 [sub_resource type="CanvasItemMaterial" id=2]
 
 shader/shader = SubResource( 1 )
 shader/shading_mode = 0
+
+[sub_resource type="CanvasItemShader" id=12]
+
+_code = { "fragment":"uniform texture heightmap;\nuniform vec2 resolution = vec2(1000, 600);\n\nvec2 invRes = vec2(1.0)/resolution;\nfloat height1 = tex(heightmap, SCREEN_UV+vec2(-invRes.x, 0.0)).x;\nfloat height2 = tex(heightmap, SCREEN_UV+vec2(invRes.x, 0.0)).x;\nfloat height3 = tex(heightmap, SCREEN_UV+vec2(0.0, -invRes.y)).x;\nfloat height4 = tex(heightmap, SCREEN_UV+vec2(0.0, invRes.y)).x;\n\nvec3 norm = normalize(vec3(height1-height2, 0.02, height3-height4));\n\n\nCOLOR = vec4(norm, 1.0);", "fragment_ofs":0, "light":"", "light_ofs":0, "vertex":"", "vertex_ofs":0 }
+
+[sub_resource type="CanvasItemMaterial" id=9]
+
+shader/shader = SubResource( 12 )
+shader/shading_mode = 0
+shader_param/resolution = Vector2( 1000, 600 )
+
+[sub_resource type="CanvasItemShader" id=11]
+
+_code = { "fragment":"uniform texture heightmap;\nuniform texture normal;\nuniform vec2 resolution = vec2(1000, 600);\n\nvec3 sun = normalize(vec3(1.0, 1.0, 1.0));\nfloat bright = dot(tex(normal, SCREEN_UV).xyz, sun);\nbright = max(0.0, bright);\nfloat height = tex(heightmap, SCREEN_UV).x;\nvec3 col = mix(vec3(0.2, 0.4, 0.7), vec3(0.4, 0.2, 0.05), smoothstep(0.0, 0.1, height));\n\n\nCOLOR = vec4(col*bright, 1.0);", "fragment_ofs":0, "light":"", "light_ofs":0, "vertex":"", "vertex_ofs":0 }
+
+[sub_resource type="CanvasItemMaterial" id=10]
+
+shader/shader = SubResource( 11 )
+shader/shading_mode = 0
+shader_param/resolution = Vector2( 1000, 600 )
+
+[sub_resource type="CanvasItemShader" id=7]
+
+_code = { "fragment":"//This shader should use nothing but the SCREEN_UV coordinates and maybe a list of positions\nuniform vec2 resolution;\n\nfloat noise(vec2 x) {\n\tvec2 p = floor(x);\n\tvec2 f = fract(x);\n\tvec2 u = f*f*(vec2(3.0)-2.0*f);\n\tvec2 a = vec2(1.0, 0.0);\n\tvec2 k = vec2(0.3183099, 0.3678794);\n\tvec2 i = p*k+k.yx;\n\tvec2 n = vec2(-1.0) + 2.0*fract(16.0 * k *fract(i.x*i.y*(i.x+i.y)));\n\tfloat h1 = dot(n, f);\n\ti = (p+a.xy)*k+k.yx;\n\tn = vec2(-1.0) + 2.0*fract(16.0 * k *fract(i.x*i.y*(i.x+i.y)));\n\tfloat h2 = dot(n, f - a.xy);\n\ti = (p+a.yx)*k+k.yx;\n\tn = vec2(-1.0) + 2.0*fract(16.0 * k *fract(i.x*i.y*(i.x+i.y)));\n\tfloat h3 = dot(n, f - a.yx);\n\ti = (p+a.xx)*k+k.yx;\n\tn = vec2(-1.0) + 2.0*fract(16.0 * k *fract(i.x*i.y*(i.x+i.y)));\n\tfloat h4 = dot(n, f - a.xx);\n\tfloat h = mix(mix(h1, h2, u.x), mix(h3, h4, u.x), u.y);\n\treturn 0.5+0.5*h;\n}\n\n//Based off of iq\'s described here: http://www.iquilezles.org/www/articles/voronoilin\nfloat cell(vec2 p) {\n  vec2 n = floor(p);\n  vec2 f = fract(p);\n  float md = 5.0;\n  vec2 m = vec2(0.0);\n//Repeat enough times\n//-1, -1\n      vec2 g = vec2(-1, -1);\n      vec2 o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      vec2 r = g + o - f;\n      float d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//-1, 0\n      g = vec2(-1.0, 0.0);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//-1, 1\n      g = vec2(-1, 1);\n\t  o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//0, -1\n      g = vec2(0, -1);\n\t  o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//0, 0\n      g = vec2(0, 0);\n\t  o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//0, 1\n      g = vec2(0, 1);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//1, -1\n      g = vec2(1, -1);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//1, 0\n      g = vec2(1, 0);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//1, 1\n      g = vec2(1, 1);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n\treturn 0.5+md*0.5;\n}\n\nvec2 pos = SCREEN_UV*10.0;\n//height function will need to be more complicated\n//it will require thinner and thicker clouds\n//and maybe even more irregular patches of sky\n//use a displacement map may be a good idea\n//or at least a high frequency layer of ridged noise\nfloat height = noise(pos)*0.5*cell(pos*2)+noise(pos*2)*0.25*cell(pos*4)+noise(pos*4)*0.125*cell(pos*8)+noise(pos*8)*0.0625*cell(pos*16);\nvec3 col = vec3(smoothstep(0.2, 1.0, height));\n\nCOLOR = vec4(col, 1.0);\n\n\n//this is the code for the 2D clouds shader that could be used as an alternative\n/*const float cloudscale = 1.1;\nconst float speed = 0.03;\nconst float clouddark = 0.5;\nconst float cloudlight = 0.3;\nconst float cloudcover = 0.2;\nconst float cloudalpha = 8.0;\nconst float skytint = 0.5;\nconst vec3 skycolour1 = vec3(0.2, 0.4, 0.6);\nconst vec3 skycolour2 = vec3(0.4, 0.7, 1.0);\n\nconst mat2 m = mat2( 1.6,  1.2, -1.2,  1.6 );\n\nvec2 hash( vec2 p ) {\n\tp = vec2(dot(p,vec2(127.1,311.7)), dot(p,vec2(269.5,183.3)));\n\treturn -1.0 + 2.0*fract(sin(p)*43758.5453123);\n}\n\nfloat noise( in vec2 p ) {\n    const float K1 = 0.366025404; // (sqrt(3)-1)/2;\n    const float K2 = 0.211324865; // (3-sqrt(3))/6;\n\tvec2 i = floor(p + (p.x+p.y)*K1);\t\n    vec2 a = p - i + (i.x+i.y)*K2;\n    vec2 o = (a.x>a.y) \? vec2(1.0,0.0) : vec2(0.0,1.0); //vec2 of = 0.5 + 0.5*vec2(sign(a.x-a.y), sign(a.y-a.x));\n    vec2 b = a - o + K2;\n\tvec2 c = a - 1.0 + 2.0*K2;\n    vec3 h = max(0.5-vec3(dot(a,a), dot(b,b), dot(c,c) ), 0.0 );\n\tvec3 n = h*h*h*h*vec3( dot(a,hash(i+0.0)), dot(b,hash(i+o)), dot(c,hash(i+1.0)));\n    return dot(n, vec3(70.0));\t\n}\n\nfloat fbm(vec2 n) {\n\tfloat total = 0.0, amplitude = 0.1;\n\tfor (int i = 0; i < 7; i++) {\n\t\ttotal += noise(n) * amplitude;\n\t\tn = m * n;\n\t\tamplitude *= 0.4;\n\t}\n\treturn total;\n}\n\n// -----------------------------------------------\n\nvoid mainImage( out vec4 fragColor, in vec2 fragCoord ) {\n    vec2 p = fragCoord.xy / iResolution.xy;\n\tvec2 uv = p*vec2(iResolution.x/iResolution.y,1.0);    \n    float time = iGlobalTime * speed;\n    float q = fbm(uv * cloudscale * 0.5);\n    \n    //ridged noise shape\n\tfloat r = 0.0;\n\tuv *= cloudscale;\n    uv -= q - time;\n    float weight = 0.8;\n    for (int i=0; i<8; i++){\n\t\tr += abs(weight*noise( uv ));\n        uv = m*uv + time;\n\t\tweight *= 0.7;\n    }\n    \n    //noise shape\n\tfloat f = 0.0;\n    uv = p*vec2(iResolution.x/iResolution.y,1.0);\n\tuv *= cloudscale;\n    uv -= q - time;\n    weight = 0.7;\n    for (int i=0; i<8; i++){\n\t\tf += weight*noise( uv );\n        uv = m*uv + time;\n\t\tweight *= 0.6;\n    }\n    \n    f *= r + f;\n    \n    //noise colour\n    float c = 0.0;\n    time = iGlobalTime * speed * 2.0;\n    uv = p*vec2(iResolution.x/iResolution.y,1.0);\n\tuv *= cloudscale*2.0;\n    uv -= q - time;\n    weight = 0.4;\n    for (int i=0; i<7; i++){\n\t\tc += weight*noise( uv );\n        uv = m*uv + time;\n\t\tweight *= 0.6;\n    }\n    \n    //noise ridge colour\n    float c1 = 0.0;\n    time = iGlobalTime * speed * 3.0;\n    uv = p*vec2(iResolution.x/iResolution.y,1.0);\n\tuv *= cloudscale*3.0;\n    uv -= q - time;\n    weight = 0.4;\n    for (int i=0; i<7; i++){\n\t\tc1 += abs(weight*noise( uv ));\n        uv = m*uv + time;\n\t\tweight *= 0.6;\n    }\n\t\n    c += c1;\n    \n    vec3 skycolour = mix(skycolour2, skycolour1, p.y);\n    vec3 cloudcolour = vec3(1.1, 1.1, 0.9) * clamp((clouddark + cloudlight*c), 0.0, 1.0);\n   \n    f = cloudcover + cloudalpha*f*r;\n    \n    vec3 result = mix(skycolour, clamp(skytint * skycolour + cloudcolour, 0.0, 1.0), clamp(f + c, 0.0, 1.0));\n    \n\tfragColor = vec4( result, 1.0 );\n*/", "fragment_ofs":0, "light":"", "light_ofs":0, "vertex":"", "vertex_ofs":0 }
+
+[sub_resource type="CanvasItemMaterial" id=8]
+
+shader/shader = SubResource( 7 )
+shader/shading_mode = 0
+shader_param/resolution = Vector2( 0, 0 )
 
 [sub_resource type="CanvasItemShader" id=3]
 
@@ -21,9 +51,19 @@ shader/shader = SubResource( 3 )
 shader/shading_mode = 0
 shader_param/resolution = Vector2( 1000, 600 )
 
+[sub_resource type="CanvasItemShader" id=13]
+
+_code = { "fragment":"uniform vec2 point = vec2(-500, -500);\n//could pass in heightmap to make the mask look a little nicer\n//or something like that\n\nvec2 screen = texscreen(SCREEN_UV).xy;\nfloat dist = smoothstep(0.0, 0.2, distance(point, SCREEN_UV));\nif (screen.y<0.5){\n\tscreen = vec2(1.0);\n}\nCOLOR = vec4(vec3(screen.x*dist, screen.y, 1.0), 1.0);", "fragment_ofs":0, "light":"", "light_ofs":0, "vertex":"", "vertex_ofs":0 }
+
+[sub_resource type="CanvasItemMaterial" id=14]
+
+shader/shader = SubResource( 13 )
+shader/shading_mode = 0
+shader_param/point = Vector2( -100, -100 )
+
 [sub_resource type="CanvasItemShader" id=5]
 
-_code = { "fragment":"uniform texture heightmap;\nuniform texture normal;\nuniform vec2 resolution = vec2(1000, 600);\n\nvec3 sun = normalize(vec3(1.0, 1.0, 1.0));\nfloat bright = dot(tex(normal, SCREEN_UV).xyz, sun);\nbright = max(0.0, bright);\nfloat height = tex(heightmap, SCREEN_UV).x;\nvec3 col = mix(vec3(0.2, 0.4, 0.7), vec3(0.4, 0.2, 0.05), smoothstep(0.0, 0.1, height));\n\n\nCOLOR = vec4(col*bright, 1.0);", "fragment_ofs":0, "light":"", "light_ofs":0, "vertex":"", "vertex_ofs":0 }
+_code = { "fragment":"uniform texture heightmap;\nuniform texture cloudmap;\nuniform texture normal;\nuniform texture mask;\nuniform vec2 resolution = vec2(1000, 600);\n\n\nvec3 sun = normalize(vec3(1.0, 1.0, 1.0));\nfloat bright = dot(tex(normal, SCREEN_UV).xyz, sun);\nbright = max(0.2, bright);\nfloat height = tex(cloudmap, SCREEN_UV).x;\n\n//use gheight to allow mountains to poke through clouds\n//float gheight = tex(heightmap, SCREEN_UV).x;\n//height += smoothstep(0.5, 1.0, gheight);\n//need to change the second step term to match cloud cover levels\nfloat M = 1.0-(tex(mask, SCREEN_UV).x);\nfloat alpha = pow(1.0-smoothstep(0.0, 0.3, height), 3.0);\n\nalpha = alpha*smoothstep(0.1, 0.4, alpha-M);\nCOLOR = vec4(vec3(sqrt(bright)), alpha);\n\n", "fragment_ofs":0, "light":"", "light_ofs":0, "vertex":"", "vertex_ofs":0 }
 
 [sub_resource type="CanvasItemMaterial" id=6]
 
@@ -35,13 +75,19 @@ shader_param/resolution = Vector2( 1000, 600 )
 
 script/script = ExtResource( 1 )
 
-[node name="DisplaySprite" type="ViewportSprite" parent="."]
+[node name="GroundDisplay" type="ViewportSprite" parent="."]
 
 viewport = NodePath("../Pass3")
 centered = false
 
+[node name="CloudDisplay" type="ViewportSprite" parent="."]
+
+viewport = NodePath("../Pass6")
+centered = false
+
 [node name="Pass1" type="Viewport" parent="."]
 
+editor/display_folded = true
 rect = Rect2( 0, 0, 1000, 600 )
 own_world = false
 world = null
@@ -75,6 +121,7 @@ invert/border = 100.0
 
 [node name="Pass2" type="Viewport" parent="."]
 
+editor/display_folded = true
 rect = Rect2( 0, 0, 1000, 600 )
 own_world = false
 world = null
@@ -92,7 +139,7 @@ gui/disable_input = false
 
 [node name="MapNormal" type="Polygon2D" parent="Pass2"]
 
-material/material = SubResource( 4 )
+material/material = SubResource( 9 )
 transform/scale = Vector2( 1000, 600 )
 polygon = Vector2Array( 0, 0, 1, 0, 1, 1, 0, 1 )
 uv = Vector2Array(  )
@@ -108,6 +155,7 @@ invert/border = 100.0
 
 [node name="Pass3" type="Viewport" parent="."]
 
+editor/display_folded = true
 rect = Rect2( 0, 0, 1000, 600 )
 own_world = false
 world = null
@@ -124,6 +172,142 @@ physics/object_picking = false
 gui/disable_input = false
 
 [node name="MapShade" type="Polygon2D" parent="Pass3"]
+
+material/material = SubResource( 10 )
+transform/scale = Vector2( 1000, 600 )
+polygon = Vector2Array( 0, 0, 1, 0, 1, 1, 0, 1 )
+uv = Vector2Array(  )
+color = Color( 1, 1, 1, 1 )
+vertex_colors = ColorArray(  )
+offset = Vector2( 0, 0 )
+texture/texture = null
+texture/offset = Vector2( 0, 0 )
+texture/scale = Vector2( 1, 1 )
+texture/rotation = 0.0
+invert/enable = false
+invert/border = 100.0
+
+[node name="Pass4" type="Viewport" parent="."]
+
+editor/display_folded = true
+rect = Rect2( 0, 0, 1000, 600 )
+own_world = false
+world = null
+transparent_bg = false
+render_target/enabled = true
+render_target/v_flip = false
+render_target/clear_on_new_frame = false
+render_target/filter = false
+render_target/gen_mipmaps = false
+render_target/update_mode = 1
+audio_listener/enable_2d = false
+audio_listener/enable_3d = false
+physics/object_picking = false
+gui/disable_input = false
+
+[node name="CloudHeight" type="Polygon2D" parent="Pass4"]
+
+material/material = SubResource( 8 )
+transform/scale = Vector2( 1000, 600 )
+polygon = Vector2Array( 0, 0, 1, 0, 1, 1, 0, 1 )
+uv = Vector2Array(  )
+color = Color( 1, 1, 1, 1 )
+vertex_colors = ColorArray(  )
+offset = Vector2( 0, 0 )
+texture/texture = null
+texture/offset = Vector2( 0, 0 )
+texture/scale = Vector2( 1, 1 )
+texture/rotation = 0.0
+invert/enable = false
+invert/border = 100.0
+
+[node name="Pass5" type="Viewport" parent="."]
+
+editor/display_folded = true
+rect = Rect2( 0, 0, 1000, 600 )
+own_world = false
+world = null
+transparent_bg = false
+render_target/enabled = true
+render_target/v_flip = false
+render_target/clear_on_new_frame = false
+render_target/filter = false
+render_target/gen_mipmaps = false
+render_target/update_mode = 0
+audio_listener/enable_2d = false
+audio_listener/enable_3d = false
+physics/object_picking = false
+gui/disable_input = false
+
+[node name="CloudNormal" type="Polygon2D" parent="Pass5"]
+
+material/material = SubResource( 4 )
+transform/scale = Vector2( 1000, 600 )
+polygon = Vector2Array( 0, 0, 1, 0, 1, 1, 0, 1 )
+uv = Vector2Array(  )
+color = Color( 1, 1, 1, 1 )
+vertex_colors = ColorArray(  )
+offset = Vector2( 0, 0 )
+texture/texture = null
+texture/offset = Vector2( 0, 0 )
+texture/scale = Vector2( 1, 1 )
+texture/rotation = 0.0
+invert/enable = false
+invert/border = 100.0
+
+[node name="Pass7" type="Viewport" parent="."]
+
+editor/display_folded = true
+rect = Rect2( 0, 0, 1000, 600 )
+own_world = false
+world = null
+transparent_bg = false
+render_target/enabled = true
+render_target/v_flip = false
+render_target/clear_on_new_frame = false
+render_target/filter = false
+render_target/gen_mipmaps = false
+render_target/update_mode = 1
+audio_listener/enable_2d = false
+audio_listener/enable_3d = false
+physics/object_picking = false
+gui/disable_input = false
+
+[node name="Mask" type="Polygon2D" parent="Pass7"]
+
+material/material = SubResource( 14 )
+transform/scale = Vector2( 1000, 600 )
+polygon = Vector2Array( 0, 0, 1, 0, 1, 1, 0, 1 )
+uv = Vector2Array(  )
+color = Color( 1, 1, 1, 1 )
+vertex_colors = ColorArray(  )
+offset = Vector2( 0, 0 )
+texture/texture = null
+texture/offset = Vector2( 0, 0 )
+texture/scale = Vector2( 1, 1 )
+texture/rotation = 0.0
+invert/enable = false
+invert/border = 100.0
+
+[node name="Pass6" type="Viewport" parent="."]
+
+editor/display_folded = true
+rect = Rect2( 0, 0, 1000, 600 )
+own_world = false
+world = null
+transparent_bg = true
+render_target/enabled = true
+render_target/v_flip = false
+render_target/clear_on_new_frame = true
+render_target/filter = false
+render_target/gen_mipmaps = false
+render_target/update_mode = 0
+audio_listener/enable_2d = false
+audio_listener/enable_3d = false
+physics/object_picking = false
+gui/disable_input = false
+
+[node name="CloudShade" type="Polygon2D" parent="Pass6"]
 
 material/material = SubResource( 6 )
 transform/scale = Vector2( 1000, 600 )

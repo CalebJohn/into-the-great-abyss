@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=1]
 
 [ext_resource path="res://src/scripts/Main.gd" type="Script" id=1]
-[ext_resource path="res://src/scenes/Generator.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/scenes/Map.tscn" type="PackedScene" id=2]
 
 [node name="Level" type="Control"]
 
@@ -17,6 +17,6 @@ margin/right = 0.0
 margin/bottom = 0.0
 script/script = ExtResource( 1 )
 
-[node name="Generator" parent="." instance=ExtResource( 2 )]
+[node name="Map" parent="." instance=ExtResource( 2 )]
 
 
