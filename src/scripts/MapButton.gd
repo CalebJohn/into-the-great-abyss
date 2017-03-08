@@ -4,13 +4,14 @@
 
 extends TextureButton
 
+var position
 #resize texture to button size
 func _resize():
 	set_texture_scale(get_size())
 
 #callback for when clicked
 func _clicked():
-	get_parent().emit_signal("child_pressed", get_meta("position"))
+	get_parent().emit_signal("child_pressed", position)
 
 #change the look of the button when the mouse is over it
 func _mouse_over():

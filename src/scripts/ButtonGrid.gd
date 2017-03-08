@@ -29,7 +29,7 @@ func _ready():
 			var newButton = button.duplicate(true)
 			#meta is a string based property that can be assigned to any object
 			#in our case we will use it to store the position in map coordinates
-			newButton.set_meta("position", Vector2(j, i))
+			newButton.position =  Vector2(j, i)
 			add_child(newButton)
 	connect("child_pressed", self, "_child_press")
 
