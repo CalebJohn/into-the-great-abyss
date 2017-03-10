@@ -4,6 +4,8 @@
 
 extends TextureButton
 
+var position
+
 
 func _ready():
 	set_texture_scale(get_size())
@@ -16,7 +18,7 @@ func _on_MapButton_resized():
 	set_texture_scale(get_size())
 
 func _on_MapButton_pressed():
-	get_parent().emit_signal("child_pressed", get_meta("position"))
+	get_parent().emit_signal("child_pressed", position)
 
 func _on_MapButton_mouse_enter():
 	get_material().set_shader_param("id", get_parent().get_pos()+get_pos())

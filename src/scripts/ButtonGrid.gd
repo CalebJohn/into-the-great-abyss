@@ -24,8 +24,9 @@ func _ready():
 			button.get_material().set_shader_param("cTexture", get_parent().get_node("Generator").cloudTexture)
 			#meta is a string based property that can be assigned to any object
 			#in our case we will use it to store the position in map coordinates
-			button.set_meta("position", Vector2(j, i))
+			button.position =  Vector2(j, i)
 			add_child(button)
+
 
 
 #called from child when it is presed
