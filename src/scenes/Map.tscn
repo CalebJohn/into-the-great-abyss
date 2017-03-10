@@ -33,4 +33,6 @@ margin/bottom = 100.0
 columns = 2
 script/script = ExtResource( 2 )
 
+[connection signal="child_pressed" from="ButtonGrid" to="ButtonGrid" method="_on_ButtonGrid_child_pressed"]
+
 

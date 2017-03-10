@@ -14,76 +14,6 @@ var setTime = 3
 
 func _start(object, method):
 	get_tree().change_scene("res://src/scenes/Level.tscn")
-	
-func _start_sunset():
-	followMouse = false
-	#Tween to move sun down
-	#Calls _start when finished
-	var sunTween = Tween.new()
-	add_child(sunTween)
-	sunTween.interpolate_method(background, "update_sun", sunPos, Vector2(global.size.x*0.5, global.size.y+50), setTime, Tween.TRANS_QUART, Tween.EASE_OUT)
-	sunTween.connect("tween_complete", self, "_start")
-	sunTween.start()
-	
-	#fades the scene to black during transition
-	var screenTween = Tween.new()
-	add_child(screenTween)
-	screenTween.interpolate_method(get_parent().get_node("Fader"), "set_color", Color(1, 1, 1, 1), Color(0, 0, 0, 1), setTime, Tween.TRANS_QUAD, Tween.EASE_IN_OUT)
-	screenTween.start()
-	
-	#Fades text away as scene changes
-	var textTween = Tween.new()
-	add_child(textTween)
-	textTween.interpolate_property(self, "visibility/opacity", 1.0, 0.0, 1, Tween.TRANS_QUAD, Tween.EASE_IN_OUT)
-	textTween.start()
-
-#switches from default menu to options
-#utilizes groups, therefore all buttons must be in the proper group
-func _show_options():
-	var nodes = get_tree().get_nodes_in_group("startMenu")
-	for node in nodes:
-		node.hide()
-	nodes = get_tree().get_nodes_in_group("optionsMenu")
-	for node in nodes:
-		node.show()
-
-func _quit():
-	get_tree().quit()
-
-#hides the options menu
-func _hide_options():
-	var nodes = get_tree().get_nodes_in_group("startMenu")
-	for node in nodes:
-		node.show()
-	nodes = get_tree().get_nodes_in_group("optionsMenu")
-	for node in nodes:
-		node.hide()
-
-#toggles fullscreen and setsglobal screen variables
-func _toggle_fullscreen():
-	if global.fullscreen:
-		OS.set_window_fullscreen(false)
-		global.fullscreen = false
-		global.size = Vector2(Globals.get("display/width"), Globals.get("display/height"))
-		
-	else:
-		OS.set_window_fullscreen(true)
-		global.fullscreen = true
-		global.size = OS.get_screen_size()
-	background.update_resolution()
-
-#called when mute is pressed
-func _toggle_mute():
-	if global.mute:
-		get_node("MuteButton").set_text("MUTE: OFF")
-		global.mute = false
-	else:
-		get_node("MuteButton").set_text("MUTE: ON")
-		global.mute = true
-
-func _seed(text):
-	global.genSeed = int(text)
-	#This needs to regenerate world
 
 func _fixed_process(delta):
 	# This is the mouse tracking code for the sun, it won't be called
@@ -113,14 +43,6 @@ func _ready():
 	#a reference is kept to background so we dont have to make background a child
 	background = get_parent().get_node("Background")
 	#connect buttons callbacks here
-	get_node("StartButton").connect("pressed", self, "_start_sunset")
-	get_node("OptionsButton").connect("pressed", self, "_show_options")
-	get_node("QuitButton").connect("pressed", self, "_quit")
-	
-	get_node("SeedButton/Value").connect("text_changed", self, "_seed")
-	get_node("FullscreenButton").connect("pressed", self, "_toggle_fullscreen")
-	get_node("MuteButton").connect("pressed", self, "_toggle_mute")
-	get_node("ReturnButton").connect("pressed", self, "_hide_options")
 	
 	set_fixed_process(true)
 	
@@ -130,6 +52,8 @@ func _ready():
 	sunTween.interpolate_method(background, "update_sun", Vector2(global.size.x*0.5, global.size.y), Vector2(global.size.x*0.5, -50), riseTime, Tween.TRANS_LINEAR, Tween.EASE_IN)
 	sunTween.start()
 	#set callback for when tween completes
+	#must be done through script because tween is made in script
+	#if tween is made in editor then we could fire this signal
 	sunTween.connect("tween_complete", self, "_free_mouse")
 	
 	#add tween to fade text
@@ -140,3 +64,75 @@ func _ready():
 	textTween.interpolate_property(self, "visibility/opacity", 0.0, 1.0, riseTime, Tween.TRANS_QUAD, Tween.EASE_IN_OUT, riseTime)
 	textTween.start()
 
+##Callbacks registered with connect button in editor
+func _on_StartButton_pressed():
+	followMouse = false
+	#Tween to move sun down
+	#Calls _start when finished
+	var sunTween = Tween.new()
+	add_child(sunTween)
+	sunTween.interpolate_method(background, "update_sun", sunPos, Vector2(global.size.x*0.5, global.size.y+50), setTime, Tween.TRANS_QUART, Tween.EASE_OUT)
+	sunTween.connect("tween_complete", self, "_start")
+	sunTween.start()
+	
+	#fades the scene to black during transition
+	var screenTween = Tween.new()
+	add_child(screenTween)
+	screenTween.interpolate_method(get_parent().get_node("Fader"), "set_color", Color(1, 1, 1, 1), Color(0, 0, 0, 1), setTime, Tween.TRANS_QUAD, Tween.EASE_IN_OUT)
+	screenTween.start()
+	
+	#Fades text away as scene changes
+	var textTween = Tween.new()
+	add_child(textTween)
+	textTween.interpolate_property(self, "visibility/opacity", 1.0, 0.0, 1, Tween.TRANS_QUAD, Tween.EASE_IN_OUT)
+	textTween.start()
+
+#switches from default menu to options
+#utilizes groups, therefore all buttons must be in the proper group
+func _on_OptionsButton_pressed():
+	var nodes = get_tree().get_nodes_in_group("startMenu")
+	for node in nodes:
+		node.hide()
+	nodes = get_tree().get_nodes_in_group("optionsMenu")
+	for node in nodes:
+		node.show()
+
+
+func _on_QuitButton_pressed():
+	get_tree().quit()
+
+
+func _on_FullscreenButton_pressed():
+	if global.fullscreen:
+		OS.set_window_fullscreen(false)
+		global.fullscreen = false
+		global.size = Vector2(Globals.get("display/width"), Globals.get("display/height"))
+		
+	else:
+		OS.set_window_fullscreen(true)
+		global.fullscreen = true
+		global.size = OS.get_screen_size()
+	background.update_resolution()
+
+
+func _on_MuteButton_pressed():
+	if global.mute:
+		get_node("MuteButton").set_text("MUTE: OFF")
+		global.mute = false
+	else:
+		get_node("MuteButton").set_text("MUTE: ON")
+		global.mute = true
+
+
+func _on_Value_text_changed( text ):
+	global.genSeed = int(text)
+	#This needs to regenerate world
+
+
+func _on_ReturnButton_pressed():
+	var nodes = get_tree().get_nodes_in_group("startMenu")
+	for node in nodes:
+		node.show()
+	nodes = get_tree().get_nodes_in_group("optionsMenu")
+	for node in nodes:
+		node.hide()

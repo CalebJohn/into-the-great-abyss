@@ -33,4 +33,10 @@ shortcut = null
 textures/normal = ExtResource( 1 )
 script/script = ExtResource( 2 )
 
+[connection signal="mouse_enter" from="." to="." method="_on_MapButton_mouse_enter"]
+
+[connection signal="pressed" from="." to="." method="_on_MapButton_pressed"]
+
+[connection signal="resized" from="." to="." method="_on_MapButton_resized"]
+
 
