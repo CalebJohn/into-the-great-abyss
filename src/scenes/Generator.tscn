@@ -4,30 +4,30 @@
 
 [sub_resource type="CanvasItemShader" id=1]
 
-_code = { "fragment":"//could switch to gradient noise like the clouds\n//likely would not be any slower\nfloat noise(vec2 x) {\n\tvec2 p = floor(x);\n\tvec2 f = fract(x);\n\tf = f*f*f*((6.0*f-vec2(15.0))*f+vec2(10.0));\n\tvec2 a = vec2(1.0, 0.0);\n\tfloat h = mix(mix(fract(sin(dot((p+a.yy)*19.19, vec2(14.73, 43.97)))*252849.342871), \n\t\t\t\t\t  fract(sin(dot((p+a.xy)*19.19, vec2(14.73, 43.97)))*252849.342871), f.x),\n\t\t\t\t  mix(fract(sin(dot((p+a.yx)*19.19, vec2(14.73, 43.97)))*252849.342871),\n\t\t\t\t\t  fract(sin(dot((p+a.xx)*19.19, vec2(14.73, 43.97)))*252849.342871), f.x), f.y);\n\treturn h;\n}\n\n//Based off of iq\'s described here: http://www.iquilezles.org/www/articles/voronoilin\nfloat cell(vec2 p) {\n  vec2 n = floor(p);\n  vec2 f = fract(p);\n  float md = 5.0;\n  vec2 m = vec2(0.0);\n//Repeat enough times\n//-1, -1\n      vec2 g = vec2(-1, -1);\n      vec2 o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      vec2 r = g + o - f;\n      float d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//-1, 0\n      g = vec2(-1.0, 0.0);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//-1, 1\n      g = vec2(-1, 1);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//0, -1\n      g = vec2(0, -1);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//0, 0\n      g = vec2(0, 0);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//0, 1\n      g = vec2(0, 1);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//1, -1\n      g = vec2(1, -1);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//1, 0\n      g = vec2(1, 0);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//1, 1\n      g = vec2(1, 1);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n\treturn md;\n}\n\nvec2 pos = SCREEN_UV*20.0;\n//calculate height\nfloat height = noise(pos)*0.5+noise(pos*2)*0.35+noise(pos*4)*0.15;\n//fake erosion with cellular noise\nheight -= cell(pos*0.5)*0.5+cell(pos*1)*0.35+cell(pos*4)*0.15;\nvec3 col = vec3(height);\nCOLOR = vec4(col, 1.0);", "fragment_ofs":0, "light":"", "light_ofs":0, "vertex":"", "vertex_ofs":0 }
+_code = { "fragment":"//Gradient noise from IQ\n//should switch to simplex noise in future\n//marginally faster, but also much cleaner and better quality\nfloat noise(vec2 x) {\n\tvec2 p = floor(x);\n\tvec2 f = fract(x);\n\tvec2 u = f*f*(vec2(3.0)-2.0*f);\n\tvec2 a = vec2(1.0, 0.0);\n\tvec2 k = vec2(0.3183099, 0.3678794);\n\tvec2 i = p*k+k.yx;\n\tvec2 n = vec2(-1.0) + 2.0*fract(16.0 * k *fract(i.x*i.y*(i.x+i.y)));\n\tfloat h1 = dot(n, f);\n\ti = (p+a.xy)*k+k.yx;\n\tn = vec2(-1.0) + 2.0*fract(16.0 * k *fract(i.x*i.y*(i.x+i.y)));\n\tfloat h2 = dot(n, f - a.xy);\n\ti = (p+a.yx)*k+k.yx;\n\tn = vec2(-1.0) + 2.0*fract(16.0 * k *fract(i.x*i.y*(i.x+i.y)));\n\tfloat h3 = dot(n, f - a.yx);\n\ti = (p+a.xx)*k+k.yx;\n\tn = vec2(-1.0) + 2.0*fract(16.0 * k *fract(i.x*i.y*(i.x+i.y)));\n\tfloat h4 = dot(n, f - a.xx);\n\tfloat h = mix(mix(h1, h2, u.x), mix(h3, h4, u.x), u.y);\n\treturn 0.5+0.5*h;\n}\n\n//Based off of iq\'s described here: http://www.iquilezles.org/www/articles/voronoilin\nfloat cell(vec2 p) {\n  vec2 n = floor(p);\n  vec2 f = fract(p);\n  float md = 5.0;\n  vec2 m = vec2(0.0);\n//Repeat enough times\n//-1, -1\n      vec2 g = vec2(-1, -1);\n      vec2 o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      vec2 r = g + o - f;\n      float d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//-1, 0\n      g = vec2(-1.0, 0.0);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//-1, 1\n      g = vec2(-1, 1);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//0, -1\n      g = vec2(0, -1);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//0, 0\n      g = vec2(0, 0);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//0, 1\n      g = vec2(0, 1);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//1, -1\n      g = vec2(1, -1);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//1, 0\n      g = vec2(1, 0);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n//1, 1\n      g = vec2(1, 1);\n      o = fract(vec2(sin(dot(n+g, vec2(123.4, 748.6))), sin(dot(n+g, vec2(547.3, 659.3))))*5232.85324);\n      r = g + o - f;\n      d = dot(r, r);\n      if (d<md) {\n        md = d;\n        m = n+g+o;\n      }\n\treturn md;\n}\n\nvec2 pos = SCREEN_UV*10.0;\n//calculate height\nfloat height = noise(pos)*0.5+noise(pos*2)*0.35+noise(pos*4)*0.15;\n//fake erosion with cellular noise\nheight -= (cell(pos)*0.5+cell(pos*2)*0.35+cell(pos*8)*0.15)*1.5;\nvec3 col = vec3(height);\nCOLOR = vec4(col, 1.0);", "fragment_ofs":0, "light":"", "light_ofs":0, "vertex":"", "vertex_ofs":0 }
 
 [sub_resource type="CanvasItemMaterial" id=2]
 
 shader/shader = SubResource( 1 )
 shader/shading_mode = 0
 
-[sub_resource type="CanvasItemShader" id=12]
+[sub_resource type="CanvasItemShader" id=3]
 
 _code = { "fragment":"uniform texture heightmap;\nuniform vec2 resolution = vec2(1000, 600);\n\nvec2 invRes = vec2(1.0)/resolution;\nfloat height1 = tex(heightmap, SCREEN_UV+vec2(-invRes.x, 0.0)).x;\nfloat height2 = tex(heightmap, SCREEN_UV+vec2(invRes.x, 0.0)).x;\nfloat height3 = tex(heightmap, SCREEN_UV+vec2(0.0, -invRes.y)).x;\nfloat height4 = tex(heightmap, SCREEN_UV+vec2(0.0, invRes.y)).x;\n\nvec3 norm = normalize(vec3(height1-height2, 0.02, height3-height4));\n\n\nCOLOR = vec4(norm, 1.0);", "fragment_ofs":0, "light":"", "light_ofs":0, "vertex":"", "vertex_ofs":0 }
 
-[sub_resource type="CanvasItemMaterial" id=9]
+[sub_resource type="CanvasItemMaterial" id=4]
 
-shader/shader = SubResource( 12 )
+shader/shader = SubResource( 3 )
 shader/shading_mode = 0
 shader_param/resolution = Vector2( 1000, 600 )
 
-[sub_resource type="CanvasItemShader" id=11]
+[sub_resource type="CanvasItemShader" id=5]
 
 _code = { "fragment":"uniform texture heightmap;\nuniform texture normal;\nuniform vec2 resolution = vec2(1000, 600);\n\nvec3 sun = normalize(vec3(1.0, 1.0, 1.0));\nfloat bright = dot(tex(normal, SCREEN_UV).xyz, sun);\nbright = max(0.0, bright);\nfloat height = tex(heightmap, SCREEN_UV).x;\nvec3 col = mix(vec3(0.2, 0.4, 0.7), vec3(0.4, 0.2, 0.05), smoothstep(0.0, 0.1, height));\n\n\nCOLOR = vec4(col*bright, 1.0);", "fragment_ofs":0, "light":"", "light_ofs":0, "vertex":"", "vertex_ofs":0 }
 
-[sub_resource type="CanvasItemMaterial" id=10]
+[sub_resource type="CanvasItemMaterial" id=6]
 
-shader/shader = SubResource( 11 )
+shader/shader = SubResource( 5 )
 shader/shading_mode = 0
 shader_param/resolution = Vector2( 1000, 600 )
 
@@ -41,33 +41,33 @@ shader/shader = SubResource( 7 )
 shader/shading_mode = 0
 shader_param/resolution = Vector2( 0, 0 )
 
-[sub_resource type="CanvasItemShader" id=3]
+[sub_resource type="CanvasItemShader" id=9]
 
 _code = { "fragment":"uniform texture heightmap;\nuniform vec2 resolution = vec2(1000, 600);\n\nvec2 invRes = vec2(1.0)/resolution;\nfloat height1 = tex(heightmap, SCREEN_UV+vec2(-invRes.x, 0.0)).x;\nfloat height2 = tex(heightmap, SCREEN_UV+vec2(invRes.x, 0.0)).x;\nfloat height3 = tex(heightmap, SCREEN_UV+vec2(0.0, -invRes.y)).x;\nfloat height4 = tex(heightmap, SCREEN_UV+vec2(0.0, invRes.y)).x;\n\nvec3 norm = normalize(vec3(height1-height2, 0.02, height3-height4));\n\n\nCOLOR = vec4(norm, 1.0);", "fragment_ofs":0, "light":"", "light_ofs":0, "vertex":"", "vertex_ofs":0 }
 
-[sub_resource type="CanvasItemMaterial" id=4]
+[sub_resource type="CanvasItemMaterial" id=10]
 
-shader/shader = SubResource( 3 )
+shader/shader = SubResource( 9 )
 shader/shading_mode = 0
 shader_param/resolution = Vector2( 1000, 600 )
 
-[sub_resource type="CanvasItemShader" id=13]
+[sub_resource type="CanvasItemShader" id=11]
 
 _code = { "fragment":"uniform vec2 point = vec2(-500, -500);\n//could pass in heightmap to make the mask look a little nicer\n//or something like that\n\nvec2 screen = texscreen(SCREEN_UV).xy;\nfloat dist = smoothstep(0.0, 0.2, distance(point, SCREEN_UV));\nif (screen.y<0.5){\n\tscreen = vec2(1.0);\n}\nCOLOR = vec4(vec3(screen.x*dist, screen.y, 1.0), 1.0);", "fragment_ofs":0, "light":"", "light_ofs":0, "vertex":"", "vertex_ofs":0 }
+
+[sub_resource type="CanvasItemMaterial" id=12]
+
+shader/shader = SubResource( 11 )
+shader/shading_mode = 0
+shader_param/point = Vector2( -100, -100 )
+
+[sub_resource type="CanvasItemShader" id=13]
+
+_code = { "fragment":"uniform texture heightmap;\nuniform texture cloudmap;\nuniform texture normal;\nuniform texture mask;\nuniform vec2 resolution = vec2(1000, 600);\n\n\nvec3 sun = normalize(vec3(1.0, 1.0, 1.0));\nfloat bright = dot(tex(normal, SCREEN_UV).xyz, sun);\nbright = max(0.2, bright);\nfloat height = tex(cloudmap, SCREEN_UV).x;\n\n//use gheight to allow mountains to poke through clouds\n//float gheight = tex(heightmap, SCREEN_UV).x;\n//height += smoothstep(0.5, 1.0, gheight);\n//need to change the second step term to match cloud cover levels\nfloat M = 1.0-(tex(mask, SCREEN_UV).x);\nfloat alpha = pow(1.0-smoothstep(0.0, 0.3, height), 3.0);\n\nalpha = alpha*smoothstep(0.1, 0.4, alpha-M);\nCOLOR = vec4(vec3(sqrt(bright)), alpha);\n\n", "fragment_ofs":0, "light":"", "light_ofs":0, "vertex":"", "vertex_ofs":0 }
 
 [sub_resource type="CanvasItemMaterial" id=14]
 
 shader/shader = SubResource( 13 )
-shader/shading_mode = 0
-shader_param/point = Vector2( -100, -100 )
-
-[sub_resource type="CanvasItemShader" id=5]
-
-_code = { "fragment":"uniform texture heightmap;\nuniform texture cloudmap;\nuniform texture normal;\nuniform texture mask;\nuniform vec2 resolution = vec2(1000, 600);\n\n\nvec3 sun = normalize(vec3(1.0, 1.0, 1.0));\nfloat bright = dot(tex(normal, SCREEN_UV).xyz, sun);\nbright = max(0.2, bright);\nfloat height = tex(cloudmap, SCREEN_UV).x;\n\n//use gheight to allow mountains to poke through clouds\n//float gheight = tex(heightmap, SCREEN_UV).x;\n//height += smoothstep(0.5, 1.0, gheight);\n//need to change the second step term to match cloud cover levels\nfloat M = 1.0-(tex(mask, SCREEN_UV).x);\nfloat alpha = pow(1.0-smoothstep(0.0, 0.3, height), 3.0);\n\nalpha = alpha*smoothstep(0.1, 0.4, alpha-M);\nCOLOR = vec4(vec3(sqrt(bright)), alpha);\n\n", "fragment_ofs":0, "light":"", "light_ofs":0, "vertex":"", "vertex_ofs":0 }
-
-[sub_resource type="CanvasItemMaterial" id=6]
-
-shader/shader = SubResource( 5 )
 shader/shading_mode = 0
 shader_param/resolution = Vector2( 1000, 600 )
 
@@ -87,7 +87,6 @@ centered = false
 
 [node name="Pass1" type="Viewport" parent="."]
 
-editor/display_folded = true
 rect = Rect2( 0, 0, 1000, 600 )
 own_world = false
 world = null
@@ -139,7 +138,7 @@ gui/disable_input = false
 
 [node name="MapNormal" type="Polygon2D" parent="Pass2"]
 
-material/material = SubResource( 9 )
+material/material = SubResource( 4 )
 transform/scale = Vector2( 1000, 600 )
 polygon = Vector2Array( 0, 0, 1, 0, 1, 1, 0, 1 )
 uv = Vector2Array(  )
@@ -173,7 +172,7 @@ gui/disable_input = false
 
 [node name="MapShade" type="Polygon2D" parent="Pass3"]
 
-material/material = SubResource( 10 )
+material/material = SubResource( 6 )
 transform/scale = Vector2( 1000, 600 )
 polygon = Vector2Array( 0, 0, 1, 0, 1, 1, 0, 1 )
 uv = Vector2Array(  )
@@ -189,7 +188,6 @@ invert/border = 100.0
 
 [node name="Pass4" type="Viewport" parent="."]
 
-editor/display_folded = true
 rect = Rect2( 0, 0, 1000, 600 )
 own_world = false
 world = null
@@ -241,7 +239,7 @@ gui/disable_input = false
 
 [node name="CloudNormal" type="Polygon2D" parent="Pass5"]
 
-material/material = SubResource( 4 )
+material/material = SubResource( 10 )
 transform/scale = Vector2( 1000, 600 )
 polygon = Vector2Array( 0, 0, 1, 0, 1, 1, 0, 1 )
 uv = Vector2Array(  )
@@ -275,7 +273,7 @@ gui/disable_input = false
 
 [node name="Mask" type="Polygon2D" parent="Pass7"]
 
-material/material = SubResource( 14 )
+material/material = SubResource( 12 )
 transform/scale = Vector2( 1000, 600 )
 polygon = Vector2Array( 0, 0, 1, 0, 1, 1, 0, 1 )
 uv = Vector2Array(  )
@@ -309,7 +307,7 @@ gui/disable_input = false
 
 [node name="CloudShade" type="Polygon2D" parent="Pass6"]
 
-material/material = SubResource( 6 )
+material/material = SubResource( 14 )
 transform/scale = Vector2( 1000, 600 )
 polygon = Vector2Array( 0, 0, 1, 0, 1, 1, 0, 1 )
 uv = Vector2Array(  )
