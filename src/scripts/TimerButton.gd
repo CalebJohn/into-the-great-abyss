@@ -20,6 +20,9 @@ func reset_loading_bar(object, method):
 	get_material().set_shader_param("progress", 1.0)
 	active = false
 	emit_signal("finished")
+	set_pressed(false)
+	set_toggle_mode(false)
+	
 
 func _ready():
 	set_material(material.duplicate(true))
@@ -34,6 +37,8 @@ func _ready():
 func _on_TimerButton_pressed():
 	##only activates if not already loading
 	if not active:
+		set_toggle_mode(true)
+		set_pressed(true)
 		tween.interpolate_method(self, "update_loading_bar", 0.0, 1.0, time, Tween.TRANS_LINEAR, Tween.EASE_OUT)
 		tween.start()
 		active = true

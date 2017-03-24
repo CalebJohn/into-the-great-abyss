@@ -41,8 +41,8 @@ content_margin/bottom = -1.0
 
 default_font = ExtResource( 1 )
 Button/colors/font_color = Color( 0.941176, 0.941176, 0.941176, 1 )
-Button/colors/font_color_disabled = Color( 1, 1, 1, 0.2 )
-Button/colors/font_color_hover = Color( 1, 1, 1, 0.501961 )
+Button/colors/font_color_disabled = Color( 1, 1, 1, 0.398797 )
+Button/colors/font_color_hover = Color( 1, 1, 1, 0.591015 )
 Button/colors/font_color_pressed = Color( 1, 1, 1, 0.784314 )
 Button/constants/hseparation = 2
 Button/fonts/font = null
