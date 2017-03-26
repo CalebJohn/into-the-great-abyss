@@ -1,6 +1,9 @@
-[gd_resource type="Theme" load_steps=7 format=1]
+[gd_scene load_steps=9 format=1]
 
 [ext_resource path="res://assets/fonts/bold.fnt" type="BitmapFont" id=1]
+[ext_resource path="res://src/scripts/BasePanel.gd" type="Script" id=2]
+
+
 
 [sub_resource type="StyleBoxEmpty" id=1]
 
@@ -37,12 +40,12 @@ content_margin/right = -1.0
 content_margin/top = -1.0
 content_margin/bottom = -1.0
 
-[resource]
+[sub_resource type="Theme" id=6]
 
 default_font = ExtResource( 1 )
 Button/colors/font_color = Color( 0.941176, 0.941176, 0.941176, 1 )
-Button/colors/font_color_disabled = Color( 1, 1, 1, 0.398797 )
-Button/colors/font_color_hover = Color( 1, 1, 1, 0.591015 )
+Button/colors/font_color_disabled = Color( 1, 1, 1, 0.2 )
+Button/colors/font_color_hover = Color( 1, 1, 1, 0.501961 )
 Button/colors/font_color_pressed = Color( 1, 1, 1, 0.784314 )
 Button/constants/hseparation = 2
 Button/fonts/font = null
@@ -67,4 +70,39 @@ LineEdit/fonts/font = null
 LineEdit/styles/focus = null
 LineEdit/styles/normal = null
 LineEdit/styles/read_only = null
+
+[node name="Base" type="Control"]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+theme/theme = SubResource( 6 )
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+script/script = ExtResource( 2 )
+
+[node name="Button" type="Button" parent="."]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 10.0
+margin/top = 10.0
+margin/right = 177.0
+margin/bottom = 45.0
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = "Return to Map"
+flat = true
+align = 0
+
+[connection signal="pressed" from="Button" to="." method="_on_Button_pressed"]
+
 
