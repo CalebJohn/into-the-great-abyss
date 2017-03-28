@@ -10,6 +10,7 @@ func pass_message(message):
 		get_node("Switch").set_text("NEW MESSAGE")
 
 func _ready():
+	pass_message("Your ship has crashed, you are all alone on an unexplored planet. Good luck")
 	#always show the newest message
 	get_node("Messages").set_scroll_follow(true)
 
