@@ -1,24 +1,23 @@
 
 extends Control
 
-var index = 0
-
+#adds a message and updates the button text to notify player
 func pass_message(message):
-	var node = Label.new()
-	node.set_text(message)
-	get_node("VBoxContainer/VBoxContainer").add_child(node)
-	var s = (get_node("VBoxContainer").get_v_scroll())
-	get_node("VBoxContainer").set_v_scroll(s+30)
-
+	get_node("Messages").add_text(message)
+	get_node("Messages").newline()
+	get_node("Messages").newline()
+	if get_node("Messages").is_hidden():
+		get_node("Switch").set_text("NEW MESSAGE")
 
 func _ready():
-	# Called every time the node is added to the scene.
-	# Initialization here
-	pass
+	#always show the newest message
+	get_node("Messages").set_scroll_follow(true)
 
-
-func _on_Button_pressed():
-	get_node("VBoxContainer").show()
-	pass_message("neeew"+str(index))
-	index += 1
-	
+func _on_Switch_pressed():
+	var c = get_node("Messages")
+	get_node("Switch").set_text("MESSAGES")
+	#toggle the visibility of the messages
+	if c.is_hidden():
+		c.show()
+	else:
+		c.hide()
