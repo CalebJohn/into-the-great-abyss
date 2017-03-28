@@ -23,6 +23,7 @@ func _tween_pos(pos):
 
 func _on_Map_switch_scene(pos):
 	move_map("out")
+	get_parent().get_node("CanvasLayer/Messenger").pass_message(str(pos))
 
 func _on_Base_switch_scene():
 	move_map("in")

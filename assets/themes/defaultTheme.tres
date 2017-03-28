@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=7 format=1]
+[gd_resource type="Theme" load_steps=10 format=1]
 
 [ext_resource path="res://assets/fonts/bold.fnt" type="BitmapFont" id=1]
 
@@ -37,6 +37,45 @@ content_margin/right = -1.0
 content_margin/top = -1.0
 content_margin/bottom = -1.0
 
+[sub_resource type="StyleBoxFlat" id=6]
+
+content_margin/left = -1.0
+content_margin/right = 10.0
+content_margin/top = -1.0
+content_margin/bottom = 10.0
+bg_color = Color( 0.872093, 0.87901, 0.898536, 1 )
+light_color = Color( 0.8, 0.8, 0.8, 1 )
+dark_color = Color( 0.8, 0.8, 0.8, 1 )
+border_size = 0
+border_blend = false
+draw_bg = true
+
+[sub_resource type="StyleBoxFlat" id=7]
+
+content_margin/left = -1.0
+content_margin/right = 10.0
+content_margin/top = -1.0
+content_margin/bottom = 10.0
+bg_color = Color( 0.6, 0.6, 0.6, 1 )
+light_color = Color( 0.8, 0.8, 0.8, 1 )
+dark_color = Color( 0.8, 0.8, 0.8, 1 )
+border_size = 0
+border_blend = false
+draw_bg = true
+
+[sub_resource type="StyleBoxFlat" id=8]
+
+content_margin/left = -1.0
+content_margin/right = 1.0
+content_margin/top = -1.0
+content_margin/bottom = 0.0
+bg_color = Color( 1, 1, 1, 0.864431 )
+light_color = Color( 1, 1, 1, 0 )
+dark_color = Color( 1, 1, 1, 0 )
+border_size = 2
+border_blend = true
+draw_bg = true
+
 [resource]
 
 default_font = ExtResource( 1 )
@@ -67,4 +106,12 @@ LineEdit/fonts/font = null
 LineEdit/styles/focus = null
 LineEdit/styles/normal = null
 LineEdit/styles/read_only = null
+VScrollBar/icons/decrement = null
+VScrollBar/icons/decrement_hilite = null
+VScrollBar/icons/increment = null
+VScrollBar/icons/increment_hilite = null
+VScrollBar/styles/grabber = SubResource( 6 )
+VScrollBar/styles/grabber_hilite = SubResource( 7 )
+VScrollBar/styles/scroll = SubResource( 8 )
+VScrollBar/styles/scroll_focus = null
 
