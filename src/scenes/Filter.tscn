@@ -1,0 +1,51 @@
+[gd_scene load_steps=5 format=1]
+
+[ext_resource path="res://assets/shaders/GlowXFilter.tres" type="CanvasItemMaterial" id=1]
+[ext_resource path="res://assets/images/blank_texture.tex" type="Texture" id=2]
+[ext_resource path="res://src/scripts/Filter.gd" type="Script" id=3]
+[ext_resource path="res://assets/shaders/GlowYFilter.tres" type="CanvasItemMaterial" id=4]
+
+[node name="Filter" type="TextureFrame"]
+
+material/material = ExtResource( 1 )
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = true
+focus/stop_mouse = false
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+texture = ExtResource( 2 )
+expand = true
+stretch_mode = 0
+script/script = ExtResource( 3 )
+effect = "Glow"
+multipass = false
+radius = 1.0
+strength = 1.0
+threshhold = 1.0
+BCS = Vector3( 1, 1, 1 )
+color = Color( 1, 1, 1, 1 )
+
+[node name="TextureFrame" type="TextureFrame" parent="."]
+
+visibility/visible = false
+material/material = ExtResource( 4 )
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = true
+focus/stop_mouse = false
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+texture = ExtResource( 2 )
+expand = true
+stretch_mode = 0
+
+

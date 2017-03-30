@@ -1,0 +1,16 @@
+[gd_resource type="CanvasItemMaterial" load_steps=2 format=1]
+
+[sub_resource type="CanvasItemShader" id=1]
+
+_code = { "fragment":"uniform float strength = 0.7;\nuniform vec2 resolution = vec2(1000, 600);\nuniform float radius = 1.0;\nuniform float threshhold = 1.0;\nuniform vec4 Color = vec4(1.0);\n\nvec2 ir = vec2(radius)/resolution;\nfloat stepx = ir.x;\nfloat stepy = ir.y;\n\nfloat tleft = length(texscreen(SCREEN_UV + vec2(-stepx,stepy)));\nfloat left = length(texscreen(SCREEN_UV + vec2(-stepx,0)));\nfloat bleft = length(texscreen(SCREEN_UV + vec2(-stepx,-stepy)));\nfloat top = length(texscreen(SCREEN_UV + vec2(0,stepy)));\nfloat bottom = length(texscreen(SCREEN_UV + vec2(0,-stepy)));\nfloat tright = length(texscreen(SCREEN_UV + vec2(stepx,stepy)));\nfloat right = length(texscreen(SCREEN_UV + vec2(stepx,0)));\nfloat bright = length(texscreen(SCREEN_UV + vec2(stepx,-stepy)));\n \nfloat x = tleft + 2.0*left + bleft - tright - 2.0*right - bright;\nfloat y = -tleft - 2.0*top - tright + bleft + 2.0 * bottom + bright;\nfloat col = sqrt((x*x) + (y*y));\ncol = smoothstep(threshhold, 1.0, col);\nCOLOR = vec4(Color.xyz, col*strength);", "fragment_ofs":0, "light":"", "light_ofs":0, "vertex":"", "vertex_ofs":0 }
+
+[resource]
+
+shader/shader = SubResource( 1 )
+shader/shading_mode = 0
+shader_param/strength = 0.4
+shader_param/resolution = Vector2( 1000, 600 )
+shader_param/radius = 1.0
+shader_param/threshhold = 0.5
+shader_param/Color = Color( 0, 0, 0, 1 )
+

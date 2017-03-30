@@ -1,0 +1,19 @@
+[gd_resource type="CanvasItemMaterial" load_steps=2 format=1]
+
+[sub_resource type="CanvasItemShader" id=1]
+
+_code = { "fragment":"uniform float strength = 0.7;\nuniform vec2 resolution = vec2(1000, 600);\nuniform float radius = 1.0;\nuniform float threshhold = 1.0;\nuniform vec4 Color = vec4(0.5);\n//Copied from Godot example project screen reading shaders\nuniform float brightness = 0.5;\nuniform float contrast = 0.8;\nuniform float saturation = 1.5;\n\nvec3 c = texscreen(SCREEN_UV);\n\nc.rgb = mix(vec3(0.0),c.rgb,brightness);\nc.rgb = mix(vec3(0.5),c.rgb,contrast);\nc.rgb = mix(vec3(dot(vec3(1.0),c.rgb)*0.33333),c.rgb,saturation);\n\nCOLOR = vec4(c, strength)*Color;\n", "fragment_ofs":0, "light":"", "light_ofs":0, "vertex":"", "vertex_ofs":0 }
+
+[resource]
+
+shader/shader = SubResource( 1 )
+shader/shading_mode = 0
+shader_param/strength = 1.0
+shader_param/resolution = Vector2( 1000, 600 )
+shader_param/radius = 3.0
+shader_param/threshhold = 0.5
+shader_param/Color = Color( 1, 1, 1, 1 )
+shader_param/brightness = 1.0
+shader_param/contrast = 0.5
+shader_param/saturation = 0.0
+
