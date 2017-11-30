@@ -2,13 +2,21 @@
 
 [sub_resource type="CanvasItemShader" id=1]
 
-_code = { "fragment":"uniform float progress = 1.0;\nCOLOR.a *= step(1.0-progress, 1.0 - VAR1.x);", "fragment_ofs":0, "light":"", "light_ofs":0, "vertex":"//this is horrible but necessary because of the way text rendering works\n//the UV position is overridden so I need to hack it in myself\nuniform float posx = 0.0;\nuniform float width = 150.0;\nVAR1.x = (SRC_VERTEX.x-posx)/width;", "vertex_ofs":0 }
+_code = {
+"fragment": "uniform float progress;
+COLOR.a *= step(1.0-progress, 1.0 - VAR1.x);",
+"fragment_ofs": 0,
+"light": "",
+"light_ofs": 0,
+"vertex": "uniform float width;
+VAR1.xy = VERTEX/vec2(width);",
+"vertex_ofs": 0
+}
 
 [resource]
 
 shader/shader = SubResource( 1 )
 shader/shading_mode = 0
-shader_param/posx = 0.0
-shader_param/width = 150.0
+shader_param/width = 100.0
 shader_param/progress = 1.0
 
