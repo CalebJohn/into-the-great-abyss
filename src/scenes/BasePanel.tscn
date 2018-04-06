@@ -1,9 +1,8 @@
-[gd_scene load_steps=9 format=1]
+[gd_scene load_steps=10 format=1]
 
 [ext_resource path="res://assets/fonts/bold.fnt" type="BitmapFont" id=1]
 [ext_resource path="res://src/scripts/BasePanel.gd" type="Script" id=2]
-
-
+[ext_resource path="res://src/scenes/SceneView.tscn" type="PackedScene" id=3]
 
 [sub_resource type="StyleBoxEmpty" id=1]
 
@@ -103,6 +102,33 @@ text = "Return to Map"
 flat = true
 align = 0
 
+[node name="Scene" type="Button" parent="."]
+
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 10.0
+margin/top = 555.0
+margin/right = 177.0
+margin/bottom = 10.0
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = "Generate Scene"
+flat = true
+align = 0
+
+[node name="SceneView" parent="." instance=ExtResource( 3 )]
+
+visibility/visible = false
+z/z = -1
+
 [connection signal="pressed" from="Button" to="." method="_on_Button_pressed"]
+
+[connection signal="pressed" from="Scene" to="SceneView" method="_on_Scene_pressed"]
+
+[connection signal="pressed" from="Scene" to="." method="_on_Scene_pressed"]
 
 
