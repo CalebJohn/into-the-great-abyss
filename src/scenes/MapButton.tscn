@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=1]
+
+[ext_resource path="res://assets/images/blank_texture.tex" type="Texture" id=1]
+[ext_resource path="res://src/scripts/MapButton.gd" type="Script" id=2]
+
+[sub_resource type="CanvasItemShader" id=1]
+
+_code = { "fragment":"uniform texture cTexture;\nuniform float tint = 0.1;\nuniform vec2 id;\nuniform vec2 buttonSize;\nuniform vec2 resolution;\n\nvec2 pos = SCREEN_UV*resolution;\npos.y = resolution.y-pos.y;\nvec2 bpos = id;\nvec2 fade = step(bpos, pos)*step(pos, bpos+buttonSize);\nCOLOR = vec4(0.0, 0.0, 0.0, step(0.5, fade.x*fade.y)*tint);", "fragment_ofs":0, "light":"", "light_ofs":0, "vertex":"", "vertex_ofs":0 }
+
+[sub_resource type="CanvasItemMaterial" id=2]
+
+shader/shader = SubResource( 1 )
+shader/shading_mode = 0
+shader_param/tint = 0.1
+shader_param/id = Vector2( 0, 0 )
+shader_param/buttonSize = Vector2( 0, 0 )
+shader_param/resolution = Vector2( 0, 0 )
+
+[node name="MapButton" type="TextureButton"]
+
+material/material = SubResource( 2 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 1.0
+margin/bottom = 1.0
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+textures/normal = ExtResource( 1 )
+script/script = ExtResource( 2 )
+
+[connection signal="mouse_enter" from="." to="." method="_on_MapButton_mouse_enter"]
+
+[connection signal="pressed" from="." to="." method="_on_MapButton_pressed"]
+
+[connection signal="resized" from="." to="." method="_on_MapButton_resized"]
+
+

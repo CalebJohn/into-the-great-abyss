@@ -1,0 +1,22 @@
+[gd_resource type="CanvasItemMaterial" load_steps=2 format=1]
+
+[sub_resource type="CanvasItemShader" id=1]
+
+_code = {
+"fragment": "uniform float progress;
+COLOR.a *= step(1.0-progress, 1.0 - VAR1.x);",
+"fragment_ofs": 0,
+"light": "",
+"light_ofs": 0,
+"vertex": "uniform float width;
+VAR1.xy = VERTEX/vec2(width);",
+"vertex_ofs": 0
+}
+
+[resource]
+
+shader/shader = SubResource( 1 )
+shader/shading_mode = 0
+shader_param/width = 100.0
+shader_param/progress = 1.0
+
