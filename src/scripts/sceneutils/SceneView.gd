@@ -5,11 +5,14 @@ extends Node2D
 
 #just passes off data and instructions to make scene into scene3d or scene2d node
 
+var time = 0.5 #range of 0-2 (dawn)
+
 func make_scene():
 	get_node("Node2D/Viewport/Spatial").regenerate()
 
 
 func _ready():
+	make_scene()
 	pass
 
 

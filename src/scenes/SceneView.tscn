@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=1]
 
-[ext_resource path="res://src/scripts/SceneView.gd" type="Script" id=1]
+[ext_resource path="res://src/scripts/sceneutils/SceneView.gd" type="Script" id=1]
 [ext_resource path="res://src/scenes/Scene3d.tscn" type="PackedScene" id=2]
 
 [node name="SceneView" type="Node2D"]
