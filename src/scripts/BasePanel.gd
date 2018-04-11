@@ -11,3 +11,4 @@ func _on_Scene_pressed():
 		get_node("Scene").set_text("Generate Scene")
 	else:
 		get_node("Scene").set_text("Hide Scene")
+

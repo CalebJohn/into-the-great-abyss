@@ -18,12 +18,12 @@ extends Spatial
 	# while buildings may be present in other scenes they will not be focussed on
 
 
-var terrain = load("res://src/scripts/sceneutils/walkingsim/Terrain.gd")
+var terrain = load("res://src/scripts/sceneutils/Terrain.gd")
 var objects = load("res://src/scripts/sceneutils/SceneObjects.gd").new()
 
 
 func place_house(pos):
-	var mat = FixedMaterial.new()
+	var mat = SpatialMaterial.new()
 	var mesh = MeshInstance.new()
 	mesh.set_mesh(objects.make_house(mat))
 	mesh.translate(pos)
@@ -48,14 +48,15 @@ func _ready():
 	
 func _process(delta):
 	if Input.is_action_pressed("scene_forward"):
-		get_node("Camera").translate(Vector3(0,0,-1))
+		$Camera.translate(Vector3(0,0,-1))
 	if Input.is_action_pressed("scene_left"):
-		get_node("Camera").translate(Vector3(-1,0,0))
+		$Camera.translate(Vector3(-1,0,0))
 	if Input.is_action_pressed("scene_back"):
-		get_node("Camera").translate(Vector3(0,0,1))
+		$Camera.translate(Vector3(0,0,1))
 	if Input.is_action_pressed("scene_right"):
-		get_node("Camera").translate(Vector3(1,0,0))
+		$Camera.translate(Vector3(1,0,0))
 	if Input.is_action_pressed("scene_up"):
-		get_node("Camera").translate(Vector3(0,1,0))
+		$Camera.translate(Vector3(0,1,0))
 	if Input.is_action_pressed("scene_down"):
-		get_node("Camera").translate(Vector3(0,-1,0))
+		$Camera.translate(Vector3(0,-1,0))
+

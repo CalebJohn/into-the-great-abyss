@@ -6,20 +6,21 @@ var followMouse = false
 #how fast the sun catches up to the mouse
 var followFactor = 30
 var sunPos = Vector2(0, 600)
-var background
 #How long the sunrise takes
 var riseTime = 2
 #how long the the sunset takes
 var setTime = 3
+#reference to Background node
+var background
 
 func _start(object, method):
 	get_tree().change_scene("res://src/scenes/Level.tscn")
 
-func _fixed_process(delta):
+func _physics_process(delta1):
 	# This is the mouse tracking code for the sun, it won't be called
 	# during sunrise or sunset
 	if followMouse:
-		var mouse = get_viewport().get_mouse_pos()
+		var mouse = get_viewport().get_mouse_position()
 		# This is the amount to move the sun towards the mouse cursor
 		# because of the follow factor the movement of the sun towards
 		# the cursor will slow down as it approaches, the larger the factor
@@ -35,16 +36,12 @@ func _fixed_process(delta):
 			background.update_sun(sunPos)
 
 #called after sun is tweened
-func _free_mouse(object, method):
+func _free_mouse(a, b):
 	followMouse = true
 	sunPos = Vector2(global.size.x*0.5, 0)
 
 func _ready():
-	#a reference is kept to background so we dont have to make background a child
-	background = get_parent().get_node("Background")
-	#connect buttons callbacks here
-	
-	set_fixed_process(true)
+	background = $"../Background"
 	
 	#make tween to move sun around
 	var sunTween = Tween.new()
@@ -54,14 +51,14 @@ func _ready():
 	#set callback for when tween completes
 	#must be done through script because tween is made in script
 	#if tween is made in editor then we could fire this signal
-	sunTween.connect("tween_complete", self, "_free_mouse")
+	sunTween.connect("tween_completed", self, "_free_mouse")
 	
 	#add tween to fade text
 	#starts a second after the sun fades in
-	set_opacity(0.0)
+	modulate.a = 0.0
 	var textTween = Tween.new()
 	add_child(textTween)
-	textTween.interpolate_property(self, "visibility/opacity", 0.0, 1.0, riseTime, Tween.TRANS_QUAD, Tween.EASE_IN_OUT, riseTime)
+	textTween.interpolate_property(self, NodePath("modulate:a"), 0, 1, riseTime, Tween.TRANS_QUAD, Tween.EASE_IN_OUT, riseTime)
 	textTween.start()
 
 ##Callbacks registered with connect button in editor
@@ -72,19 +69,18 @@ func _on_StartButton_pressed():
 	var sunTween = Tween.new()
 	add_child(sunTween)
 	sunTween.interpolate_method(background, "update_sun", sunPos, Vector2(global.size.x*0.5, global.size.y+50), setTime, Tween.TRANS_QUART, Tween.EASE_OUT)
-	sunTween.connect("tween_complete", self, "_start")
+	sunTween.connect("tween_completed", self, "_start")
 	sunTween.start()
 	
 	#fades the scene to black during transition
 	var screenTween = Tween.new()
 	add_child(screenTween)
-	screenTween.interpolate_method(get_parent().get_node("Fader"), "set_color", Color(1, 1, 1, 1), Color(0, 0, 0, 1), setTime, Tween.TRANS_QUAD, Tween.EASE_IN_OUT)
+	screenTween.interpolate_property(get_parent(), "modulate", Color(1, 1, 1, 1), Color(0, 0, 0, 1), setTime, Tween.TRANS_QUAD, Tween.EASE_IN_OUT)
 	screenTween.start()
-	
 	#Fades text away as scene changes
 	var textTween = Tween.new()
 	add_child(textTween)
-	textTween.interpolate_property(self, "visibility/opacity", 1.0, 0.0, 1, Tween.TRANS_QUAD, Tween.EASE_IN_OUT)
+	textTween.interpolate_property(self, "modulate:a", 1.0, 0.0, 1, Tween.TRANS_QUAD, Tween.EASE_IN_OUT)
 	textTween.start()
 
 #switches from default menu to options
@@ -92,10 +88,10 @@ func _on_StartButton_pressed():
 func _on_OptionsButton_pressed():
 	var nodes = get_tree().get_nodes_in_group("startMenu")
 	for node in nodes:
-		node.hide()
+		node.visible = false
 	nodes = get_tree().get_nodes_in_group("optionsMenu")
 	for node in nodes:
-		node.show()
+		node.visible = true
 
 
 func _on_QuitButton_pressed():
@@ -106,7 +102,7 @@ func _on_FullscreenButton_pressed():
 	if global.fullscreen:
 		OS.set_window_fullscreen(false)
 		global.fullscreen = false
-		global.size = Vector2(Globals.get("display/width"), Globals.get("display/height"))
+		global.size = Vector2(ProjectSettings.get_setting("display/window/size/width"), ProjectSettings.get_setting("display/window/size/height"))
 		
 	else:
 		OS.set_window_fullscreen(true)
@@ -117,10 +113,10 @@ func _on_FullscreenButton_pressed():
 
 func _on_MuteButton_pressed():
 	if global.mute:
-		get_node("MuteButton").set_text("MUTE: OFF")
+		$MuteButton.text = "MUTE: OFF"
 		global.mute = false
 	else:
-		get_node("MuteButton").set_text("MUTE: ON")
+		$MuteButton.text = "MUTE: ON"
 		global.mute = true
 
 
@@ -132,7 +128,8 @@ func _on_Value_text_changed( text ):
 func _on_ReturnButton_pressed():
 	var nodes = get_tree().get_nodes_in_group("startMenu")
 	for node in nodes:
-		node.show()
+		node.visible = true
 	nodes = get_tree().get_nodes_in_group("optionsMenu")
 	for node in nodes:
-		node.hide()
+		node.visible = false
+

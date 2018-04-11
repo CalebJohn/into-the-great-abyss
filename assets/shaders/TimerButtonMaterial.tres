@@ -1,22 +1,28 @@
-[gd_resource type="CanvasItemMaterial" load_steps=2 format=1]
+[gd_resource type="ShaderMaterial" load_steps=2 format=2]
 
-[sub_resource type="CanvasItemShader" id=1]
+[sub_resource type="Shader" id=1]
 
-_code = {
-"fragment": "uniform float progress;
-COLOR.a *= step(1.0-progress, 1.0 - VAR1.x);",
-"fragment_ofs": 0,
-"light": "",
-"light_ofs": 0,
-"vertex": "uniform float width;
-VAR1.xy = VERTEX/vec2(width);",
-"vertex_ofs": 0
+code = "shader_type canvas_item;
+
+uniform sampler2D text;
+uniform float width;
+uniform float progress;
+
+varying vec2 limit;
+
+void vertex() {
+	limit.xy = VERTEX/vec2(width);
 }
+
+void fragment() {
+	COLOR = texture(text, UV);
+	COLOR.a *= step(1.0 - progress, 1.0 - limit.x);
+}"
 
 [resource]
 
-shader/shader = SubResource( 1 )
-shader/shading_mode = 0
-shader_param/width = 100.0
-shader_param/progress = 1.0
+render_priority = 0
+shader = SubResource( 1 )
+shader_param/width = null
+shader_param/progress = null
 

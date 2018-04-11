@@ -8,3 +8,4 @@ func _ready():
 	set_placeholder(str(global.genSeed))
 
 
+

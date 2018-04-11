@@ -8,17 +8,16 @@ extends Node2D
 var time = 0.5 #range of 0-2 (dawn)
 
 func make_scene():
-	get_node("Node2D/Viewport/Spatial").regenerate()
-
+	$Node2D/Viewport/Spatial.regenerate()
 
 func _ready():
+	$Node2D/Viewport.size = global.size * 0.5
 	make_scene()
-	pass
+	$Sprite.position = global.size * 0.5
+	$Sprite.texture = $Node2D/Viewport.get_texture()
 
 
 func _on_Scene_pressed():
 	make_scene()
-	if is_visible():
-		hide()
-	else:
-		show()
+	visible = visible == false
+

@@ -21,73 +21,80 @@ var cloudMask;
 
 #update the mask once and update the cloud layer accordingly
 func apply_mask(pos):
-	get_node("Pass7").set_render_target_update_mode(1)
-	get_node("Pass7/Mask").get_material().set_shader_param("point", pos/global.size)
-	cloudUpdateFrame = OS.get_frames_drawn()
+	$Pass7.render_target_update_mode = Viewport.UPDATE_ONCE
+	$Pass7/Mask.material.set_shader_param("point", pos/global.size)
+	cloudUpdateFrame = Engine.get_frames_drawn()
 	set_process(true)
 
 #runs each frame.
 func _process(delta):
 	##once pass one is finished start pass two
 	##and the same for pass 5 and 6
-	if OS.get_frames_drawn() == startFrame + 1:
-		get_node("Pass2").set_render_target_update_mode(1)
-		get_node("Pass5").set_render_target_update_mode(1)
-	if OS.get_frames_drawn() == startFrame + 2:
-		get_node("Pass3").set_render_target_update_mode(1)
-		get_node("Pass6").set_render_target_update_mode(1)
+	if Engine.get_frames_drawn() == startFrame + 1:
+		$Pass2.render_target_update_mode = Viewport.UPDATE_ONCE
+		$Pass5.render_target_update_mode = Viewport.UPDATE_ONCE
+	if Engine.get_frames_drawn() == startFrame + 2:
+		$Pass3.render_target_update_mode = Viewport.UPDATE_ONCE
+		$Pass6.render_target_update_mode = Viewport.UPDATE_ONCE
 	##after running pass four stop calling _process
-	if OS.get_frames_drawn() == startFrame + 4:
+	if Engine.get_frames_drawn() == startFrame + 4:
 		set_process(false)
 	##if cloudUpdateFrame is reset then re-render the cloud layer using the
 	##updated mask
-	if OS.get_frames_drawn() == cloudUpdateFrame+1:
-		get_node("Pass6").set_render_target_update_mode(1)
+	if Engine.get_frames_drawn() == cloudUpdateFrame+1:
+		$Pass6.render_target_update_mode = Viewport.UPDATE_ONCE
 		set_process(false)
 		
 
 func _ready():
-	set_process(true)
-	startFrame = OS.get_frames_drawn()
-	
+	#set_process(true)
+	startFrame = Engine.get_frames_drawn()
 	## initialize size of each viewport
 	##TODO do this with groups
-	get_node("Pass1").set_rect(Rect2(0, 0, global.size.x, global.size.y))
-	get_node("Pass1/Heightmap").set_scale(global.size)
-	get_node("Pass2").set_rect(Rect2(0, 0, global.size.x, global.size.y))
-	get_node("Pass2/MapNormal").set_scale(global.size)
-	get_node("Pass2/MapNormal").get_material().set_shader_param("resolution", global.size)
-	get_node("Pass3").set_rect(Rect2(0, 0, global.size.x, global.size.y))
-	get_node("Pass3/MapShade").set_scale(global.size)
-	get_node("Pass3/MapShade").get_material().set_shader_param("resolution", global.size)
-	get_node("Pass4").set_rect(Rect2(0, 0, global.size.x, global.size.y))
-	get_node("Pass4/CloudHeight").set_scale(global.size)
-	get_node("Pass4/CloudHeight").get_material().set_shader_param("resolution", global.size)
-	get_node("Pass5").set_rect(Rect2(0, 0, global.size.x, global.size.y))
-	get_node("Pass5/CloudNormal").set_scale(global.size)
-	get_node("Pass5/CloudNormal").get_material().set_shader_param("resolution", global.size)
-	get_node("Pass6").set_rect(Rect2(0, 0, global.size.x, global.size.y))
-	get_node("Pass6/CloudShade").set_scale(global.size)
-	get_node("Pass6/CloudShade").get_material().set_shader_param("resolution", global.size)
-	
+	$Pass1.size = global.size
+	$Pass1/Heightmap.scale = global.size
+	$Pass1/Heightmap.material.set_shader_param("resolution", global.size)
+	$Pass2.size = global.size
+	$Pass2/MapNormal.scale = global.size
+	$Pass2/MapNormal.material.set_shader_param("resolution", global.size)
+	$Pass3.size = global.size
+	$Pass3/MapShade.scale = global.size
+	$Pass3/MapShade.material.set_shader_param("resolution", global.size)
+	$Pass4.size = global.size
+	$Pass4/CloudHeight.scale = global.size
+	$Pass4/CloudHeight.material.set_shader_param("resolution", global.size)
+	$Pass5.size = global.size
+	$Pass5/CloudNormal.scale = global.size
+	$Pass5/CloudNormal.material.set_shader_param("resolution", global.size)
+	$Pass6.size = global.size
+	$Pass6/CloudShade.scale = global.size
+	$Pass6/CloudShade.material.set_shader_param("resolution", global.size)
+	$Pass7.size = global.size
+	$Pass7/Mask.scale = global.size
 	##acquire references to internal texture of all viewports in order
 	##to be accessed from other parts of the generator and scene
-	mapHeight = get_node("Pass1").get_render_target_texture()
-	mapNormal = get_node("Pass2").get_render_target_texture()
-	mapTexture = get_node("Pass3").get_render_target_texture()
-	cloudHeight = get_node("Pass4").get_render_target_texture()
-	cloudNormal = get_node("Pass5").get_render_target_texture()
-	cloudTexture = get_node("Pass6").get_render_target_texture()
-	cloudMask = get_node("Pass7").get_render_target_texture()
+	mapHeight = $Pass1.get_texture()
+	mapNormal = $Pass2.get_texture()
+	mapTexture = $Pass3.get_texture()
+	cloudHeight = $Pass4.get_texture()
+	cloudNormal = $Pass5.get_texture()
+	cloudTexture = $Pass6.get_texture()
+	cloudMask = $Pass7.get_texture()
+
+	#Unfortunatly, this needs to be set from code now
+	$GroundDisplay.texture = mapTexture
+	$GroundDisplay.position = global.size * 0.5
+	
+	$CloudDisplay.texture = cloudTexture
+	$CloudDisplay.position = global.size * 0.5
 	
 	#pass textures to other viewports to use them as input
-	get_node("Pass2/MapNormal").get_material().set_shader_param("heightmap", mapHeight)
-	get_node("Pass3/MapShade").get_material().set_shader_param("heightmap", mapHeight)
-	get_node("Pass3/MapShade").get_material().set_shader_param("normal", mapNormal)
+	$Pass2/MapNormal.material.set_shader_param("heightmap", mapHeight)
+	$Pass3/MapShade.material.set_shader_param("heightmap", mapHeight)
+	$Pass3/MapShade.material.set_shader_param("normal", mapNormal)
 	#set up the cloud render pass
-	get_node("Pass5/CloudNormal").get_material().set_shader_param("heightmap", cloudHeight)
-	get_node("Pass6/CloudShade").get_material().set_shader_param("heightmap", mapHeight)
-	get_node("Pass6/CloudShade").get_material().set_shader_param("cloudmap", cloudHeight)
-	get_node("Pass6/CloudShade").get_material().set_shader_param("normal", cloudNormal)
-	get_node("Pass6/CloudShade").get_material().set_shader_param("mask", cloudMask)
-	
+	$Pass5/CloudNormal.material.set_shader_param("heightmap", cloudHeight)
+	$Pass6/CloudShade.material.set_shader_param("heightmap", mapHeight)
+	$Pass6/CloudShade.material.set_shader_param("cloudmap", cloudHeight)
+	$Pass6/CloudShade.material.set_shader_param("normal", cloudNormal)
+	$Pass6/CloudShade.material.set_shader_param("mask", cloudMask)	

@@ -13,13 +13,13 @@ func move_map(direction):
 	var panelTween = Tween.new()
 	add_child(panelTween)
 	if direction == "out":
-		panelTween.interpolate_method(self, "_tween_pos", start, end, speed, Tween.TRANS_QUAD, Tween.EASE_IN_OUT)
+		panelTween.interpolate_property(self, "rect_position:x", start, end, speed, Tween.TRANS_QUAD, Tween.EASE_IN_OUT)
 	elif direction == "in":
-		panelTween.interpolate_method(self, "_tween_pos", end, start, speed, Tween.TRANS_QUAD, Tween.EASE_IN_OUT)
+		panelTween.interpolate_property(self, "rect_position:x", end, start, speed, Tween.TRANS_QUAD, Tween.EASE_IN_OUT)
 	panelTween.start()
 	
-func _tween_pos(pos):
-	set_pos(pos)
+func _tween_position(pos):
+	set_position(pos)
 
 func _on_Map_switch_scene(pos):
 	move_map("out")
@@ -29,5 +29,5 @@ func _on_Base_switch_scene():
 	move_map("in")
 	
 func _ready():
-	start = Vector2(0, 0)
-	end = Vector2(-get_viewport().get_rect().size.width, 0)
+	start = 0
+	end = -get_viewport().size.x

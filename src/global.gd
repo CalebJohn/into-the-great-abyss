@@ -27,4 +27,5 @@ func _ready():
 	randomize()
 	genSeed = randi()
 	#set the size variable to default values defined in project settings
-	size = Vector2(Globals.get("display/width"), Globals.get("display/height"))
+	size = Vector2(ProjectSettings.get_setting("display/window/size/width"), ProjectSettings.get_setting("display/window/size/height"))
+

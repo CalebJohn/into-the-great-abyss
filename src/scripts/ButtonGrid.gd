@@ -12,16 +12,15 @@ var buttonSize;
 
 
 func _ready():
-	set_columns(numWidth)
+	self.columns = numWidth
 	#set up button properties
-	
 	#Godot adds buttons depth first
 	for i in range(numHeight):
 		for j in range(numWidth):
 			var button = buttonPrototype.instance()
-			buttonSize = get_size()/Vector2(numWidth, numHeight)
-			button.set_size(buttonSize)
-			button.get_material().set_shader_param("cTexture", get_parent().get_node("Generator").cloudTexture)
+			buttonSize = self.rect_size/Vector2(numWidth, numHeight)
+			button.rect_min_size = buttonSize
+			button.material.set_shader_param("cTexture", get_parent().get_node("Generator").cloudTexture)
 			#meta is a string based property that can be assigned to any object
 			#in our case we will use it to store the position in map coordinates
 			button.position =  Vector2(j, i)
@@ -35,3 +34,4 @@ func _ready():
 func _on_ButtonGrid_child_pressed(pos):
 	var screenPos = Vector2(100, 100)+pos*buttonSize+buttonSize*0.5
 	get_parent().get_node("Generator").apply_mask(screenPos)
+
