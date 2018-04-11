@@ -1,0 +1,16 @@
+[gd_resource type="CanvasItemMaterial" load_steps=2 format=1]
+
+[sub_resource type="CanvasItemShader" id=1]
+
+_code = { "fragment":"uniform float strength = 0.7;\nuniform vec2 resolution = vec2(1000, 600);\nuniform float radius = 1.0;\nuniform float threshhold = 1.0;\nuniform vec4 Color = vec4(1.0);\n\nvec2 rad = (vec2(radius)/resolution)*1.0;\nvec3 col = vec3(0);\nfloat num = 0.0;\nvec3 c = vec3(0.0);\nc = texscreen(SCREEN_UV+vec2(-rad.x,-rad.y));\nif (length(c)>threshhold) {\n\tcol += c;\n\tnum += 1.0;\n}\nc = texscreen(SCREEN_UV+vec2(0,-rad.y));\nif (length(c)>threshhold) {\n\tcol += c;\n\tnum += 1.0;\n}\nc = texscreen(SCREEN_UV+vec2(rad.x,-rad.y));\nif (length(c)>threshhold) {\n\tcol += c;\n\tnum += 1.0;\n}\n\nc = texscreen(SCREEN_UV+vec2(-rad.x,0));\nif (length(c)>threshhold) {\n\tcol += c;\n\tnum += 1.0;\n}\nc = texscreen(SCREEN_UV+vec2(0,0));\ncol += c;\nnum += 1.0;\nc = texscreen(SCREEN_UV+vec2(rad.x,0));\nif (length(c)>threshhold) {\n\tcol += c;\n\tnum += 1.0;\n}\n\n\nc = texscreen(SCREEN_UV+vec2(-rad.x,rad.y));\nif (length(c)>threshhold) {\n\tcol += c;\n\tnum += 1.0;\n}\nc = texscreen(SCREEN_UV+vec2(0,rad.y));\nif (length(c)>threshhold) {\n\tcol += c;\n\tnum += 1.0;\n}\nc = texscreen(SCREEN_UV+vec2(rad.x,rad.y));\nif (length(c)>threshhold) {\n\tcol += c;\n\tnum += 1.0;\n}\n\ncol /= num;\nCOLOR = vec4(col, strength)*Color;", "fragment_ofs":0, "light":"", "light_ofs":0, "vertex":"", "vertex_ofs":0 }
+
+[resource]
+
+shader/shader = SubResource( 1 )
+shader/shading_mode = 0
+shader_param/strength = 0.7
+shader_param/resolution = Vector2( 1000, 600 )
+shader_param/radius = 1.0
+shader_param/threshhold = 1.0
+shader_param/Color = Plane( 1, 1, 1, 1 )
+

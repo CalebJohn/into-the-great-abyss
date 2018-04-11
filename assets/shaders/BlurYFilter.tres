@@ -1,0 +1,16 @@
+[gd_resource type="CanvasItemMaterial" load_steps=2 format=1]
+
+[sub_resource type="CanvasItemShader" id=1]
+
+_code = { "fragment":"uniform float strength = 0.7;\nuniform vec2 resolution = vec2(1000, 600);\nuniform float radius = 1.0;\nuniform float threshhold = 1.0;\nuniform vec4 Color = vec4(0.5);\n//look into texel offsets to increase efficiency\nvec3 col = vec3(0.0);\nvec2 blur = vec2(radius)/resolution;\nblur.x = 0.0;\n//0.0162162162;\n// 0.0540540541;\n// 0.1216216216;\n// 0.1945945946;\n// 0.2270270270;\n\n//16, 15, 12, 9, 5\n\ncol += texscreen(SCREEN_UV-blur*4.0)*0.0162162162;\ncol += texscreen(SCREEN_UV-blur*3.0)*0.0540540541;\ncol += texscreen(SCREEN_UV-blur*2.0)*0.1216216216;\ncol += texscreen(SCREEN_UV-blur)*0.1945945946;\ncol += texscreen(SCREEN_UV)*0.2270270270;\ncol += texscreen(SCREEN_UV+blur)*0.1945945946;\ncol += texscreen(SCREEN_UV+blur*2.0)*0.1216216216;\ncol += texscreen(SCREEN_UV+blur*3.0)*0.0540540541;\ncol += texscreen(SCREEN_UV+blur*4.0)*0.0162162162;\n/*\ncol += texscreen(SCREEN_UV-blur*4.0)*0.05;\ncol += texscreen(SCREEN_UV-blur*3.0)*0.09;\ncol += texscreen(SCREEN_UV-blur*2.0)*0.12;\ncol += texscreen(SCREEN_UV-blur)*0.15;\ncol += texscreen(SCREEN_UV)*0.16;\ncol += texscreen(SCREEN_UV+blur)*0.15;\ncol += texscreen(SCREEN_UV+blur*2.0)*0.12;\ncol += texscreen(SCREEN_UV+blur*3.0)*0.09;\ncol += texscreen(SCREEN_UV+blur*4.0)*0.05;\n*/\nCOLOR = vec4(col, strength)*Color;", "fragment_ofs":0, "light":"", "light_ofs":0, "vertex":"", "vertex_ofs":0 }
+
+[resource]
+
+shader/shader = SubResource( 1 )
+shader/shading_mode = 0
+shader_param/strength = 0.7
+shader_param/resolution = Vector2( 1000, 600 )
+shader_param/radius = 3.0
+shader_param/threshhold = 1.0
+shader_param/Color = Plane( 0.5, 0.5, 0.5, 0.5 )
+

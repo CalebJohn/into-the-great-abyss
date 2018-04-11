@@ -1,0 +1,16 @@
+[gd_resource type="CanvasItemMaterial" load_steps=2 format=1]
+
+[sub_resource type="CanvasItemShader" id=1]
+
+_code = { "fragment":"uniform float strength = 0.7;\nuniform vec2 resolution = vec2(1000, 600);\nuniform float radius = 1.0;\nuniform float threshhold = 1.0;\nuniform vec4 Color = vec4(1.0);\n\nvec3 col = texscreen(SCREEN_UV);\ncol.x = 1.0-col.x;\ncol.y = 1.0-col.y;\ncol.z = 1.0-col.z;\nCOLOR = vec4(col, strength)*Color;", "fragment_ofs":0, "light":"", "light_ofs":0, "vertex":"", "vertex_ofs":0 }
+
+[resource]
+
+shader/shader = SubResource( 1 )
+shader/shading_mode = 0
+shader_param/strength = 0.7
+shader_param/resolution = Vector2( 1000, 600 )
+shader_param/radius = 1.0
+shader_param/threshhold = 1.0
+shader_param/Color = Plane( 1, 1, 1, 1 )
+
