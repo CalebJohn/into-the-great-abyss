@@ -1,0 +1,64 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://src/scripts/Main.gd" type="Script" id=1]
+[ext_resource path="res://src/scripts/EnterBase.gd" type="Script" id=2]
+[ext_resource path="res://src/scenes/Map.tscn" type="PackedScene" id=3]
+[ext_resource path="res://src/scenes/BasePanel.tscn" type="PackedScene" id=4]
+[ext_resource path="res://src/scenes/Messenger.tscn" type="PackedScene" id=5]
+
+[node name="Level" type="Control" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+script = ExtResource( 1 )
+_sections_unfolded = [ "Visibility" ]
+
+[node name="LevelContainer" type="Control" parent="." index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+script = ExtResource( 2 )
+
+[node name="Map" parent="LevelContainer" index="0" instance=ExtResource( 3 )]
+
+rect_clip_content = false
+_sections_unfolded = [ "Visibility" ]
+
+[node name="Base" parent="LevelContainer" index="1" instance=ExtResource( 4 )]
+
+anchor_left = 1.0
+margin_right = -1000.0
+_sections_unfolded = [ "Visibility" ]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." index="1"]
+
+editor/display_folded = true
+layer = 1
+offset = Vector2( 0, 0 )
+rotation = 0.0
+scale = Vector2( 1, 1 )
+transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+
+[node name="Messenger" parent="CanvasLayer" index="0" instance=ExtResource( 5 )]
+
+[connection signal="switch_scene" from="LevelContainer/Map" to="LevelContainer" method="_on_Map_switch_scene"]
+
+[connection signal="switch_scene" from="LevelContainer/Base" to="LevelContainer" method="_on_Base_switch_scene"]
+
+
