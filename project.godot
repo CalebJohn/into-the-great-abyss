@@ -10,7 +10,7 @@ config_version=3
 
 [application]
 
-config/name="potential-fortnight"
+config/name="Into The Great Abyss"
 run/main_scene="res://src/scenes/Menu.tscn"
 boot_splash/image="res://assets/1.png"
 config/icon="res://assets/images/icon.png"
