@@ -2,12 +2,37 @@
 
 A prototype for a space exploration/management game.
 
-![sketch](https://cloud.githubusercontent.com/assets/2179547/13969920/241d406a-f04b-11e5-95a2-b51d8bcd1df9.png)
+Into The Great Abyss is a game where you find yourself on a strange planet and you have to build up infrastructure to gather the resources needed to escape. 
+
+Development is open source and anyone is welcome to submit issues and/or pull requests.
 
 Contributing
 -----------
-This game is built with [godotengine](https://godotengine.org)
+This game is built with the [Godot](https://godotengine.org) game engine
 
-In order to contribute, [download](https://godotengine.org/download) the godot executable and load this project as usual. Please refer to the [docs](http://docs.godotengine.org/en/stable/) for tutorials and getting started.
+In order to contribute: 
+1) [download](https://godotengine.org/download) the Godot executable 
+2) Download this reposity either with the 'Clone or Download' button above or with git ```git clone https://github.com/calebjohn/into-the-great-abyss```
+3) Run Godot 
+4) Click 'Import' on the sidebar and navigate to where you saved the project
 
-Although style and code formatting is a very important aspect in project development, for the purposes of this prototype we will be focussing on content rather than quality in order to get a prototype finished as soon as possible.
+Please refer to the Godot [docs](http://docs.godotengine.org/en/stable/) for tutorials and getting started.
+
+
+# Current Features
+* Main Menu
+* Framework for planet generation
+* Framework for planetary map
+* Shell for the player base
+* Proof of concept for 3D base view
+
+# Road Map
+The goal is to first get a playable game with a single planet working and then to expand to multiple planets
+* Procedural resources
+* Resource gathering (both manual and automated)
+* Building (taking into account resources)
+* Exploration component (costs for travelling, fog of war, etc.)
+* Multiple bases
+
+## Long Term
+* Interplanetary travel
