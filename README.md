@@ -1,4 +1,4 @@
-# potential-fortnight
+# Into The Great Abyss
 
 A prototype for a space exploration/management game.
 
