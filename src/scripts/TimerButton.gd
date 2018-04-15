@@ -8,6 +8,7 @@ var tween
 #material needs to be loaded this way otherwise uniform values are shared between all buttons
 var timer_mat = preload("res://assets/shaders/TimerButtonMaterial.tres")
 
+var text = "a" setget _set_text
 var active = false
 export var time = 1.0 #time it takes to load
 
@@ -22,8 +23,6 @@ func reset_loading_bar(object, method):
 	emit_signal("finished")
 	$Viewport/Button.pressed = false
 	$Viewport/Button.toggle_mode = false
-	$Viewport.render_target_update_mode = Viewport.UPDATE_ONCE
-	
 
 func _ready():
 	material = timer_mat.duplicate(true)
@@ -38,6 +37,7 @@ func _ready():
 func _on_Button_resized():
 	rect_size = $Viewport/Button.rect_size
 	$Viewport.size = rect_size
+	material.set_shader_param("width", rect_size.x)
 
 
 func _on_Button_pressed():
@@ -49,3 +49,7 @@ func _on_Button_pressed():
 		tween.interpolate_method(self, "update_loading_bar", 0.0, 1.0, time, Tween.TRANS_LINEAR, Tween.EASE_OUT)
 		tween.start()
 		active = true
+		
+func _set_text(a):
+	text = a
+	$Viewport/Button.text = a
