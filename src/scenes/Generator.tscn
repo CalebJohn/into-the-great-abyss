@@ -12,6 +12,7 @@ uniform vec2 resolution;
 vec2 hash2(vec2 p ) {
    return fract(sin(vec2(dot(p, vec2(123.4, 748.6)), dot(p, vec2(547.3, 659.3))))*5232.85324);
 }
+
 float hash1(vec2 p) {
   return fract(sin(dot(p*11.5, vec2(43.232, 75.876)))*45246.32957);
 }
@@ -20,6 +21,7 @@ vec2 hash( vec2 p ) {
 	p = vec2(dot(p,vec2(127.1,311.7)), dot(p,vec2(269.5,183.3)));
 	return -1.0 + 2.0*fract(sin(p)*43758.5453123);
 }
+
 vec3 noised( in vec2 p ) {
     vec2 i = floor( p );
     vec2 f = fract( p );
@@ -57,22 +59,24 @@ float noise( in vec2 p ) {
     return dot(n, vec3(70.0));
 }
 
+//helper function for mountain noise, gives a rounded top to mountains
 float smoothabs(float x) {
-	return sqrt(x*x+0.0001)-0.01;
+	return sqrt(x * x + 0.0001) - 0.01;
 }
 
+//mountain noise for sharp ridges and peaks
 float mountain(vec2 p) {
 	mat2 m = mat2( vec2(1.6,  1.2), vec2(-1.2,  1.6) );
 	float total = 0.0, a = 0.45;
 	vec2 d = vec2(0.0);
-	vec2 p2 = p+vec2(1000.0, 512.12);
+	vec2 p2 = p + vec2(1000.0, 512.12);
 	vec2 d2 = vec2(0.0);
 	for (int i = 0; i < 6; i++) {
-		vec3 n  = noised(p+2.5*d);
-		vec3 n2 = noised(p2+2.5*d2);
-		d += n.yz*a*-n.x;
-		d2 += n2.yz*a*-n2.x;
-		total += ((1.0-smoothabs(n.x))*(1.0-smoothabs(n2.x))*a) / (1.0 + dot(d, d))/(1.0+dot(d2, d2));
+		vec3 n  = noised(p + 2.5 * d);
+		vec3 n2 = noised(p2 + 2.5 * d2);
+		d += n.yz * a * -n.x;
+		d2 += n2.yz * a * -n2.x;
+		total += ((1.0 - smoothabs(n.x)) * (1.0 - smoothabs(n2.x)) * a) / (1.0 + dot(d, d)) / (1.0 + dot(d2, d2));
 		p = m * p;
 		p2 = m * p2;
 		a *= 0.6 * pow(total, 0.5);
@@ -80,6 +84,7 @@ float mountain(vec2 p) {
 	return total;
 }
 
+//regular fbm noise for rolling hills
 float fbm(vec2 p) {
 	mat2 m = mat2( vec2(1.6,  1.2), vec2(-1.2,  1.6) );
 	float total = 0.0, a = 0.5;
@@ -120,15 +125,14 @@ void fragment() {
 	vec2 uv = SCREEN_UV;
 	
 	uv.x *= aspect;
-	vec2 pos = uv*3.0;
+	vec2 pos = uv * 3.0;
 	
 	float height = mix(mountain(pos), fbm(pos), COLOR.x);
-	//fake erosion with cellular noise
-	//pos = uv*10.0;
-	//height -= (cell(pos)*0.5+cell(pos*2.0)*0.35+cell(pos*8.0)*0.15)*1.5;
+
 	vec3 col = vec3(height, COLOR.yz);
 	COLOR = vec4(col, 1.0);
 }"
+_sections_unfolded = [ "Resource" ]
 
 [sub_resource type="ShaderMaterial" id=2]
 
@@ -145,12 +149,12 @@ uniform vec2 resolution;
 
 void fragment(){
 	vec2 invRes = SCREEN_PIXEL_SIZE;//vec2(1.0) / resolution;
-	float height1 = texture(heightmap, SCREEN_UV+vec2(-invRes.x, 0.0)).x;
-	float height2 = texture(heightmap, SCREEN_UV+vec2(invRes.x, 0.0)).x;
-	float height3 = texture(heightmap, SCREEN_UV+vec2(0.0, -invRes.y)).x;
-	float height4 = texture(heightmap, SCREEN_UV+vec2(0.0, invRes.y)).x;
+	float height1 = texture(heightmap, SCREEN_UV + vec2(-invRes.x, 0.0)).x;
+	float height2 = texture(heightmap, SCREEN_UV + vec2(invRes.x, 0.0)).x;
+	float height3 = texture(heightmap, SCREEN_UV + vec2(0.0, -invRes.y)).x;
+	float height4 = texture(heightmap, SCREEN_UV + vec2(0.0, invRes.y)).x;
 	
-	vec3 norm = normalize(vec3(height1-height2, 2.0*invRes.x, height3-height4));
+	vec3 norm = normalize(vec3(height1 - height2, 2.0 * invRes.x, height3 - height4));
 	
 	
 	COLOR = vec4(norm, 1.0);
@@ -177,7 +181,7 @@ float shadow(vec3 position, vec3 sun_direction) {
 	for (int i = 0; i < 30; i++) {
 		p += sun_direction * r;
 		float h = texture(heightmap, p.xz).x;
-		if (p.y<h) {
+		if (p.y < h) {
 			return 0.5;
 		}
 	}
@@ -380,7 +384,7 @@ render_priority = 0
 shader = SubResource( 13 )
 shader_param/resolution = null
 
-[node name="Generator" type="Node2D"]
+[node name="Generator" type="Node2D" index="0"]
 
 script = ExtResource( 1 )
 
