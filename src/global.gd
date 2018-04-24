@@ -19,6 +19,8 @@ var genSeed
 var fullscreen = false
 var mute = false
 var size
+var basePosition = Vector2(0.0, 0.0)
+var baseSize = Vector2(100.0, 100.0)
 
 func _ready():
 	#sets the initial seed to random value

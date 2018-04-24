@@ -50,11 +50,11 @@ func _process(delta):
 	if Input.is_action_pressed("scene_forward"):
 		$Camera.translate(Vector3(0,0,-1))
 	if Input.is_action_pressed("scene_left"):
-		$Camera.translate(Vector3(-1,0,0))
+		$Camera.rotate_y(0.01)
 	if Input.is_action_pressed("scene_back"):
 		$Camera.translate(Vector3(0,0,1))
 	if Input.is_action_pressed("scene_right"):
-		$Camera.translate(Vector3(1,0,0))
+		$Camera.rotate_y(-0.01)
 	if Input.is_action_pressed("scene_up"):
 		$Camera.translate(Vector3(0,1,0))
 	if Input.is_action_pressed("scene_down"):

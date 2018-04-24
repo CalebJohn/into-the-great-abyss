@@ -23,6 +23,7 @@ driver="ALSA"
 
 global="*res://src/global.gd"
 resources="*res://src/resources.gd"
+planet="*res://src/planet.gd"
 
 [display]
 
