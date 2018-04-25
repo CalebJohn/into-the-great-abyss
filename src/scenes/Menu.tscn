@@ -113,7 +113,7 @@ shader = SubResource( 4 )
 shader_param/mouse = null
 shader_param/resolution = null
 
-[node name="Root" type="Control" index="0"]
+[node name="Root" type="Control"]
 
 anchor_left = 0.0
 anchor_top = 0.0

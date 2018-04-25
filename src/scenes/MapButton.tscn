@@ -20,6 +20,7 @@ void fragment() {
 	vec2 fade = step(bpos, pos)*step(pos, bpos+buttonSize);
 	COLOR = vec4(0.0, 0.0, 0.0, step(0.5, fade.x*fade.y)*tint);
 }"
+_sections_unfolded = [ "Resource" ]
 
 [sub_resource type="ShaderMaterial" id=2]
 
@@ -30,7 +31,7 @@ shader_param/id = null
 shader_param/buttonSize = null
 shader_param/resolution = null
 
-[node name="MapButton" type="TextureButton"]
+[node name="MapButton" type="TextureButton" index="0"]
 
 material = SubResource( 2 )
 anchor_left = 0.0
@@ -40,6 +41,7 @@ anchor_bottom = 0.0
 margin_right = 1.0
 margin_bottom = 1.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 focus_mode = 2
 mouse_filter = 0
 mouse_default_cursor_shape = 0
@@ -55,6 +57,8 @@ script = ExtResource( 2 )
 _sections_unfolded = [ "Margin", "Material", "Textures" ]
 
 [connection signal="mouse_entered" from="." to="." method="_on_MapButton_mouse_enter"]
+
+[connection signal="mouse_exited" from="." to="." method="_on_MapButton_mouse_exited"]
 
 [connection signal="pressed" from="." to="." method="_on_MapButton_pressed"]
 

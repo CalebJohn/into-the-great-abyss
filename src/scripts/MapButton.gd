@@ -14,9 +14,13 @@ func _ready():
 
 
 func _on_MapButton_pressed():
+	material.set_shader_param("buttonSize", Vector2(0, 0))
 	get_parent().emit_signal("child_pressed", position)
 
 func _on_MapButton_mouse_enter():
 	material.set_shader_param("id", get_parent().get_position()+get_position())
 	material.set_shader_param("buttonSize", get_parent().buttonSize)
 	material.set_shader_param("resolution", global.size)
+
+func _on_MapButton_mouse_exited():
+	material.set_shader_param("buttonSize", Vector2(0, 0))
