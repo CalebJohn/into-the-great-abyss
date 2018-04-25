@@ -1,17 +1,18 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://src/scripts/Generator.gd" type="Script" id=1]
+[ext_resource path="res://src/scripts/Heightmap.gd" type="Script" id=2]
 
 [sub_resource type="Shader" id=1]
 
 code = "shader_type canvas_item;
-render_mode unshaded;
 
 uniform vec2 resolution;
 
 vec2 hash2(vec2 p ) {
    return fract(sin(vec2(dot(p, vec2(123.4, 748.6)), dot(p, vec2(547.3, 659.3))))*5232.85324);
 }
+
 float hash1(vec2 p) {
   return fract(sin(dot(p*11.5, vec2(43.232, 75.876)))*45246.32957);
 }
@@ -20,6 +21,30 @@ vec2 hash( vec2 p ) {
 	p = vec2(dot(p,vec2(127.1,311.7)), dot(p,vec2(269.5,183.3)));
 	return -1.0 + 2.0*fract(sin(p)*43758.5453123);
 }
+
+vec3 noised( in vec2 p ) {
+    vec2 i = floor( p );
+    vec2 f = fract( p );
+
+    // quintic interpolation
+    vec2 u = f*f*f*(f*(f*6.0-15.0)+10.0);
+    vec2 du = 30.0*f*f*(f*(f-2.0)+1.0);
+    
+    vec2 ga = hash( i + vec2(0.0,0.0) );
+    vec2 gb = hash( i + vec2(1.0,0.0) );
+    vec2 gc = hash( i + vec2(0.0,1.0) );
+    vec2 gd = hash( i + vec2(1.0,1.0) );
+    
+    float va = dot( ga, f - vec2(0.0,0.0) );
+    float vb = dot( gb, f - vec2(1.0,0.0) );
+    float vc = dot( gc, f - vec2(0.0,1.0) );
+    float vd = dot( gd, f - vec2(1.0,1.0) );
+
+    return vec3( va + u.x*(vb-va) + u.y*(vc-va) + u.x*u.y*(va-vb-vc+vd),   // value
+                 ga + u.x*(gb-ga) + u.y*(gc-ga) + u.x*u.y*(ga-gb-gc+gd) +  // derivatives
+                 du * (u.yx*(va-vb-vc+vd) + vec2(vb,vc) - va));
+}
+
 
 float noise( in vec2 p ) {
     float K1 = 0.366025404; // (sqrt(3)-1)/2;
@@ -31,19 +56,47 @@ float noise( in vec2 p ) {
 	vec2 c = a - 1.0 + 2.0*K2;
     vec3 h = max(0.5-vec3(dot(a,a), dot(b,b), dot(c,c) ), vec3(0.0) );
 	vec3 n = h*h*h*h*vec3( dot(a,hash(i+0.0)), dot(b,hash(i+o)), dot(c,hash(i+1.0)));
-    return 0.5+0.5*dot(n, vec3(70.0));	
+    return dot(n, vec3(70.0));
 }
 
-float fbm(vec2 n) {
+//helper function for mountain noise, gives a rounded top to mountains
+float smoothabs(float x) {
+	return sqrt(x * x + 0.0001) - 0.01;
+}
+
+//mountain noise for sharp ridges and peaks
+float mountain(vec2 p) {
 	mat2 m = mat2( vec2(1.6,  1.2), vec2(-1.2,  1.6) );
-	float total = 0.0, amplitude = 0.1;
-	for (int i = 0; i < 7; i++) {
-		total += noise(n) * amplitude;
-		n = m * n;
-		amplitude *= 0.4;
+	float total = 0.0, a = 0.45;
+	vec2 d = vec2(0.0);
+	vec2 p2 = p + vec2(1000.0, 512.12);
+	vec2 d2 = vec2(0.0);
+	for (int i = 0; i < 6; i++) {
+		vec3 n  = noised(p + 2.5 * d);
+		vec3 n2 = noised(p2 + 2.5 * d2);
+		d += n.yz * a * -n.x;
+		d2 += n2.yz * a * -n2.x;
+		total += ((1.0 - smoothabs(n.x)) * (1.0 - smoothabs(n2.x)) * a) / (1.0 + dot(d, d)) / (1.0 + dot(d2, d2));
+		p = m * p;
+		p2 = m * p2;
+		a *= 0.6 * pow(total, 0.5);
 	}
 	return total;
 }
+
+//regular fbm noise for rolling hills
+float fbm(vec2 p) {
+	mat2 m = mat2( vec2(1.6,  1.2), vec2(-1.2,  1.6) );
+	float total = 0.0, a = 0.5;
+	for (int i = 0; i < 6; i++) {
+		float n  = noise(p)*0.5+0.5;
+		total += n*a;
+		p = m * p;
+		a *= 0.5;
+	}
+	return total;
+}
+
 
 //Based off of iq's described here: http://www.iquilezles.org/www/articles/voronoilin
 float cell(vec2 p) {
@@ -72,14 +125,14 @@ void fragment() {
 	vec2 uv = SCREEN_UV;
 	
 	uv.x *= aspect;
-	vec2 pos = uv*2.0;
-	float height = noise(pos)*0.5+noise(pos*2.0)*0.35+noise(pos*4.0)*0.15;
-	//fake erosion with cellular noise
-	pos = uv*10.0;
-	height -= (cell(pos)*0.5+cell(pos*2.0)*0.35+cell(pos*8.0)*0.15)*1.5;
-	vec3 col = vec3(height);
+	vec2 pos = uv * 3.0;
+	
+	float height = mix(mountain(pos), fbm(pos), COLOR.x);
+
+	vec3 col = vec3(height, COLOR.yz);
 	COLOR = vec4(col, 1.0);
 }"
+_sections_unfolded = [ "Resource" ]
 
 [sub_resource type="ShaderMaterial" id=2]
 
@@ -90,19 +143,18 @@ shader_param/resolution = null
 [sub_resource type="Shader" id=3]
 
 code = "shader_type canvas_item;
-render_mode unshaded;
 
 uniform sampler2D heightmap;
 uniform vec2 resolution;
 
 void fragment(){
 	vec2 invRes = SCREEN_PIXEL_SIZE;//vec2(1.0) / resolution;
-	float height1 = texture(heightmap, SCREEN_UV+vec2(-invRes.x, 0.0)).x;
-	float height2 = texture(heightmap, SCREEN_UV+vec2(invRes.x, 0.0)).x;
-	float height3 = texture(heightmap, SCREEN_UV+vec2(0.0, -invRes.y)).x;
-	float height4 = texture(heightmap, SCREEN_UV+vec2(0.0, invRes.y)).x;
+	float height1 = texture(heightmap, SCREEN_UV + vec2(-invRes.x, 0.0)).x;
+	float height2 = texture(heightmap, SCREEN_UV + vec2(invRes.x, 0.0)).x;
+	float height3 = texture(heightmap, SCREEN_UV + vec2(0.0, -invRes.y)).x;
+	float height4 = texture(heightmap, SCREEN_UV + vec2(0.0, invRes.y)).x;
 	
-	vec3 norm = normalize(vec3(height1-height2, 0.02, height3-height4));
+	vec3 norm = normalize(vec3(height1 - height2, 2.0 * invRes.x, height3 - height4));
 	
 	
 	COLOR = vec4(norm, 1.0);
@@ -122,15 +174,35 @@ uniform sampler2D heightmap;
 uniform sampler2D normal;
 uniform vec2 resolution;
 
+float shadow(vec3 position, vec3 sun_direction) {
+	vec3 p = position;
+	float r = 3.0 / resolution.x;
+	float shaded = 1.0;
+	for (int i = 0; i < 30; i++) {
+		p += sun_direction * r;
+		float h = texture(heightmap, p.xz).x;
+		if (p.y < h) {
+			return 0.5;
+		}
+	}
+	return shaded;
+}
+
 void fragment() {
-	vec3 sun = normalize(vec3(1.0, 1.0, 1.0));
-	float bright = dot(texture(normal, SCREEN_UV).xyz, sun);
+	vec3 sun = normalize(vec3(0.5, 0.5, 0.5));
+	vec3 n = texture(normal, SCREEN_UV).xyz;
+	float bright = dot(n, sun);
+	vec3 height = texture(heightmap, SCREEN_UV).xyz;
+	float shade = shadow(vec3(SCREEN_UV.x, height.x, SCREEN_UV.y), sun);
 	bright = max(0.0, bright);
-	float height = texture(heightmap, SCREEN_UV).x;
-	vec3 col = mix(vec3(0.2, 0.4, 0.7), vec3(0.4, 0.2, 0.05), smoothstep(0.0, 0.1, height));
-	
+	bright = mix(1.0, bright, smoothstep(0.45, 0.55, height.x));
+	vec3 ground_color = mix(vec3(0.7, 0.6, 0.6), vec3(0.4, 0.2, 0.05), smoothstep(0.4, 0.6, height.y));
+	ground_color = mix(ground_color, vec3(0.4, 0.85, 0.5), smoothstep(0.4, 0.6, height.z));
+	vec3 col = mix(vec3(0.2, 0.4, 0.7), ground_color, smoothstep(0.45, 0.55, height.x));
 	COLOR = vec4(col*bright, 1.0);
+
 }"
+_sections_unfolded = [ "Resource" ]
 
 [sub_resource type="ShaderMaterial" id=6]
 
@@ -210,7 +282,7 @@ void fragment() {
 	
 	float height = noise(pos)*0.5*cell(pos*5.0)+noise(pos*2.0)*0.25*cell(pos*10.0)+noise(pos*4.0)*0.125*cell(pos*20.0)+noise(pos*8.0)*0.0625*cell(pos*40.0);
 	vec3 col = vec3(smoothstep(0.0, 1.0, height));
-
+	
 	COLOR = vec4(col, 1.0);
 }"
 
@@ -312,7 +384,7 @@ render_priority = 0
 shader = SubResource( 13 )
 shader_param/resolution = null
 
-[node name="Generator" type="Node2D"]
+[node name="Generator" type="Node2D" index="0"]
 
 script = ExtResource( 1 )
 
@@ -332,11 +404,11 @@ own_world = false
 world = null
 transparent_bg = false
 msaa = 0
-hdr = false
+hdr = true
 disable_3d = false
-usage = 1
+usage = 0
 debug_draw = 0
-render_target_v_flip = true
+render_target_v_flip = false
 render_target_clear_mode = 0
 render_target_update_mode = 1
 audio_listener_enable_2d = false
@@ -349,25 +421,13 @@ shadow_atlas_quad_0 = 2
 shadow_atlas_quad_1 = 2
 shadow_atlas_quad_2 = 3
 shadow_atlas_quad_3 = 4
-_sections_unfolded = [ "Render Target" ]
+_sections_unfolded = [ "Render Target", "Rendering" ]
 
-[node name="Heightmap" type="Polygon2D" parent="Pass1" index="0"]
+[node name="Heightmap" type="Node2D" parent="Pass1" index="0"]
 
 material = SubResource( 2 )
-scale = Vector2( 1000, 600 )
-polygon = PoolVector2Array( 0, 0, 1, 0, 1, 1, 0, 1 )
-uv = PoolVector2Array(  )
-color = Color( 1, 1, 1, 1 )
-vertex_colors = PoolColorArray(  )
-offset = Vector2( 0, 0 )
-antialiased = false
-texture = null
-texture_offset = Vector2( 0, 0 )
-texture_scale = Vector2( 1, 1 )
-texture_rotation_degrees = 0.0
-invert_enable = false
-invert_border = 100.0
-_sections_unfolded = [ "Material" ]
+script = ExtResource( 2 )
+_sections_unfolded = [ "Anchor", "Margin", "Material" ]
 
 [node name="Pass2" type="Viewport" parent="." index="3"]
 
@@ -377,7 +437,7 @@ own_world = false
 world = null
 transparent_bg = false
 msaa = 0
-hdr = false
+hdr = true
 disable_3d = false
 usage = 0
 debug_draw = 0
@@ -396,23 +456,21 @@ shadow_atlas_quad_2 = 3
 shadow_atlas_quad_3 = 4
 _sections_unfolded = [ "Rendering" ]
 
-[node name="MapNormal" type="Polygon2D" parent="Pass2" index="0"]
+[node name="MapNormal" type="ColorRect" parent="Pass2" index="0"]
 
 material = SubResource( 4 )
-scale = Vector2( 1000, 600 )
-polygon = PoolVector2Array( 0, 0, 1, 0, 1, 1, 0, 1 )
-uv = PoolVector2Array(  )
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
 color = Color( 1, 1, 1, 1 )
-vertex_colors = PoolColorArray(  )
-offset = Vector2( 0, 0 )
-antialiased = false
-texture = null
-texture_offset = Vector2( 0, 0 )
-texture_scale = Vector2( 1, 1 )
-texture_rotation_degrees = 0.0
-invert_enable = false
-invert_border = 100.0
-_sections_unfolded = [ "Material" ]
+_sections_unfolded = [ "Anchor", "Margin", "Material" ]
 
 [node name="Pass3" type="Viewport" parent="." index="4"]
 
@@ -422,7 +480,7 @@ own_world = false
 world = null
 transparent_bg = false
 msaa = 0
-hdr = false
+hdr = true
 disable_3d = false
 usage = 0
 debug_draw = 0
@@ -439,23 +497,22 @@ shadow_atlas_quad_0 = 2
 shadow_atlas_quad_1 = 2
 shadow_atlas_quad_2 = 3
 shadow_atlas_quad_3 = 4
+_sections_unfolded = [ "Render Target", "Rendering" ]
 
-[node name="MapShade" type="Polygon2D" parent="Pass3" index="0"]
+[node name="MapShade" type="ColorRect" parent="Pass3" index="0"]
 
 material = SubResource( 6 )
-scale = Vector2( 1000, 600 )
-polygon = PoolVector2Array( 0, 0, 1, 0, 1, 1, 0, 1 )
-uv = PoolVector2Array(  )
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
 color = Color( 1, 1, 1, 1 )
-vertex_colors = PoolColorArray(  )
-offset = Vector2( 0, 0 )
-antialiased = false
-texture = null
-texture_offset = Vector2( 0, 0 )
-texture_scale = Vector2( 1, 1 )
-texture_rotation_degrees = 0.0
-invert_enable = false
-invert_border = 100.0
 _sections_unfolded = [ "Material" ]
 
 [node name="Pass4" type="Viewport" parent="." index="5"]
@@ -483,25 +540,23 @@ shadow_atlas_quad_0 = 2
 shadow_atlas_quad_1 = 2
 shadow_atlas_quad_2 = 3
 shadow_atlas_quad_3 = 4
-_sections_unfolded = [ "Render Target" ]
+_sections_unfolded = [ "Render Target", "Rendering" ]
 
-[node name="CloudHeight" type="Polygon2D" parent="Pass4" index="0"]
+[node name="CloudHeight" type="ColorRect" parent="Pass4" index="0"]
 
 material = SubResource( 8 )
-scale = Vector2( 1000, 600 )
-polygon = PoolVector2Array( 0, 0, 1, 0, 1, 1, 0, 1 )
-uv = PoolVector2Array(  )
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
 color = Color( 1, 1, 1, 1 )
-vertex_colors = PoolColorArray(  )
-offset = Vector2( 0, 0 )
-antialiased = false
-texture = null
-texture_offset = Vector2( 0, 0 )
-texture_scale = Vector2( 1, 1 )
-texture_rotation_degrees = 0.0
-invert_enable = false
-invert_border = 100.0
-_sections_unfolded = [ "Material" ]
+_sections_unfolded = [ "Anchor", "Margin", "Material", "Theme" ]
 
 [node name="Pass5" type="Viewport" parent="." index="6"]
 
@@ -530,23 +585,21 @@ shadow_atlas_quad_2 = 3
 shadow_atlas_quad_3 = 4
 _sections_unfolded = [ "Render Target", "Rendering" ]
 
-[node name="CloudNormal" type="Polygon2D" parent="Pass5" index="0"]
+[node name="CloudNormal" type="ColorRect" parent="Pass5" index="0"]
 
 material = SubResource( 10 )
-scale = Vector2( 1000, 600 )
-polygon = PoolVector2Array( 0, 0, 1, 0, 1, 1, 0, 1 )
-uv = PoolVector2Array(  )
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
 color = Color( 1, 1, 1, 1 )
-vertex_colors = PoolColorArray(  )
-offset = Vector2( 0, 0 )
-antialiased = false
-texture = null
-texture_offset = Vector2( 0, 0 )
-texture_scale = Vector2( 1, 1 )
-texture_rotation_degrees = 0.0
-invert_enable = false
-invert_border = 100.0
-_sections_unfolded = [ "Material", "Z Index" ]
+_sections_unfolded = [ "Anchor", "Margin", "Material", "Z Index" ]
 
 [node name="Pass7" type="Viewport" parent="." index="7"]
 
@@ -575,24 +628,21 @@ shadow_atlas_quad_2 = 3
 shadow_atlas_quad_3 = 4
 _sections_unfolded = [ "Render Target", "Rendering" ]
 
-[node name="Mask" type="Polygon2D" parent="Pass7" index="0"]
+[node name="Mask" type="ColorRect" parent="Pass7" index="0"]
 
 material = SubResource( 12 )
-scale = Vector2( 1000, 600 )
-z_as_relative = false
-polygon = PoolVector2Array( 0, 0, 1, 0, 1, 1, 0, 1 )
-uv = PoolVector2Array(  )
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
 color = Color( 1, 1, 1, 1 )
-vertex_colors = PoolColorArray(  )
-offset = Vector2( 0, 0 )
-antialiased = false
-texture = null
-texture_offset = Vector2( 0, 0 )
-texture_scale = Vector2( 1, 1 )
-texture_rotation_degrees = 0.0
-invert_enable = false
-invert_border = 100.0
-_sections_unfolded = [ "Material", "Z Index" ]
+_sections_unfolded = [ "Anchor", "Margin", "Material", "Z Index" ]
 
 [node name="Pass6" type="Viewport" parent="." index="8"]
 
@@ -621,22 +671,20 @@ shadow_atlas_quad_2 = 3
 shadow_atlas_quad_3 = 4
 _sections_unfolded = [ "Render Target", "Rendering" ]
 
-[node name="CloudShade" type="Polygon2D" parent="Pass6" index="0"]
+[node name="CloudShade" type="ColorRect" parent="Pass6" index="0"]
 
 material = SubResource( 14 )
-scale = Vector2( 1000, 600 )
-polygon = PoolVector2Array( 0, 0, 1, 0, 1, 1, 0, 1 )
-uv = PoolVector2Array(  )
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
 color = Color( 1, 1, 1, 1 )
-vertex_colors = PoolColorArray(  )
-offset = Vector2( 0, 0 )
-antialiased = false
-texture = null
-texture_offset = Vector2( 0, 0 )
-texture_scale = Vector2( 1, 1 )
-texture_rotation_degrees = 0.0
-invert_enable = false
-invert_border = 100.0
-_sections_unfolded = [ "Material", "Visibility" ]
+_sections_unfolded = [ "Anchor", "Margin", "Material", "Visibility" ]
 
 
