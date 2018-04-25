@@ -88,6 +88,9 @@ func _ready():
 	$CloudDisplay.texture = cloudTexture
 	$CloudDisplay.position = global.size * 0.5
 	
+	#Pass the heightmap to the planet information node
+	planet.heightmap = mapHeight
+	
 	#pass textures to other viewports to use them as input
 	$Pass2/MapNormal.material.set_shader_param("heightmap", mapHeight)
 	$Pass3/MapShade.material.set_shader_param("heightmap", mapHeight)

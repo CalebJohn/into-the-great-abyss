@@ -10,9 +10,10 @@ func height(pos):
 	return -5.0+5.0*pow(noise.fbmsimplex(pos),3)+5.0*noise.cliffNoise(pos*0.05)
 
 func _ready():
-	groundMat = SpatialMaterial.new()
-	groundMat.albedo_color = Color(65/255.0, 120/255.0, 52/255.0)
-	#groundMat.params_diffuse_mode = SpatialMaterial.DIFFUSE_TOON
+	groundMat = load("res://assets/shaders/TerrainMaterial.tres")
+	groundMat.set_shader_param("heightmap", planet.heightmap)
+	groundMat.set_shader_param("world_pos", global.basePosition / global.size)
+	groundMat.set_shader_param("scene_size", global.baseSize / global.size)
 
 	set_process(false)
 	#var width = 15
@@ -21,7 +22,7 @@ func _ready():
 		#for j in range(-10, 0):
 			#var res = 10.0
 			#add_plane(i*width, j*length, width, length, res)
-	add_plane(-100, -200, 200, 200, 100)
+	add_plane(-100, -100, 200, 200, 100)
 
 func crand(pos, m):
 	var offset = Vector2()

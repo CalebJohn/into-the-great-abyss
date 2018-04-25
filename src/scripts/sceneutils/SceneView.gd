@@ -18,6 +18,11 @@ func _ready():
 
 
 func _on_Scene_pressed():
-	make_scene()
 	visible = visible == false
+	if visible:
+		$Node2D/Viewport.render_target_update_mode = Viewport.UPDATE_ALWAYS
+		make_scene()
+	else:
+		$Node2D/Viewport.render_target_update_mode = Viewport.UPDATE_DISABLED
+	
 
