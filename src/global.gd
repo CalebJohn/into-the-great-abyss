@@ -15,7 +15,7 @@ extends Node
 
 #seed for random numbers
 #will need to play a role in gpu generation code as well
-var genSeed
+var genSeed = 0
 var fullscreen = false
 var mute = false
 var size

@@ -8,18 +8,19 @@
 code = "shader_type canvas_item;
 
 uniform vec2 resolution;
+uniform float seed;
 
 vec2 hash2(vec2 p ) {
-   return fract(sin(vec2(dot(p, vec2(123.4, 748.6)), dot(p, vec2(547.3, 659.3))))*5232.85324);
+   return fract(seed + sin(vec2(dot(p, vec2(123.4, 748.6)), dot(p, vec2(547.3, 659.3))))*5232.85324);
 }
 
 float hash1(vec2 p) {
-  return fract(sin(dot(p*11.5, vec2(43.232, 75.876)))*45246.32957);
+  return fract(seed + sin(dot(p*11.5, vec2(43.232, 75.876)))*45246.32957);
 }
 
 vec2 hash( vec2 p ) {
-	p = vec2(dot(p,vec2(127.1,311.7)), dot(p,vec2(269.5,183.3)));
-	return -1.0 + 2.0*fract(sin(p)*43758.5453123);
+	p = vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)));
+	return -1.0 + 2.0*fract(seed + sin(p)*43758.5453123);
 }
 
 vec3 noised( in vec2 p ) {
@@ -85,7 +86,7 @@ float mountain(vec2 p) {
 }
 
 //regular fbm noise for rolling hills
-float fbm(vec2 p) {
+float hills(vec2 p) {
 	mat2 m = mat2( vec2(1.6,  1.2), vec2(-1.2,  1.6) );
 	float total = 0.0, a = 0.5;
 	for (int i = 0; i < 6; i++) {
@@ -97,6 +98,9 @@ float fbm(vec2 p) {
 	return total;
 }
 
+float desert(vec2 p) {
+	return 0.5 + (1.0 - abs(noise(p * vec2(3.0, 8.0)))) * 0.01;
+}
 
 //Based off of iq's described here: http://www.iquilezles.org/www/articles/voronoilin
 float cell(vec2 p) {
@@ -118,18 +122,28 @@ float cell(vec2 p) {
     }
     return md;
 }
-
-
+/*
+COLOR vertex color passed in and final color passed out
+r: Height (Water <-> Mountain)
+g: Temperature (Snowy <-> Normal)
+b: Humidity (Desert <-> Rainforest)
+a: Rockiness (Earthy <-> Rocky)
+*/
 void fragment() {
 	float aspect = resolution.x/resolution.y;
 	vec2 uv = SCREEN_UV;
 	
 	uv.x *= aspect;
 	vec2 pos = uv * 3.0;
-	
-	float height = mix(mountain(pos), fbm(pos), COLOR.x);
+	float hill = hills(pos);
+	float des = desert(pos);
+	float height = mix (des, mountain(pos), smoothstep(0.1, 0.3, COLOR.b));
+	height = mix(hill, height, smoothstep(0.3, 0.6, COLOR.x));
+	height -= cell(pos*15.0)*0.05 * smoothstep(0.5, 1.0, COLOR.a); // make it chunky when rockiness is high
 
-	vec3 col = vec3(height, COLOR.yz);
+	//remap height into 0-1 range
+	height = (height-0.3)*2.0;
+	vec3 col = vec3(height * 1.3 - 0.3);
 	COLOR = vec4(col, 1.0);
 }"
 _sections_unfolded = [ "Resource" ]
@@ -139,16 +153,16 @@ _sections_unfolded = [ "Resource" ]
 render_priority = 0
 shader = SubResource( 1 )
 shader_param/resolution = null
+shader_param/seed = null
 
 [sub_resource type="Shader" id=3]
 
 code = "shader_type canvas_item;
 
 uniform sampler2D heightmap;
-uniform vec2 resolution;
 
 void fragment(){
-	vec2 invRes = SCREEN_PIXEL_SIZE;//vec2(1.0) / resolution;
+	vec2 invRes = SCREEN_PIXEL_SIZE;
 	float height1 = texture(heightmap, SCREEN_UV + vec2(-invRes.x, 0.0)).x;
 	float height2 = texture(heightmap, SCREEN_UV + vec2(invRes.x, 0.0)).x;
 	float height3 = texture(heightmap, SCREEN_UV + vec2(0.0, -invRes.y)).x;
@@ -164,7 +178,6 @@ void fragment(){
 
 render_priority = 0
 shader = SubResource( 3 )
-shader_param/resolution = null
 
 [sub_resource type="Shader" id=5]
 
@@ -173,6 +186,13 @@ code = "shader_type canvas_item;
 uniform sampler2D heightmap;
 uniform sampler2D normal;
 uniform vec2 resolution;
+uniform vec3 mountain = vec3(0.7, 0.6, 0.6);
+uniform vec3 desert = vec3(0.85, 0.8, 0.45);
+uniform vec3 water = vec3(0.2, 0.4, 0.7);
+uniform vec3 snow = vec3(0.95, 0.97, 1.0);
+uniform vec3 rock ;
+uniform vec3 soil = vec3(0.6, 0.3, 0.15);
+uniform vec3 plant = vec3(0.4, 0.85, 0.5);
 
 float shadow(vec3 position, vec3 sun_direction) {
 	vec3 p = position;
@@ -195,20 +215,33 @@ void fragment() {
 	vec3 height = texture(heightmap, SCREEN_UV).xyz;
 	float shade = shadow(vec3(SCREEN_UV.x, height.x, SCREEN_UV.y), sun);
 	bright = max(0.0, bright);
-	bright = mix(1.0, bright, smoothstep(0.45, 0.55, height.x));
-	vec3 ground_color = mix(vec3(0.7, 0.6, 0.6), vec3(0.4, 0.2, 0.05), smoothstep(0.4, 0.6, height.y));
-	ground_color = mix(ground_color, vec3(0.4, 0.85, 0.5), smoothstep(0.4, 0.6, height.z));
-	vec3 col = mix(vec3(0.2, 0.4, 0.7), ground_color, smoothstep(0.45, 0.55, height.x));
+	bright = mix(1.0, bright, smoothstep(0.0, 0.1, height.x));
+	
+	vec3 ground_color = soil;
+	ground_color = mix(ground_color, plant, smoothstep(0.6, 0.8, COLOR.b));
+	ground_color = mix(ground_color, mountain, smoothstep(0.3, 0.4, COLOR.r));
+	ground_color = mix(desert, ground_color,  smoothstep(0.1, 0.3, COLOR.b)); 
+	ground_color = mix(ground_color, snow, smoothstep(0.75, 0.85, height.x));
+	ground_color = mix(snow, ground_color, smoothstep(0.1, 0.2, COLOR.g));
+
+	vec3 col = mix(water, ground_color, smoothstep(0.0, 0.1, height.x));
+
 	COLOR = vec4(col*bright, 1.0);
 
 }"
-_sections_unfolded = [ "Resource" ]
 
 [sub_resource type="ShaderMaterial" id=6]
 
 render_priority = 0
 shader = SubResource( 5 )
 shader_param/resolution = null
+shader_param/mountain = null
+shader_param/desert = null
+shader_param/water = null
+shader_param/snow = null
+shader_param/rock = null
+shader_param/soil = null
+shader_param/plant = null
 
 [sub_resource type="Shader" id=7]
 
@@ -298,10 +331,9 @@ code = "shader_type canvas_item;
 render_mode unshaded;
 
 uniform sampler2D heightmap;
-uniform vec2 resolution;
 
 void fragment(){
-	vec2 invRes = SCREEN_PIXEL_SIZE;//vec2(1.0) / resolution;
+	vec2 invRes = SCREEN_PIXEL_SIZE;
 	float height1 = texture(heightmap, SCREEN_UV+vec2(-invRes.x, 0.0)).x;
 	float height2 = texture(heightmap, SCREEN_UV+vec2(invRes.x, 0.0)).x;
 	float height3 = texture(heightmap, SCREEN_UV+vec2(0.0, -invRes.y)).x;
@@ -312,12 +344,12 @@ void fragment(){
 	
 	COLOR = vec4(norm, 1.0);
 }"
+_sections_unfolded = [ "Resource" ]
 
 [sub_resource type="ShaderMaterial" id=10]
 
 render_priority = 0
 shader = SubResource( 9 )
-shader_param/resolution = null
 
 [sub_resource type="Shader" id=11]
 
@@ -357,7 +389,6 @@ uniform sampler2D heightmap;
 uniform sampler2D cloudmap;
 uniform sampler2D normal;
 uniform sampler2D mask;
-uniform vec2 resolution;
 
 void fragment(){
 
@@ -382,7 +413,6 @@ void fragment(){
 
 render_priority = 0
 shader = SubResource( 13 )
-shader_param/resolution = null
 
 [node name="Generator" type="Node2D" index="0"]
 
@@ -470,7 +500,7 @@ mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
 color = Color( 1, 1, 1, 1 )
-_sections_unfolded = [ "Anchor", "Margin", "Material" ]
+_sections_unfolded = [ "Material" ]
 
 [node name="Pass3" type="Viewport" parent="." index="4"]
 
@@ -499,21 +529,11 @@ shadow_atlas_quad_2 = 3
 shadow_atlas_quad_3 = 4
 _sections_unfolded = [ "Render Target", "Rendering" ]
 
-[node name="MapShade" type="ColorRect" parent="Pass3" index="0"]
+[node name="MapShade" type="Node2D" parent="Pass3" index="0"]
 
 material = SubResource( 6 )
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-color = Color( 1, 1, 1, 1 )
-_sections_unfolded = [ "Material" ]
+script = ExtResource( 2 )
+_sections_unfolded = [ "Anchor", "Margin", "Material" ]
 
 [node name="Pass4" type="Viewport" parent="." index="5"]
 
@@ -556,7 +576,7 @@ mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
 color = Color( 1, 1, 1, 1 )
-_sections_unfolded = [ "Anchor", "Margin", "Material", "Theme" ]
+_sections_unfolded = [ "Material" ]
 
 [node name="Pass5" type="Viewport" parent="." index="6"]
 
@@ -599,7 +619,7 @@ mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
 color = Color( 1, 1, 1, 1 )
-_sections_unfolded = [ "Anchor", "Margin", "Material", "Z Index" ]
+_sections_unfolded = [ "Material", "Z Index" ]
 
 [node name="Pass7" type="Viewport" parent="." index="7"]
 
@@ -642,7 +662,7 @@ mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
 color = Color( 1, 1, 1, 1 )
-_sections_unfolded = [ "Anchor", "Margin", "Material", "Z Index" ]
+_sections_unfolded = [ "Material", "Z Index" ]
 
 [node name="Pass6" type="Viewport" parent="." index="8"]
 
@@ -685,6 +705,6 @@ mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
 color = Color( 1, 1, 1, 1 )
-_sections_unfolded = [ "Anchor", "Margin", "Material", "Visibility" ]
+_sections_unfolded = [ "Material" ]
 
 

@@ -42,7 +42,12 @@ func get_color(pos):
 		pos.y -= 1/numHeight
 	
 	#set seed based on position 
-	#TODO add global seed into the mix
-	seed((str(pos.x)+str(pos.y)).hash())
-	randf()
-	return Color(randf(), randf(), randf())
+	seed((str(pos.x)+str(pos.y)).hash()+global.genSeed)
+	randf() #For some reason the first call is always garbage
+	# Four properties are passed in per vertex
+	# TODO constrain properties based on planet information 
+	#r: Height (Water <-> Mountain)
+	#g: Temperature (Snowy <-> Normal)
+	#b: Humidity (Desert <-> Rainforest)
+	#a: Rockiness (Earthy <-> Rocky)
+	return Color(randf(), randf(), randf(), randf())

@@ -54,21 +54,20 @@ func _ready():
 	$Pass1.size = global.size
 	$Pass1/Heightmap.scale = global.size
 	$Pass1/Heightmap.material.set_shader_param("resolution", global.size)
+	$Pass1/Heightmap.material.set_shader_param("seed", float(global.genSeed) / pow(2, 31))
 	
 	$Pass2.size = global.size
-	$Pass2/MapNormal.material.set_shader_param("resolution", global.size)
 	
 	$Pass3.size = global.size
+	$Pass3/MapShade.scale = global.size
 	$Pass3/MapShade.material.set_shader_param("resolution", global.size)
 	
 	$Pass4.size = global.size
 	$Pass4/CloudHeight.material.set_shader_param("resolution", global.size)
 	
 	$Pass5.size = global.size
-	$Pass5/CloudNormal.material.set_shader_param("resolution", global.size)
 	
 	$Pass6.size = global.size
-	$Pass6/CloudShade.material.set_shader_param("resolution", global.size)
 	
 	$Pass7.size = global.size
 	##acquire references to internal texture of all viewports in order

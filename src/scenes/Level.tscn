@@ -6,7 +6,7 @@
 [ext_resource path="res://src/scenes/BasePanel.tscn" type="PackedScene" id=4]
 [ext_resource path="res://src/scenes/Messenger.tscn" type="PackedScene" id=5]
 
-[node name="Level" type="Control" index="0"]
+[node name="Level" type="Control"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -37,7 +37,6 @@ script = ExtResource( 2 )
 
 [node name="Map" parent="LevelContainer" index="0" instance=ExtResource( 3 )]
 
-rect_clip_content = false
 _sections_unfolded = [ "Visibility" ]
 
 [node name="Base" parent="LevelContainer" index="1" instance=ExtResource( 4 )]
