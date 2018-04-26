@@ -121,7 +121,7 @@ func _on_MuteButton_pressed():
 
 
 func _on_Value_text_changed( text ):
-	global.genSeed = int(text)
+	global.genSeed = hash(text)
 	#This needs to regenerate world
 
 
