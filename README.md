@@ -40,3 +40,8 @@ The goal is to first get a playable game with a single planet working and then t
 
 ## Long Term
 * Interplanetary travel
+
+# FAQ
+* Can I write a FAQ, Privacy Policy, and About Us section for your project?
+
+*No. Although we always welcome contributors who want to get involved with the code. We do not need an improved FAQ, a Privacy Policy, or an About Us section at this time* 
