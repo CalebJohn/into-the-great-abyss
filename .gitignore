@@ -16,4 +16,4 @@ Thumbs.db
 
 # Godot import directory #
 ##########################
-.import
+*.import

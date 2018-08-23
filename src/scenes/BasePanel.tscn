@@ -70,7 +70,7 @@ LineEdit/styles/focus = null
 LineEdit/styles/normal = null
 LineEdit/styles/read_only = null
 
-[node name="Base" type="Control"]
+[node name="Base" type="Control" index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -141,16 +141,127 @@ _sections_unfolded = [ "Anchor", "Margin" ]
 visible = false
 z_index = -1
 
-[node name="GatherButtons" type="GridContainer" parent="." index="3"]
+[node name="ProductionButton" type="Button" parent="." index="3"]
 
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 100.0
+margin_top = 50.0
+margin_right = -800.0
+margin_bottom = -550.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "Production"
+flat = false
+align = 1
+
+[node name="BuildingButton" type="Button" parent="." index="4"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 300.0
+margin_top = 50.0
+margin_right = -800.0
+margin_bottom = -550.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "Building"
+flat = false
+align = 1
+_sections_unfolded = [ "Margin" ]
+
+[node name="ResourceStock" type="GridContainer" parent="." index="5"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 700.0
+margin_top = 100.0
+margin_right = -100.0
+margin_bottom = -640.0
+rect_min_size = Vector2( 100, 150 )
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+columns = 1
+_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
+
+[node name="PropertyDisplay" type="GridContainer" parent="." index="6"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 700.0
+margin_top = 360.0
+margin_right = -100.0
+margin_bottom = -100.0
+rect_min_size = Vector2( 100, 150 )
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+columns = 1
+_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
+
+[node name="Production" type="GridContainer" parent="." index="7"]
+
+editor/display_folded = true
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 100.0
 margin_top = 100.0
-margin_right = -640.0
-margin_bottom = -349.0
+margin_right = -400.0
+margin_bottom = -100.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+columns = 1
+_sections_unfolded = [ "Focus", "Margin", "Mouse", "Rect" ]
+
+[node name="GatherButtons" type="GridContainer" parent="Production" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 200.0
+margin_bottom = 150.0
+rect_min_size = Vector2( 200, 150 )
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 mouse_filter = 1
@@ -158,31 +269,56 @@ mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
 columns = 1
-_sections_unfolded = [ "Margin" ]
+_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
 
-[node name="ProcessButtons" type="GridContainer" parent="." index="4"]
+[node name="ProcessButtons" type="GridContainer" parent="Production" index="1"]
 
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 154.0
+margin_right = 200.0
+margin_bottom = 304.0
+rect_min_size = Vector2( 200, 150 )
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+columns = 1
+_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
+
+[node name="Building" type="GridContainer" parent="." index="8"]
+
+visible = false
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 100.0
-margin_top = 350.0
-margin_right = -640.0
+margin_top = 100.0
+margin_right = -400.0
 margin_bottom = -100.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
-mouse_filter = 1
+focus_mode = 2
+mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
 columns = 1
-_sections_unfolded = [ "Margin" ]
+_sections_unfolded = [ "Anchor", "Focus", "Margin", "Mouse", "Rect" ]
 
 [connection signal="pressed" from="Button" to="." method="_on_Button_pressed"]
 
 [connection signal="pressed" from="Scene" to="." method="_on_Scene_pressed"]
 
 [connection signal="pressed" from="Scene" to="SceneView" method="_on_Scene_pressed"]
+
+[connection signal="pressed" from="ProductionButton" to="." method="_on_ProductionButton_pressed"]
+
+[connection signal="pressed" from="BuildingButton" to="." method="_on_BuildingButton_pressed"]
 
 

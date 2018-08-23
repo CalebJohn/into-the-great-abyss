@@ -4,7 +4,7 @@
 [ext_resource path="res://src/scripts/TimerButton.gd" type="Script" id=2]
 [ext_resource path="res://assets/themes/defaultTheme.tres" type="Theme" id=3]
 
-[node name="TimerButton" type="ViewportContainer"]
+[node name="TimerButton" type="ViewportContainer" index="0"]
 
 material = ExtResource( 1 )
 anchor_left = 0.0
@@ -60,7 +60,7 @@ shadow_atlas_quad_0 = 2
 shadow_atlas_quad_1 = 2
 shadow_atlas_quad_2 = 3
 shadow_atlas_quad_3 = 4
-_sections_unfolded = [ "Render Target", "Rendering" ]
+_sections_unfolded = [ "GUI", "Render Target", "Rendering" ]
 
 [node name="Button" type="Button" parent="Viewport" index="0"]
 
