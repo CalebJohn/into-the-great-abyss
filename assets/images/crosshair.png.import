@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/icon.png-e2b956fc1cad352d3b1bbca4fcd64fa9.stex"
+path="res://.import/crosshair.png-8b182635149764aaded85e6f086ada69.stex"
 
 [deps]
 
-source_file="res://assets/images/icon.png"
-source_md5="86aa1d9e8afaf5ec9cabb7e89945c7a8"
+source_file="res://assets/images/crosshair.png"
+source_md5="44d41b7cd1add88f406af6e10eef287f"
 
-dest_files=[ "res://.import/icon.png-e2b956fc1cad352d3b1bbca4fcd64fa9.stex" ]
-dest_md5="194e27316e2654f135e48790be5bcb33"
+dest_files=[ "res://.import/crosshair.png-8b182635149764aaded85e6f086ada69.stex" ]
+dest_md5="5476f21edd0f6dd031612816ee5d92f0"
 
 [params]
 

@@ -42,8 +42,8 @@ columns = 2
 script = ExtResource( 3 )
 _sections_unfolded = [ "Visibility" ]
 
-[connection signal="child_pressed" from="ButtonGrid" to="." method="_on_ButtonGrid_child_pressed"]
-
 [connection signal="child_pressed" from="ButtonGrid" to="ButtonGrid" method="_on_ButtonGrid_child_pressed"]
+
+[connection signal="child_pressed" from="ButtonGrid" to="." method="_on_ButtonGrid_child_pressed"]
 
 
