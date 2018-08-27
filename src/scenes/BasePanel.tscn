@@ -112,6 +112,7 @@ align = 0
 
 [node name="Scene" type="Button" parent="." index="1"]
 
+visible = false
 anchor_left = 0.0
 anchor_top = 1.0
 anchor_right = 0.0
@@ -234,7 +235,6 @@ _sections_unfolded = [ "Anchor", "Margin", "Rect" ]
 
 [node name="Production" type="GridContainer" parent="." index="7"]
 
-editor/display_folded = true
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 1.0
@@ -311,14 +311,53 @@ size_flags_vertical = 1
 columns = 1
 _sections_unfolded = [ "Anchor", "Focus", "Margin", "Mouse", "Rect" ]
 
+[node name="BuildButtons" type="GridContainer" parent="Building" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 40.0
+margin_bottom = 40.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+columns = 1
+
+[node name="Scanner" type="Button" parent="Building/BuildButtons" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 40.0
+margin_bottom = 25.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "Build Scanner"
+flat = false
+align = 1
+
 [connection signal="pressed" from="Button" to="." method="_on_Button_pressed"]
 
 [connection signal="pressed" from="Scene" to="." method="_on_Scene_pressed"]
 
-[connection signal="pressed" from="Scene" to="SceneView" method="_on_Scene_pressed"]
-
 [connection signal="pressed" from="ProductionButton" to="." method="_on_ProductionButton_pressed"]
 
 [connection signal="pressed" from="BuildingButton" to="." method="_on_BuildingButton_pressed"]
+
+[connection signal="pressed" from="Building/BuildButtons/Scanner" to="." method="_on_Scanner_pressed"]
 
 

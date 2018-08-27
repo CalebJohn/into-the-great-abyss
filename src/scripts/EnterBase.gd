@@ -31,3 +31,7 @@ func _on_Base_switch_scene():
 func _ready():
 	start = 0
 	end = -get_viewport().size.x
+
+
+func _on_Base_message(message):
+	get_parent().get_node("CanvasLayer/Messenger").pass_message(message)

@@ -4,6 +4,7 @@ var resourceStock = {}
 var gatherers = {}
 var processors = {}
 var productionEfficiency = 2
+var scannerBuilt = false
 
 func _ready():
 	for key in resources.types:
