@@ -15,14 +15,3 @@ func _ready():
 	make_scene()
 	$Sprite.position = global.size * 0.5
 	$Sprite.texture = $Node2D/Viewport.get_texture()
-
-
-func _on_Scene_pressed():
-	visible = visible == false
-	if visible:
-		$Node2D/Viewport.render_target_update_mode = Viewport.UPDATE_ALWAYS
-		make_scene()
-	else:
-		$Node2D/Viewport.render_target_update_mode = Viewport.UPDATE_DISABLED
-	
-
